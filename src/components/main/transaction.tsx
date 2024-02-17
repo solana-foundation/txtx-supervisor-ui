@@ -22,7 +22,7 @@ export function Transaction({
         #{executionIndex}
       </p>
       <NetworkBadge network={network} />
-      <CodeBlock value={rawData + "\n \n \n" + decodedData} />
+      <CodeBlock data={rawData + "\n \n \n" + decodedData} />
       <ActionBar />
     </div>
   );
