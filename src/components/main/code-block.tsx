@@ -1,16 +1,57 @@
-import React from "react";
+import React, { useContext } from "react";
+import Editor from "@monaco-editor/react";
+import * as monaco_editor from "monaco-editor";
+import { getCustomTheme } from "../../utils/monaco-theme";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import {
+  selectManual,
+  updateFieldDirtinessMap,
+} from "../../reducers/manualsSlice";
 
 export interface CodeBlock {
-  data: { [key: string]: string };
+  code: string;
+  dataKey: string;
+  manualUuid: string;
 }
-export function CodeBlock({ data }: CodeBlock) {
+export function CodeBlock({ code, dataKey, manualUuid }: CodeBlock) {
+  const dispatch = useAppDispatch();
+  async function beforeEditorMount(monaco: typeof monaco_editor) {
+    monaco.editor.defineTheme("txtx-dark", getCustomTheme());
+    monaco.editor.setTheme("txtx-dark");
+  }
+  const onChange = (value) => {
+    dispatch(
+      updateFieldDirtinessMap({
+        manualUuid,
+        mapKey: dataKey,
+        fieldIsDirty: value != code,
+      }),
+    );
+  };
+
   return (
-    <pre className="scrollbar-h-1 scrollbar scrollbar-thumb-slate-500/50 scrollbar-track-slate-950 scrollbar-thumb-rounded-full scrollbar-track-rounded-full overflow-x-auto w-full whitespace-pre text-sm font-medium dark:text-slate-500 leading-6 mt-2 -ml-0.5 px-2.5 py-1 border rounded dark:border-slate-500/20 dark:bg-slate-950">
-      <code className="w-full break-words box-decoration-clone font-mono ">
-        {Object.keys(data).map((k) => {
-          return `${k}: ${data[k]}\n`;
-        })}
-      </code>
-    </pre>
+    <div>
+      <Editor
+        className="border rounded dark:border-slate-500/10 leading-6"
+        height="2rem"
+        theme="txtx-dark"
+        defaultLanguage="javascript"
+        defaultValue={code + ""}
+        beforeMount={beforeEditorMount}
+        options={{
+          lineNumbers: "off",
+          minimap: { enabled: false },
+          hideCursorInOverviewRuler: true,
+          padding: { top: 6 },
+          lightbulb: {
+            enabled: false,
+          },
+          scrollbar: { vertical: "hidden" },
+          scrollBeyondLastLine: false,
+          renderLineHighlight: "none",
+        }}
+        onChange={onChange}
+      />
+    </div>
   );
 }

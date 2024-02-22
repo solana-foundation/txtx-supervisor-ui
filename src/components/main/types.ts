@@ -39,15 +39,9 @@ export interface ManualData {
   commandInputsEvaluationResult: CommandInputEvaluationResult;
 }
 
-export interface Manual {
+export interface ManualMetadata {
   name: string;
   description: string;
-  data: ManualData[];
-}
-
-export interface ManualDescription {
-  name: string;
-  description: string;
-  id: string;
+  uuid: string;
   constructUuids: string[];
 }

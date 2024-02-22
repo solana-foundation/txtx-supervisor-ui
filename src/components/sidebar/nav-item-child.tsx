@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { ActiveManualContext } from "../../App";
-import { Transition } from "@headlessui/react";
 
 export interface NavItemChild {
   name: string;
