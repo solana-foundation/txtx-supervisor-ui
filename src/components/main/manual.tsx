@@ -31,7 +31,11 @@ export default function Manual() {
   return (
     <div className="max-w-3xl">
       <div className="px-4 sm:px-0">
-        <h1 className={isDirty ? "" : "hidden"}>Dirty boi</h1>
+        <div className={isDirty ? "w-full flex justify-center" : "hidden"}>
+          <div className="text-center w-10/12 py-1 mb-10   rounded-xl dark:bg-orange-500/20 dark:text-orange-500">
+            Preview Mode: Some notice to user communicating information.
+          </div>
+        </div>
         <h1 className="text-3xl font-medium leading-7 dark:text-emerald-400">
           {metadata.name}
         </h1>
