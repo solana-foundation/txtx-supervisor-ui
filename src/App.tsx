@@ -10,13 +10,21 @@ import { ManualMetadata } from "./components/main/types";
 import { SortNavItemsRecursive } from "./utils/helpers";
 import { useAppDispatch } from "./hooks";
 import { addManual } from "./reducers/manualsSlice";
+import ManualIcon from "./components/icons/manual";
+import DeploymentIcon from "./components/icons/deployment";
 
 const packageData = {
   title: "Pyth",
   versions: ["0.0.1", "0.0.2"],
 };
 
+enum PageNav {
+  Manual,
+  Deploy,
+}
 export default function App() {
+  // todo: we should probably introduce a router to actually have this on a separate page
+  const [pageNav, setPageNav] = useState<PageNav>(PageNav.Manual);
   const [navGroups, setNavGroups] = useState<NavGroup[]>();
   const dispatch = useAppDispatch();
 
@@ -43,9 +51,23 @@ export default function App() {
       <div>
         {/* Small sidebar */}
         <div className="hidden xl:fixed xl:inset-y-0 xl:left-0 xl:z-50 xl:block xl:w-20 xl:overflow-y-auto dark:bg-slate-950 border-r dark:border-slate-500/20 xl:pb-4 transition-all">
-          <div className="flex h-16 shrink-0 items-center justify-center px-4 py-1">
+          <div className="flex h-20 shrink-0 items-center justify-center px-4 py-1">
             <Logo />
           </div>
+          <PageNavButton
+            activePageNav={pageNav}
+            thisPageNav={PageNav.Manual}
+            name="Manuals"
+            icon={<ManualIcon />}
+            setPageNav={setPageNav}
+          />
+          <PageNavButton
+            activePageNav={pageNav}
+            thisPageNav={PageNav.Deploy}
+            name="Deploy"
+            icon={<DeploymentIcon />}
+            setPageNav={setPageNav}
+          />
         </div>
 
         {/* Header & main content */}
@@ -69,5 +91,33 @@ export default function App() {
         </aside>
       </div>
     </>
+  );
+}
+
+interface PageNavButton {
+  activePageNav: PageNav;
+  thisPageNav: PageNav;
+  name: string;
+  icon: React.JSX.Element;
+  setPageNav: any;
+}
+function PageNavButton({
+  activePageNav,
+  thisPageNav,
+  name,
+  icon,
+  setPageNav,
+}: PageNavButton) {
+  return (
+    <div
+      className={
+        "flex flex-col h-16 shrink-0 items-center justify-center mx-1.5 mb-1 dark:text-white/80 rounded-lg hover:brightness-150 hover:backdrop-brightness-150 transition-all " +
+        (activePageNav === thisPageNav ? "dark:bg-emerald-400/30" : "")
+      }
+      onClick={() => setPageNav(thisPageNav)}
+    >
+      {icon}
+      <div className="text-xs uppercase pt-1">{name}</div>
+    </div>
   );
 }
