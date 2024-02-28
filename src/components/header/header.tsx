@@ -6,7 +6,6 @@ export interface HeaderProps {
   versions: string[];
 }
 export function Header({ title, versions }: HeaderProps) {
-  console.log(title, versions);
   return (
     <div className="sticky top-0 z-50 flex h-20 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 dark:bg-slate-950 border-b dark:border-slate-500/20">
       <div className="py-4">

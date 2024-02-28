@@ -1,11 +1,14 @@
 import { Disclosure, Transition } from "@headlessui/react";
-import React, { useContext } from "react";
-import { NavItemChild } from "./nav-item-child";
-import { ActiveManualContext } from "../../App";
+import React from "react";
+import { useAppSelector, useAppDispatch } from "../../hooks";
+import {
+  selectActiveManual,
+  setActiveManual,
+} from "../../reducers/manualsSlice";
 
 export interface NavItem {
   name: string;
-  uuid: string;
+  manualUuid: string;
   children?: NavItem[];
 }
 
@@ -13,13 +16,20 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export function NavItem({ name, children, uuid: manualId }: NavItem) {
-  const { activeManualId, setActiveManualId } = useContext(ActiveManualContext);
+export function NavItem({ name, children, manualUuid }: NavItem) {
+  const dispatch = useAppDispatch();
+  const { metadata } = useAppSelector(selectActiveManual);
+  const activeManualUuid = metadata?.uuid;
   const hasChildren = children != null;
   const childIsActive =
-    hasChildren && children.some((child) => child.uuid == activeManualId);
+    hasChildren &&
+    children.some((child) => child.manualUuid == activeManualUuid);
   return (
-    <li onClick={() => (!hasChildren ? setActiveManualId(manualId) : null)}>
+    <li
+      onClick={() =>
+        !hasChildren ? dispatch(setActiveManual(manualUuid)) : null
+      }
+    >
       {hasChildren ? (
         <Disclosure as="div" defaultOpen={childIsActive}>
           <Disclosure.Button
@@ -42,7 +52,7 @@ export function NavItem({ name, children, uuid: manualId }: NavItem) {
           >
             <Disclosure.Panel as="ul" className="mt-1 px-2">
               {children?.map((navItemChild) => (
-                <NavItem key={navItemChild.uuid} {...navItemChild} />
+                <NavItem key={navItemChild.manualUuid} {...navItemChild} />
               ))}
             </Disclosure.Panel>
           </Transition>
@@ -51,7 +61,7 @@ export function NavItem({ name, children, uuid: manualId }: NavItem) {
         <a
           href="#"
           className={classNames(
-            manualId == activeManualId
+            manualUuid == activeManualUuid
               ? "border-l rounded-l-none dark:border-emerald-400 dark:text-emerald-400 "
               : "border-l rounded-l-none dark:border-slate-500/20 dark:text-slate-500",
             "block rounded-md py-1 pr-2 pl-9 text-sm leading-6 transition-colors",
