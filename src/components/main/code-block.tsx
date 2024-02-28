@@ -5,20 +5,49 @@ import { getCustomTheme } from "../../utils/monaco-theme";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import {
   selectManual,
+  setManualData,
   updateFieldDirtinessMap,
 } from "../../reducers/manualsSlice";
+import { GET_MANUAL, UPDATE_COMMAND_INPUT } from "../../utils/queries";
+import { useMutation } from "@apollo/client";
 
 export interface CodeBlock {
   code: string;
   dataKey: string;
   manualUuid: string;
+  fieldName: string;
+  constructUuid: string;
 }
-export function CodeBlock({ code, dataKey, manualUuid }: CodeBlock) {
+export function CodeBlock({
+  code,
+  dataKey,
+  manualUuid,
+  fieldName,
+  constructUuid,
+}: CodeBlock) {
   const dispatch = useAppDispatch();
   async function beforeEditorMount(monaco: typeof monaco_editor) {
     monaco.editor.defineTheme("txtx-dark", getCustomTheme());
     monaco.editor.setTheme("txtx-dark");
   }
+  const [updateCommandInput, { data, loading, error }] = useMutation(
+    UPDATE_COMMAND_INPUT,
+    {
+      update(cache, { data: { updateCommandInput } }) {
+        const manualData = {
+          uuid: manualUuid,
+          data: updateCommandInput,
+        };
+        cache.writeQuery({
+          query: GET_MANUAL,
+          data: {
+            manual: manualData,
+          },
+        });
+        dispatch(setManualData(manualData));
+      },
+    },
+  );
   const onChange = (value) => {
     dispatch(
       updateFieldDirtinessMap({
@@ -27,6 +56,14 @@ export function CodeBlock({ code, dataKey, manualUuid }: CodeBlock) {
         fieldIsDirty: value != code,
       }),
     );
+    updateCommandInput({
+      variables: {
+        manualName: manualUuid,
+        commandUuid: constructUuid.replace("local:", ""),
+        inputName: fieldName,
+        value: value,
+      },
+    });
   };
 
   return (
@@ -36,7 +73,7 @@ export function CodeBlock({ code, dataKey, manualUuid }: CodeBlock) {
         height="2rem"
         theme="txtx-dark"
         defaultLanguage="javascript"
-        defaultValue={code + ""}
+        value={code + ""}
         beforeMount={beforeEditorMount}
         options={{
           lineNumbers: "off",

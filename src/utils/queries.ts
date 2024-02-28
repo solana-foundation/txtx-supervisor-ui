@@ -19,3 +19,18 @@ export const GET_MANUAL = gql`
     }
   }
 `;
+export const UPDATE_COMMAND_INPUT = gql`
+  mutation UpdateCommandInput(
+    $manualName: String!
+    $commandUuid: Uuid!
+    $inputName: String!
+    $value: String!
+  ) {
+    updateCommandInput(
+      manualName: $manualName
+      commandUuid: $commandUuid
+      inputName: $inputName
+      value: $value
+    )
+  }
+`;

@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Variable } from "./variable";
 import { Output } from "./output";
 import { GET_MANUAL } from "../../utils/queries";
 import { useQuery } from "@apollo/client";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import { addManualData, selectActiveManual } from "../../reducers/manualsSlice";
+import { setManualData, selectActiveManual } from "../../reducers/manualsSlice";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -14,14 +14,13 @@ export default function Manual() {
   const dispatch = useAppDispatch();
   const { metadata, data, variables, outputs, isDirty } =
     useAppSelector(selectActiveManual);
-
   const { loading, error } = useQuery(GET_MANUAL, {
     variables: {
       manualName: metadata?.uuid,
     },
     skip: !metadata?.uuid || isDirty,
     onCompleted: (result) => {
-      dispatch(addManualData(result.manual));
+      dispatch(setManualData(result.manual));
     },
   });
 
@@ -43,7 +42,6 @@ export default function Manual() {
           {metadata.description}
         </p>
       </div>
-      {/* Inputs */}
       <div className={classNames(variables.length ? "" : "hidden", "mt-6")}>
         <h2 className="uppercase border-b dark:border-slate-500/20 text-md font-medium dark:text-slate-500">
           Variables

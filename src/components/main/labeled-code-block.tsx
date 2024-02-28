@@ -48,7 +48,9 @@ export function LabeledCodeBlock({ data, uuid, manualUuid }: CodeBlockTabs) {
         <CodeBlock
           code={data[dataKey]}
           dataKey={keyUuid}
+          fieldName={dataKey}
           manualUuid={manualUuid}
+          constructUuid={uuid}
         />
       </div>,
     );

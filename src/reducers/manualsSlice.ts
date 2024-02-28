@@ -62,7 +62,7 @@ export const manualsSlice = createSlice({
         });
       },
     ),
-    addManualData: create.reducer(
+    setManualData: create.reducer(
       (state, action: PayloadAction<SerializedManualData>) => {
         const { data, uuid } = action.payload;
         const manualIdx = findManualIdx(state, uuid);
@@ -165,7 +165,7 @@ export const manualsSlice = createSlice({
 
 export const {
   addManual,
-  addManualData,
+  setManualData,
   updateFieldDirtinessMap,
   setActiveManual,
 } = manualsSlice.actions;
