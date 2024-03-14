@@ -9,6 +9,7 @@ import {
 } from "../../reducers/manualsSlice";
 import { GET_MANUAL, UPDATE_COMMAND_INPUT } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
+import debounce from "debounce";
 
 const MAX_LINE_HEIGHT = 1000;
 const MIN_LINE_HEIGHT = 32;
@@ -70,7 +71,7 @@ export function CodeBlock({
       });
     }
   };
-
+  const debouncedOnChange = debounce(onChange, 500);
   const onMount = (editor: monaco_editor.editor.IStandaloneCodeEditor) => {
     const updateHeight = () => {
       const contentHeight = Math.min(
@@ -109,7 +110,7 @@ export function CodeBlock({
           renderLineHighlight: "none",
           readOnly: readonly,
         }}
-        onChange={onChange}
+        onChange={debouncedOnChange}
       />
     </div>
   );
