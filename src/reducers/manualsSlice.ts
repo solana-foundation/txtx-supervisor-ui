@@ -1,14 +1,23 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice, createSelector } from "@reduxjs/toolkit";
-import { ManualData, ManualMetadata } from "../components/main/types";
+import {
+  CommandInputEvaluationResult,
+  ManualData,
+  ManualMetadata,
+} from "../components/main/types";
 import { Output } from "../components/main/output";
 import { Variable } from "../components/main/variable";
+import {
+  StacksWalletInteraction,
+  StacksWalletInteractionType,
+} from "../components/main/stacks/stacks-wallet-interaction";
 
 export interface IndexedManual {
   metadata: ManualMetadata;
   data?: ManualData[];
   variables: Variable[];
   outputs: Output[];
+  stacksWalletInteractions: StacksWalletInteraction[];
   isDirty: boolean;
   fieldDirtinessMap: { [key: string]: boolean };
   isActive: boolean;
@@ -21,9 +30,13 @@ export interface SerializedManualData {
   uuid: string;
   data: string;
 }
-export enum Construct {
-  Variable = "Variable",
-  Output = "Output",
+
+// todo: move away from hard-coded strings
+export namespace ConstructDisplayType {
+  export const Input = new Set(["Variable", "Stacks Contract Call"]);
+  export const Readonly = new Set(["Output"]);
+  export const StacksWalletSign = "Sign Stacks Transaction";
+  export const StacksWalletInteraction = new Set(["Sign Stacks Transaction"]);
 }
 
 function findManualIdx(manuals: IndexedManual[], uuid: string): number {
@@ -56,6 +69,7 @@ export const manualsSlice = createSlice({
           metadata,
           variables: [],
           outputs: [],
+          stacksWalletInteractions: [],
           isDirty: false,
           fieldDirtinessMap: {},
           isActive,
@@ -73,6 +87,7 @@ export const manualsSlice = createSlice({
         const manualData: ManualData[] = JSON.parse(data);
         const variables: Variable[] = [];
         const outputs: Output[] = [];
+        const stacksWalletInteractions: StacksWalletInteraction[] = [];
         const fieldDirtinessMap: { [key: string]: boolean } = {};
 
         for (const {
@@ -87,31 +102,39 @@ export const manualsSlice = createSlice({
           for (const key in constructsExecutionResult) {
             fieldDirtinessMap[`${key}-${constructUuid}`] = false;
           }
-          switch (commandInstance.specification.name) {
-            case Construct.Variable:
-              variables.push({
-                name: commandInstance.name,
-                inputs: commandInputsEvaluationResult,
-                outputs: constructsExecutionResult,
-                uuid: constructUuid,
-                manualUuid: uuid,
-              });
-              break;
-            case Construct.Output:
-              outputs.push({
-                name: commandInstance.name,
-                inputs: commandInputsEvaluationResult,
-                outputs: constructsExecutionResult,
-                uuid: constructUuid,
-                manualUuid: uuid,
-              });
-              break;
+          let spec_name = commandInstance.specification.name;
+          if (ConstructDisplayType.Input.has(spec_name)) {
+            variables.push({
+              name: commandInstance.name,
+              inputs: commandInputsEvaluationResult,
+              outputs: constructsExecutionResult,
+              uuid: constructUuid,
+              manualUuid: uuid,
+            });
+          } else if (ConstructDisplayType.Readonly.has(spec_name)) {
+            outputs.push({
+              name: commandInstance.name,
+              inputs: commandInputsEvaluationResult,
+              outputs: constructsExecutionResult,
+              uuid: constructUuid,
+              manualUuid: uuid,
+            });
+          } else if (spec_name === ConstructDisplayType.StacksWalletSign) {
+            stacksWalletInteractions.push({
+              name: commandInstance.name,
+              inputs:
+                commandInputsEvaluationResult.web_interact as unknown as CommandInputEvaluationResult, // todo
+              uuid: constructUuid,
+              manualUuid: uuid,
+              interactionType: StacksWalletInteractionType.Sign,
+            });
           }
         }
         state[manualIdx] = {
           ...state[manualIdx],
           outputs,
           variables,
+          stacksWalletInteractions,
           data: manualData,
           fieldDirtinessMap,
         };
