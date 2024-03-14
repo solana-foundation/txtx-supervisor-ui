@@ -1,10 +1,10 @@
 import React from "react";
-import { CodeBlock } from "./code-block";
 import {
   CommandInputEvaluationResult,
   ConstructExecutionResult,
 } from "./types";
 import { LabeledCodeBlock } from "./labeled-code-block";
+import { filterKeysFromObject } from "../../utils/helpers";
 
 export interface Variable {
   name: string;
@@ -13,13 +13,19 @@ export interface Variable {
   uuid: string;
   manualUuid: string;
 }
-export function Variable({
-  name,
-  inputs,
-  outputs,
-  uuid,
-  manualUuid,
-}: Variable) {
+
+// todo: this is definitely not how we want to decide what inputs to display
+const EDITABLE_INPUTS = [
+  "value",
+  "default",
+  "nonce",
+  "contract_id",
+  "function_name",
+  "args",
+];
+
+export function Variable({ name, inputs, uuid, manualUuid }: Variable) {
+  let filteredInputs = filterKeysFromObject(inputs, EDITABLE_INPUTS);
   return (
     <div className="mt-4">
       <p className="text-sm font-medium dark:text-white/90 leading-6">{name}</p>
@@ -27,7 +33,7 @@ export function Variable({
         {inputs?.description || "No description provided"}
       </p>
       <LabeledCodeBlock
-        data={{ value: inputs?.value || "", default: inputs?.default || "" }}
+        data={filteredInputs}
         uuid={uuid}
         manualUuid={manualUuid}
       />
