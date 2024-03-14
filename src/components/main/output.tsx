@@ -13,6 +13,8 @@ export interface Output {
   manualUuid: string;
 }
 export function Output({ name, inputs, outputs, uuid, manualUuid }: Output) {
+  let outputsToDisplay =
+    outputs && Object.keys(outputs).length ? outputs : { value: "" };
   return (
     <div className="mt-4">
       <p className="text-sm font-medium dark:text-white/90 leading-6">{name}</p>
@@ -20,7 +22,7 @@ export function Output({ name, inputs, outputs, uuid, manualUuid }: Output) {
         {inputs?.description || "No description provided"}
       </p>
       <LabeledCodeBlock
-        data={{ value: inputs?.value || "", default: inputs?.default || "" }}
+        data={outputsToDisplay}
         uuid={uuid}
         manualUuid={manualUuid}
         readonly={true}

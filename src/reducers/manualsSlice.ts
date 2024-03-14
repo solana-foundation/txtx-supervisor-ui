@@ -33,8 +33,12 @@ export interface SerializedManualData {
 
 // todo: move away from hard-coded strings
 export namespace ConstructDisplayType {
-  export const Input = new Set(["Variable", "Stacks Contract Call"]);
-  export const Readonly = new Set(["Output"]);
+  export const Input = new Set(["Variable"]);
+  export const Readonly = new Set([
+    "Output",
+    "Stacks Contract Call",
+    "Decode Stacks Contract Call",
+  ]);
   export const StacksWalletSign = "Sign Stacks Transaction";
   export const StacksWalletInteraction = new Set(["Sign Stacks Transaction"]);
 }
