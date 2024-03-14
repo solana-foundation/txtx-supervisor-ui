@@ -5,8 +5,15 @@ export interface CodeBlockTabs {
   data: { [key: string]: string };
   uuid: string;
   manualUuid: string;
+  readonly?: boolean;
 }
-export function LabeledCodeBlock({ data, uuid, manualUuid }: CodeBlockTabs) {
+
+export function LabeledCodeBlock({
+  data,
+  uuid,
+  manualUuid,
+  readonly = false,
+}: CodeBlockTabs) {
   const dataKeys = Object.keys(data);
   const [selected, setSelected] = useState<string>(`${dataKeys[0]}-${uuid}`); // todo, get default in a better way
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0);
@@ -51,6 +58,7 @@ export function LabeledCodeBlock({ data, uuid, manualUuid }: CodeBlockTabs) {
           fieldName={dataKey}
           manualUuid={manualUuid}
           constructUuid={uuid}
+          readonly={readonly}
         />
       </div>,
     );

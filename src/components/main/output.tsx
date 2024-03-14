@@ -23,6 +23,7 @@ export function Output({ name, inputs, outputs, uuid, manualUuid }: Output) {
         data={{ value: inputs?.value || "", default: inputs?.default || "" }}
         uuid={uuid}
         manualUuid={manualUuid}
+        readonly={true}
       />
     </div>
   );
