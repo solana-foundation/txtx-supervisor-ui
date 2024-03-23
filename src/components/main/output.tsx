@@ -15,6 +15,24 @@ export interface Output {
 export function Output({ name, inputs, outputs, uuid, manualUuid }: Output) {
   let outputsToDisplay =
     outputs && Object.keys(outputs).length ? outputs : { value: "" };
+  if (outputsToDisplay["error"]) {
+    // @ts-ignore
+    let message = outputsToDisplay["error"].message;
+    return (
+      <div className="mt-4">
+        <p className="text-sm font-medium dark:text-white/90 leading-6">
+          {name}
+        </p>
+        <p className="text-sm font-medium dark:text-slate-500 leading-6">
+          {inputs?.description || "No description provided"}
+        </p>
+
+        <p className="text-sm font-medium dark:text-red-600 leading-6">
+          {message}
+        </p>
+      </div>
+    );
+  }
   return (
     <div className="mt-4">
       <p className="text-sm font-medium dark:text-white/90 leading-6">{name}</p>

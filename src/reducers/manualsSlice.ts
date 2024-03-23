@@ -38,6 +38,8 @@ export namespace ConstructDisplayType {
     "Output",
     "Stacks Contract Call",
     "Decode Stacks Contract Call",
+    "Send Stacks Transaction",
+    "Broadcast Stacks Transaction",
   ]);
   export const StacksWalletSign = "Sign Stacks Transaction";
   export const StacksWalletInteraction = new Set(["Sign Stacks Transaction"]);
