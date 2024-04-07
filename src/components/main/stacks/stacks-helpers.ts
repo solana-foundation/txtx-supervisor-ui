@@ -2,10 +2,7 @@ import {
   ContractCallPayload,
   Payload,
 } from "@stacks/transactions/dist/payload";
-import {
-  StacksWalletInteractionType,
-  userSession,
-} from "./stacks-wallet-interaction";
+import { StacksWalletInteractionType } from "./stacks-wallet-interaction";
 import {
   AnchorMode,
   PayloadType,
@@ -13,8 +10,8 @@ import {
   addressToString,
   makeUnsignedContractCall,
 } from "@stacks/transactions";
-import { getKeys } from "@stacks/connect";
 import { bytesToHex } from "@stacks/common";
+import { getAddress } from "sats-connect";
 
 export const interactionTypeToButtonTitle = (
   type: StacksWalletInteractionType,
@@ -27,18 +24,39 @@ export const interactionTypeToButtonTitle = (
   }
 };
 
+export const getPublicKey = async () => {
+  let publicKey;
+  const getAddressOptions = {
+    payload: {
+      purposes: ["stacks"],
+      message: "Address for signing the transaction.",
+      network: {
+        type: "Testnet",
+      },
+    },
+    onFinish: (response) => {
+      publicKey = response.addresses[0].publicKey;
+    },
+  };
+  // @ts-ignore
+  await getAddress(getAddressOptions);
+  return publicKey;
+};
+
 export const payloadToUnsignedTxHex = async (
   payload: Payload,
 ): Promise<string> => {
   switch (payload.payloadType) {
     case PayloadType.ContractCall:
       const contractCallPayload = payload as ContractCallPayload;
+      let publicKey = await getPublicKey();
       const txOpts: UnsignedContractCallOptions = {
-        publicKey: getKeys(userSession).publicKey,
+        publicKey: publicKey,
         contractAddress: addressToString(contractCallPayload.contractAddress),
         contractName: contractCallPayload.contractName.content,
         functionName: contractCallPayload.functionName.content,
         functionArgs: contractCallPayload.functionArgs,
+        network: "testnet",
         anchorMode: AnchorMode.Any,
       };
       const tx = await makeUnsignedContractCall(txOpts);

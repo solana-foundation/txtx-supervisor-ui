@@ -31,7 +31,7 @@ export interface SerializedManualData {
   data: string;
 }
 
-// todo: move away from hard-coded strings
+// todo: move away from hard-coded strings (use state?)
 export namespace ConstructDisplayType {
   export const Input = new Set(["Variable"]);
   export const Readonly = new Set([
@@ -122,6 +122,7 @@ export const manualsSlice = createSlice({
               name: commandInstance.name,
               inputs: commandInputsEvaluationResult,
               outputs: constructsExecutionResult,
+              state: commandInstance.state,
               uuid: constructUuid,
               manualUuid: uuid,
             });
