@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Variable } from "./variable";
 import { Output } from "./output";
 import { GET_MANUAL } from "../../utils/queries";
 import { useQuery } from "@apollo/client";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { setManualData, selectActiveManual } from "../../reducers/manualsSlice";
+import { StacksWalletInteraction } from "./stacks/stacks-wallet-interaction";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -12,8 +13,14 @@ function classNames(...classes) {
 
 export default function Manual() {
   const dispatch = useAppDispatch();
-  const { metadata, data, variables, outputs, isDirty } =
-    useAppSelector(selectActiveManual);
+  const {
+    metadata,
+    data,
+    variables,
+    outputs,
+    stacksWalletInteractions,
+    isDirty,
+  } = useAppSelector(selectActiveManual);
   const { loading, error } = useQuery(GET_MANUAL, {
     variables: {
       manualName: metadata?.uuid,
@@ -56,6 +63,19 @@ export default function Manual() {
         </h2>
         {outputs.map((output) => (
           <Output {...output} key={output.uuid} />
+        ))}
+      </div>
+      <div
+        className={classNames(
+          stacksWalletInteractions.length ? "" : "hidden",
+          "mt-6",
+        )}
+      >
+        <h2 className="uppercase border-b dark:border-slate-500/20 text-md font-medium dark:text-slate-500">
+          Stacks Wallet Interactions
+        </h2>
+        {stacksWalletInteractions.map((interaction) => (
+          <StacksWalletInteraction {...interaction} key={interaction.uuid} />
         ))}
       </div>
     </div>

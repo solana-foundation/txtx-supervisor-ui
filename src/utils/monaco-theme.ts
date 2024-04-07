@@ -166,7 +166,7 @@ export function getCustomTheme(): monaco.editor.IStandaloneThemeData {
     },
     {
       token: "string",
-      foreground: "ff0000",
+      foreground: "3dc9b0",
     },
     {
       token: "constant.other.symbol",

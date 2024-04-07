@@ -22,6 +22,7 @@ export interface CommandInstance {
   name: string;
   packageUuid: string;
   specification: CommandSpecification;
+  state: CommandInstanceState;
 }
 
 export interface ConstructExecutionResult {
@@ -30,6 +31,15 @@ export interface ConstructExecutionResult {
 
 export interface CommandInputEvaluationResult {
   [key: string]: string;
+}
+
+export enum CommandInstanceState {
+  New = "New",
+  Evaluated = "Evaluated",
+  AwaitingUserInput = "AwaitingUserInput",
+  AwaitingAsyncRequest = "AwaitingAsyncRequest",
+  Aborted = "Aborted",
+  Failed = "Failed",
 }
 
 export interface ManualData {
