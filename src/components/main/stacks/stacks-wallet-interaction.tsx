@@ -125,6 +125,7 @@ interface StacksInteractionButton {
   uuid: string;
   manualUuid: string;
 }
+
 function StacksInteractButton({
   payload,
   interactionType,
@@ -147,7 +148,6 @@ function StacksInteractButton({
             manual: manualData,
           },
         });
-        console.log("manualData", manualData);
         dispatch(setManualData(manualData));
       },
     },
@@ -172,20 +172,17 @@ function StacksInteractButton({
       }
     } else if (interactionType === StacksWalletInteractionType.Sign) {
       const txHex = await payloadToUnsignedTxHex(payload);
+
       // @ts-ignore
       const { result } = await window.LeatherProvider.request(
         "stx_signTransaction",
         { txHex },
       );
-      // todo: use this once it's working
-      // openSignTransaction({
-      //   onFinish: console.log,
-      //   txHex,
-      // });
       const value = {
         signed_transaction_bytes: result.txHex,
-        nonce: 0,
+        nonce: 0, // todo
       };
+
       updateCommandInput({
         variables: {
           manualName: manualUuid,
