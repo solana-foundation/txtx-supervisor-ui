@@ -6,6 +6,7 @@ import { useQuery } from "@apollo/client";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { setManualData, selectActiveManual } from "../../reducers/manualsSlice";
 import { StacksWalletInteraction } from "./stacks/stacks-wallet-interaction";
+import { Disclosure, Transition } from "@headlessui/react";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -49,35 +50,80 @@ export default function Manual() {
           {metadata.description}
         </p>
       </div>
-      <div className={classNames(variables.length ? "" : "hidden", "mt-6")}>
-        <h2 className="uppercase border-b dark:border-slate-500/20 text-md font-medium dark:text-slate-500">
-          Variables
-        </h2>
-        {variables.map((variable) => (
-          <Variable {...variable} key={variable.uuid} />
-        ))}
-      </div>
-      <div className={classNames(outputs.length ? "" : "hidden", "mt-6")}>
-        <h2 className="uppercase border-b dark:border-slate-500/20 text-md font-medium dark:text-slate-500">
-          Outputs
-        </h2>
-        {outputs.map((output) => (
-          <Output {...output} key={output.uuid} />
-        ))}
-      </div>
-      <div
+      <Disclosure
+        as="div"
+        defaultOpen={true}
         className={classNames(
-          stacksWalletInteractions.length ? "" : "hidden",
-          "mt-6",
+          variables.length ? "" : "hidden",
+          "mt-6 cursor-pointer",
         )}
       >
-        <h2 className="uppercase border-b dark:border-slate-500/20 text-md font-medium dark:text-slate-500">
-          Stacks Wallet Interactions
-        </h2>
-        {stacksWalletInteractions.map((interaction) => (
-          <StacksWalletInteraction {...interaction} key={interaction.uuid} />
-        ))}
-      </div>
+        <Disclosure.Button
+          as="h2"
+          className="uppercase border-b dark:border-slate-500/20 text-md font-medium dark:text-orange-500 dark:bg-orange-500/20 p-6 rounded"
+        >
+          Inputs Review
+        </Disclosure.Button>
+        <Transition
+          enter="transition duration-200 ease-out"
+          enterFrom="transform scale-95 opacity-0"
+          enterTo="transform scale-100 opacity-100"
+          leave="transition duration-100 ease-out"
+          leaveFrom="transform scale-100 opacity-100"
+          leaveTo="transform scale-95 opacity-0"
+        >
+          <Disclosure.Panel as="div" className="ml-2">
+            {variables.map((variable) => (
+              <Variable {...variable} key={variable.uuid} />
+            ))}
+          </Disclosure.Panel>
+        </Transition>
+      </Disclosure>
+
+      <Disclosure
+        as="div"
+        defaultOpen={false}
+        className={classNames(
+          variables.length ? "" : "hidden",
+          "mt-6 cursor-pointer",
+        )}
+      >
+        <Disclosure.Button
+          as="h2"
+          className="mt-6 uppercase border-b dark:border-slate-500/20 text-md font-medium dark:text-purple-500 dark:bg-purple-500/20 p-6 rounded"
+        >
+          Execution Plan Review Review
+        </Disclosure.Button>
+        <Transition
+          enter="transition duration-200 ease-out"
+          enterFrom="transform scale-95 opacity-0"
+          enterTo="transform scale-100 opacity-100"
+          leave="transition duration-100 ease-out"
+          leaveFrom="transform scale-100 opacity-100"
+          leaveTo="transform scale-95 opacity-0"
+        >
+          <Disclosure.Panel as="div" className="ml-2">
+            <div className={classNames(outputs.length ? "" : "hidden", "mt-6")}>
+              {outputs.map((output) => (
+                <Output {...output} key={output.uuid} />
+              ))}
+            </div>
+            <div
+              className={classNames(
+                stacksWalletInteractions.length ? "" : "hidden",
+                "mt-6",
+              )}
+            >
+              {stacksWalletInteractions.map((interaction) => (
+                <StacksWalletInteraction
+                  {...interaction}
+                  key={interaction.uuid}
+                />
+              ))}
+            </div>
+          </Disclosure.Panel>
+        </Transition>
+      </Disclosure>
     </div>
   );
 }
