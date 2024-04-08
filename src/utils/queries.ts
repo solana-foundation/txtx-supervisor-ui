@@ -1,12 +1,15 @@
 import { gql } from "@apollo/client";
 
-export const GET_MANUALS = gql`
-  query GetManuals {
-    manuals {
-      uuid
+export const GET_PROTOCOL = gql`
+  query GetProtocol {
+    protocol {
       name
-      description
-      constructUuids
+      manuals {
+        uuid
+        name
+        description
+        constructUuids
+      }
     }
   }
 `;

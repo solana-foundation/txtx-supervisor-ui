@@ -49,6 +49,10 @@ export interface ManualData {
   commandInputsEvaluationResult: CommandInputEvaluationResult;
 }
 
+export interface Protocol {
+  name: string;
+  manuals: Array<ManualMetadata>;
+}
 export interface ManualMetadata {
   name: string;
   description: string;
