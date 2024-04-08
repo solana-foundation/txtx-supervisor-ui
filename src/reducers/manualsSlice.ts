@@ -127,10 +127,12 @@ export const manualsSlice = createSlice({
               manualUuid: uuid,
             });
           } else if (spec_name === ConstructDisplayType.StacksWalletSign) {
+            let inputs =
+              (commandInputsEvaluationResult?.web_interact as unknown as CommandInputEvaluationResult) ||
+              null; //todo
             stacksWalletInteractions.push({
               name: commandInstance.name,
-              inputs:
-                commandInputsEvaluationResult.web_interact as unknown as CommandInputEvaluationResult, // todo
+              inputs,
               uuid: constructUuid,
               manualUuid: uuid,
               interactionType: StacksWalletInteractionType.Sign,

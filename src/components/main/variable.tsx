@@ -26,6 +26,9 @@ const EDITABLE_INPUTS = [
 
 export function Variable({ name, inputs, uuid, manualUuid }: Variable) {
   let filteredInputs = filterKeysFromObject(inputs, EDITABLE_INPUTS);
+  if (Object.keys(filteredInputs).length === 0) {
+    filteredInputs = { value: "" };
+  }
   return (
     <div className="mt-4">
       <p className="text-sm font-medium dark:text-white/90 leading-6">{name}</p>

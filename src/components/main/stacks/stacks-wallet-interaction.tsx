@@ -35,7 +35,7 @@ export enum StacksWalletInteractionType {
 }
 export interface StacksWalletInteraction {
   name: string;
-  inputs: CommandInputEvaluationResult;
+  inputs: CommandInputEvaluationResult | null;
   uuid: string;
   manualUuid: string;
   interactionType: StacksWalletInteractionType;
@@ -47,10 +47,14 @@ export function StacksWalletInteraction({
   manualUuid,
   interactionType,
 }: StacksWalletInteraction) {
-  const bytesReader = new BytesReader(
-    Buffer.from(inputs.transaction_payload_bytes.slice(2), "hex"),
-  );
-  const deserializedPayload = deserializePayload(bytesReader);
+  let deserializedPayload;
+  if (inputs !== null) {
+    const bytesReader = new BytesReader(
+      Buffer.from(inputs.transaction_payload_bytes.slice(2), "hex"),
+    );
+    deserializedPayload = deserializePayload(bytesReader);
+  }
+
   const codeBlockFieldName = `${interactionTypeToButtonTitle(
     interactionType,
   )}-Transaction`;
@@ -74,8 +78,13 @@ export function StacksWalletInteraction({
       </p>
 
       <NetworkBadge network="Stacks" />
+
       <CodeBlock
-        code={payloadToDisplayString(deserializedPayload)}
+        code={
+          deserializedPayload
+            ? payloadToDisplayString(deserializedPayload)
+            : `"Waiting on user input to compute payload."`
+        }
         dataKey={codeBlockDataKey}
         fieldName={codeBlockFieldName}
         manualUuid={manualUuid}
@@ -120,10 +129,14 @@ function authenticate() {
 }
 
 interface StacksInteractionButton {
-  payload: Payload;
+  payload: Payload | null;
   interactionType: StacksWalletInteractionType;
   uuid: string;
   manualUuid: string;
+}
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
 }
 
 function StacksInteractButton({
@@ -154,6 +167,7 @@ function StacksInteractButton({
   );
 
   const onClick = async () => {
+    if (!payload) return;
     if (interactionType === StacksWalletInteractionType.Send) {
       switch (payload.payloadType) {
         case PayloadType.ContractCall:
@@ -203,7 +217,8 @@ function StacksInteractButton({
       <button
         onClick={onClick}
         type="button"
-        className="rounded-md dark:bg-emerald-400/80 mx-2 px-3 py-2 text-sm font-semibold dark:text-white shadow-sm hover:bg-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400/90"
+        disabled={payload === null}
+        className="rounded-md dark:bg-emerald-400/80 mx-2 px-3 py-2 text-sm font-semibold dark:text-white shadow-sm hover:bg-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400/90 "
       >
         {buttonTitle} Transaction
       </button>
