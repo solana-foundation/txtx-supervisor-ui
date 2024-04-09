@@ -15,7 +15,7 @@ const MAX_LINE_HEIGHT = 1000;
 const MIN_LINE_HEIGHT = 32;
 
 export interface CodeBlock {
-  code: string;
+  code: string | object;
   dataKey: string;
   manualUuid: string;
   fieldName: string;
@@ -87,14 +87,16 @@ export function CodeBlock({
     monaco.editor.defineTheme("txtx-dark", getCustomTheme());
     monaco.editor.setTheme("txtx-dark");
   }
+
+  const isObject = typeof code === "object";
   return (
     <div>
       <Editor
         className="border rounded dark:border-slate-500/10 leading-6"
         height={`${height}px`}
         theme="txtx-dark"
-        defaultLanguage="javascript"
-        value={code + ""}
+        defaultLanguage={isObject ? "json" : "javascript"}
+        value={isObject ? JSON.stringify(code, null, "\t") : code + ""}
         onMount={onMount}
         beforeMount={beforeEditorMount}
         options={{
