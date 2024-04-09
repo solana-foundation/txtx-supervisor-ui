@@ -77,7 +77,7 @@ export const payloadToDisplayString = (payload: Payload): string => {
           functionName: contractCallPayload.functionName.content,
           functionArgs: contractCallPayload.functionArgs,
         },
-        null,
+        (key, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
         "\t",
       );
     default:
