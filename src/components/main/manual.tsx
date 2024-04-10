@@ -82,5 +82,7 @@ function commandSectionToElements(commandSection: CommandSectionIndex) {
           key={item.uuid}
         />
       ));
+    default:
+      return [];
   }
 }
