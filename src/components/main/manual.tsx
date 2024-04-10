@@ -7,19 +7,16 @@ import { useAppDispatch, useAppSelector } from "../../hooks";
 import {
   setManualData,
   selectActiveManual,
-  ConstructDisplayType,
+  CommandSectionIndex,
 } from "../../reducers/manualsSlice";
-import {
-  StacksWalletInteraction,
-  StacksWalletInteractionType,
-} from "./stacks/stacks-wallet-interaction";
-import { Disclosure, Transition } from "@headlessui/react";
+import { StacksWalletInteraction } from "./stacks/stacks-wallet-interaction";
+import { Disclosure } from "@headlessui/react";
 import CommandSection, { CommandSectionType } from "./command-section";
-import { CommandInputEvaluationResult } from "./types";
 
 export default function Manual() {
   const dispatch = useAppDispatch();
-  const { metadata, data, isDirty } = useAppSelector(selectActiveManual);
+  const { metadata, data, isDirty, commandSections } =
+    useAppSelector(selectActiveManual);
   const { loading, error } = useQuery(GET_MANUAL, {
     variables: {
       manualName: metadata?.uuid,
@@ -33,89 +30,6 @@ export default function Manual() {
   if (loading || !data) {
     return <div>Loading...</div>;
   }
-
-  // todo: move this whole indexing section to the manual slice
-  type CommandSectionIndex = {
-    type: CommandSectionType;
-    items: React.JSX.Element[];
-  };
-  let commandSections: CommandSectionIndex[] = [];
-  let currentSection: CommandSectionType | null = null;
-  let cursor = -1;
-  let manualUuid = metadata.uuid;
-  for (let i = 0; i < data.length; i++) {
-    const {
-      readonly,
-      constructUuid,
-      commandInstance,
-      commandInputsEvaluationResult,
-      constructsExecutionResult,
-    } = data[i];
-    let spec_name = commandInstance.specification.name;
-    if (spec_name === ConstructDisplayType.StacksWalletSign) {
-      let inputs =
-        (commandInputsEvaluationResult?.web_interact as unknown as CommandInputEvaluationResult) ||
-        null;
-      let interactionData = {
-        name: commandInstance.name,
-        inputs,
-        uuid: constructUuid,
-        manualUuid,
-        interactionType: StacksWalletInteractionType.Sign,
-      };
-      let interactionNode = (
-        <StacksWalletInteraction {...interactionData} key={constructUuid} />
-      );
-
-      if (currentSection === CommandSectionType.Action) {
-        commandSections[cursor].items.push(interactionNode);
-      } else {
-        currentSection = CommandSectionType.Action;
-        commandSections.push({
-          type: currentSection,
-          items: [interactionNode],
-        });
-        cursor++;
-      }
-    } else if (!readonly) {
-      let inputData = {
-        name: commandInstance.name,
-        inputs: commandInputsEvaluationResult,
-        outputs: constructsExecutionResult,
-        uuid: constructUuid,
-        manualUuid,
-      };
-
-      let inputNode = <Variable {...inputData} key={constructUuid} />;
-      if (currentSection === CommandSectionType.Input) {
-        commandSections[cursor].items.push(inputNode);
-      } else {
-        currentSection = CommandSectionType.Input;
-        commandSections.push({ type: currentSection, items: [inputNode] });
-        cursor++;
-      }
-    } else {
-      let outputData = {
-        name: commandInstance.name,
-        inputs: commandInputsEvaluationResult,
-        outputs: constructsExecutionResult,
-        state: commandInstance.state,
-        uuid: constructUuid,
-        manualUuid,
-      };
-
-      let outputNode = <Output {...outputData} key={constructUuid} />;
-
-      if (currentSection === CommandSectionType.Output) {
-        commandSections[cursor].items.push(outputNode);
-      } else {
-        currentSection = CommandSectionType.Output;
-        commandSections.push({ type: currentSection, items: [outputNode] });
-        cursor++;
-      }
-    }
-  }
-  console.log("command sections", commandSections);
 
   return (
     <div className="max-w-3xl">
@@ -132,15 +46,41 @@ export default function Manual() {
           {metadata.description}
         </p>
       </div>
-      {commandSections.map((commandSection) => {
+      {commandSections.map((commandSection, i) => {
         let panel = (
           <Disclosure.Panel as="div" className="ml-2">
-            {...commandSection.items}
+            {...commandSectionToElements(commandSection)}
           </Disclosure.Panel>
         );
 
-        return <CommandSection type={commandSection.type} panel={panel} />;
+        return (
+          <CommandSection
+            type={commandSection.type}
+            panel={panel}
+            key={`${commandSection.type}-${i}-${commandSection.items.length}`}
+          />
+        );
       })}
     </div>
   );
+}
+
+function commandSectionToElements(commandSection: CommandSectionIndex) {
+  switch (commandSection.type) {
+    case CommandSectionType.Input:
+      return commandSection.items.map((item) => (
+        <Variable {...(item as Variable)} key={item.uuid} />
+      ));
+    case CommandSectionType.Output:
+      return commandSection.items.map((item) => (
+        <Output {...(item as Output)} key={item.uuid} />
+      ));
+    case CommandSectionType.Action:
+      return commandSection.items.map((item) => (
+        <StacksWalletInteraction
+          {...(item as StacksWalletInteraction)}
+          key={item.uuid}
+        />
+      ));
+  }
 }
