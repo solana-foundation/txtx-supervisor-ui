@@ -4,24 +4,22 @@ import { Output } from "./output";
 import { GET_MANUAL } from "../../utils/queries";
 import { useQuery } from "@apollo/client";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import { setManualData, selectActiveManual } from "../../reducers/manualsSlice";
-import { StacksWalletInteraction } from "./stacks/stacks-wallet-interaction";
+import {
+  setManualData,
+  selectActiveManual,
+  ConstructDisplayType,
+} from "../../reducers/manualsSlice";
+import {
+  StacksWalletInteraction,
+  StacksWalletInteractionType,
+} from "./stacks/stacks-wallet-interaction";
 import { Disclosure, Transition } from "@headlessui/react";
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+import CommandSection, { CommandSectionType } from "./command-section";
+import { CommandInputEvaluationResult } from "./types";
 
 export default function Manual() {
   const dispatch = useAppDispatch();
-  const {
-    metadata,
-    data,
-    variables,
-    outputs,
-    stacksWalletInteractions,
-    isDirty,
-  } = useAppSelector(selectActiveManual);
+  const { metadata, data, isDirty } = useAppSelector(selectActiveManual);
   const { loading, error } = useQuery(GET_MANUAL, {
     variables: {
       manualName: metadata?.uuid,
@@ -35,6 +33,90 @@ export default function Manual() {
   if (loading || !data) {
     return <div>Loading...</div>;
   }
+
+  // todo: move this whole indexing section to the manual slice
+  type CommandSectionIndex = {
+    type: CommandSectionType;
+    items: React.JSX.Element[];
+  };
+  let commandSections: CommandSectionIndex[] = [];
+  let currentSection: CommandSectionType | null = null;
+  let cursor = -1;
+  let manualUuid = metadata.uuid;
+  for (let i = 0; i < data.length; i++) {
+    const {
+      readonly,
+      constructUuid,
+      commandInstance,
+      commandInputsEvaluationResult,
+      constructsExecutionResult,
+    } = data[i];
+    let spec_name = commandInstance.specification.name;
+    if (spec_name === ConstructDisplayType.StacksWalletSign) {
+      let inputs =
+        (commandInputsEvaluationResult?.web_interact as unknown as CommandInputEvaluationResult) ||
+        null;
+      let interactionData = {
+        name: commandInstance.name,
+        inputs,
+        uuid: constructUuid,
+        manualUuid,
+        interactionType: StacksWalletInteractionType.Sign,
+      };
+      let interactionNode = (
+        <StacksWalletInteraction {...interactionData} key={constructUuid} />
+      );
+
+      if (currentSection === CommandSectionType.Action) {
+        commandSections[cursor].items.push(interactionNode);
+      } else {
+        currentSection = CommandSectionType.Action;
+        commandSections.push({
+          type: currentSection,
+          items: [interactionNode],
+        });
+        cursor++;
+      }
+    } else if (!readonly) {
+      let inputData = {
+        name: commandInstance.name,
+        inputs: commandInputsEvaluationResult,
+        outputs: constructsExecutionResult,
+        uuid: constructUuid,
+        manualUuid,
+      };
+
+      let inputNode = <Variable {...inputData} key={constructUuid} />;
+      if (currentSection === CommandSectionType.Input) {
+        commandSections[cursor].items.push(inputNode);
+      } else {
+        currentSection = CommandSectionType.Input;
+        commandSections.push({ type: currentSection, items: [inputNode] });
+        cursor++;
+      }
+    } else {
+      let outputData = {
+        name: commandInstance.name,
+        inputs: commandInputsEvaluationResult,
+        outputs: constructsExecutionResult,
+        state: commandInstance.state,
+        uuid: constructUuid,
+        manualUuid,
+      };
+
+      let outputNode = <Output {...outputData} key={constructUuid} />;
+
+      if (currentSection === CommandSectionType.Output) {
+        commandSections[cursor].items.push(outputNode);
+      } else {
+        currentSection = CommandSectionType.Output;
+        commandSections.push({ type: currentSection, items: [outputNode] });
+        cursor++;
+      }
+    }
+  }
+  console.log("command sections", commandSections);
+
   return (
     <div className="max-w-3xl">
       <div className="px-4 sm:px-0">
@@ -50,80 +132,15 @@ export default function Manual() {
           {metadata.description}
         </p>
       </div>
-      <Disclosure
-        as="div"
-        defaultOpen={true}
-        className={classNames(
-          variables.length ? "" : "hidden",
-          "mt-6 cursor-pointer",
-        )}
-      >
-        <Disclosure.Button
-          as="h2"
-          className="uppercase border-b dark:border-slate-500/20 text-md font-medium dark:text-orange-500 dark:bg-orange-500/20 p-6 rounded"
-        >
-          Inputs Review
-        </Disclosure.Button>
-        <Transition
-          enter="transition duration-200 ease-out"
-          enterFrom="transform scale-95 opacity-0"
-          enterTo="transform scale-100 opacity-100"
-          leave="transition duration-100 ease-out"
-          leaveFrom="transform scale-100 opacity-100"
-          leaveTo="transform scale-95 opacity-0"
-        >
+      {commandSections.map((commandSection) => {
+        let panel = (
           <Disclosure.Panel as="div" className="ml-2">
-            {variables.map((variable) => (
-              <Variable {...variable} key={variable.uuid} />
-            ))}
+            {...commandSection.items}
           </Disclosure.Panel>
-        </Transition>
-      </Disclosure>
+        );
 
-      <Disclosure
-        as="div"
-        defaultOpen={false}
-        className={classNames(
-          variables.length ? "" : "hidden",
-          "mt-6 cursor-pointer",
-        )}
-      >
-        <Disclosure.Button
-          as="h2"
-          className="mt-6 uppercase border-b dark:border-slate-500/20 text-md font-medium dark:text-purple-500 dark:bg-purple-500/20 p-6 rounded"
-        >
-          Execution Plan Review Review
-        </Disclosure.Button>
-        <Transition
-          enter="transition duration-200 ease-out"
-          enterFrom="transform scale-95 opacity-0"
-          enterTo="transform scale-100 opacity-100"
-          leave="transition duration-100 ease-out"
-          leaveFrom="transform scale-100 opacity-100"
-          leaveTo="transform scale-95 opacity-0"
-        >
-          <Disclosure.Panel as="div" className="ml-2">
-            <div className={classNames(outputs.length ? "" : "hidden", "mt-6")}>
-              {outputs.map((output) => (
-                <Output {...output} key={output.uuid} />
-              ))}
-            </div>
-            <div
-              className={classNames(
-                stacksWalletInteractions.length ? "" : "hidden",
-                "mt-6",
-              )}
-            >
-              {stacksWalletInteractions.map((interaction) => (
-                <StacksWalletInteraction
-                  {...interaction}
-                  key={interaction.uuid}
-                />
-              ))}
-            </div>
-          </Disclosure.Panel>
-        </Transition>
-      </Disclosure>
+        return <CommandSection type={commandSection.type} panel={panel} />;
+      })}
     </div>
   );
 }

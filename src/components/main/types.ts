@@ -42,7 +42,9 @@ export enum CommandInstanceState {
   Failed = "Failed",
 }
 
-export interface ManualData {
+export interface CommandData {
+  index: number;
+  readonly: boolean;
   constructUuid: string;
   commandInstance: CommandInstance;
   constructsExecutionResult: ConstructExecutionResult;

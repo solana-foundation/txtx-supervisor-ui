@@ -2,7 +2,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 import {
   CommandInputEvaluationResult,
-  ManualData,
+  CommandData,
   ManualMetadata,
 } from "../components/main/types";
 import { Output } from "../components/main/output";
@@ -11,13 +11,11 @@ import {
   StacksWalletInteraction,
   StacksWalletInteractionType,
 } from "../components/main/stacks/stacks-wallet-interaction";
+import { sortCommands } from "../utils/helpers";
 
 export interface IndexedManual {
   metadata: ManualMetadata;
-  data?: ManualData[];
-  variables: Variable[];
-  outputs: Output[];
-  stacksWalletInteractions: StacksWalletInteraction[];
+  data?: CommandData[];
   isDirty: boolean;
   fieldDirtinessMap: { [key: string]: boolean };
   isActive: boolean;
@@ -73,9 +71,6 @@ export const manualsSlice = createSlice({
         }
         state.push({
           metadata,
-          variables: [],
-          outputs: [],
-          stacksWalletInteractions: [],
           isDirty: false,
           fieldDirtinessMap: {},
           isActive,
@@ -90,7 +85,8 @@ export const manualsSlice = createSlice({
           console.error(`manual has not been initialized: ${uuid}`);
           return;
         }
-        const manualData: ManualData[] = JSON.parse(data);
+        let manualData: CommandData[] = JSON.parse(data);
+        manualData.sort(sortCommands);
         const variables: Variable[] = [];
         const outputs: Output[] = [];
         const stacksWalletInteractions: StacksWalletInteraction[] = [];
@@ -141,9 +137,6 @@ export const manualsSlice = createSlice({
         }
         state[manualIdx] = {
           ...state[manualIdx],
-          outputs,
-          variables,
-          stacksWalletInteractions,
           data: manualData,
           fieldDirtinessMap,
         };
