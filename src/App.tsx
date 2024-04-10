@@ -7,7 +7,7 @@ import { Logo } from "./components/header/logo";
 import { useQuery } from "@apollo/client";
 import { GET_PROTOCOL } from "./utils/queries";
 import { ManualMetadata, Protocol } from "./components/main/types";
-import { SortNavItemsRecursive } from "./utils/helpers";
+import { sortNavItemsRecursive } from "./utils/helpers";
 import { useAppDispatch } from "./hooks";
 import { addManual } from "./reducers/manualsSlice";
 import ManualIcon from "./components/icons/manual";
@@ -29,7 +29,10 @@ export default function App() {
       const protocol: Protocol = result.protocol;
       const protocolName = protocol.name;
       const metadatas: ManualMetadata[] = protocol.manuals;
-      const navGroup: NavGroup = { name: "Usage Manuals", children: [] };
+      const navGroup: NavGroup = {
+        name: "Runbooks",
+        children: [],
+      };
       for (let i = 0; i < metadatas.length; i++) {
         const metadata = metadatas[i];
         navGroup.children.push({
@@ -39,7 +42,7 @@ export default function App() {
         dispatch(addManual([metadata, i === 0]));
       }
       let navGroups = [navGroup];
-      navGroups.forEach((group) => group.children.sort(SortNavItemsRecursive));
+      navGroups.forEach((group) => group.children.sort(sortNavItemsRecursive));
       setNavGroups(navGroups);
       setProtocolName(protocolName);
     },
