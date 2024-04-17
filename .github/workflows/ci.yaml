@@ -1,0 +1,40 @@
+name: Node.js CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "14.x"
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Compress Build
+        run: tar -C dist -zcvf txtx-web-ui.tar.gz txtx-web-ui
+
+      - name: Upload Build
+        uses: actions/upload-artifact@v2
+        with:
+          name: txtx-web-ui
+          path: txtx-web-ui.tar.gz
