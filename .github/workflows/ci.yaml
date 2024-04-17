@@ -31,10 +31,10 @@ jobs:
       - run: npm run build
 
       - name: Compress Build
-        run: tar -C dist -zcvf txtx-web-ui.tar.gz .
+        run: tar -zcvf txtx-web-ui.tar.gz dist
 
       - name: Upload Build
         uses: actions/upload-artifact@v2
         with:
-          name: txtx-web-ui
+          name: txtx-web-ui.tar.gz
           path: txtx-web-ui.tar.gz
