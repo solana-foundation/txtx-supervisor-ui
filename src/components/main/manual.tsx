@@ -4,23 +4,19 @@ import { Output } from "./output";
 import { GET_MANUAL } from "../../utils/queries";
 import { useQuery } from "@apollo/client";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import { setManualData, selectActiveManual } from "../../reducers/manualsSlice";
+import {
+  setManualData,
+  selectActiveManual,
+  CommandSectionIndex,
+} from "../../reducers/manualsSlice";
 import { StacksWalletInteraction } from "./stacks/stacks-wallet-interaction";
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+import { Disclosure } from "@headlessui/react";
+import CommandSection, { CommandSectionType } from "./command-section";
 
 export default function Manual() {
   const dispatch = useAppDispatch();
-  const {
-    metadata,
-    data,
-    variables,
-    outputs,
-    stacksWalletInteractions,
-    isDirty,
-  } = useAppSelector(selectActiveManual);
+  const { metadata, data, isDirty, commandSections } =
+    useAppSelector(selectActiveManual);
   const { loading, error } = useQuery(GET_MANUAL, {
     variables: {
       manualName: metadata?.uuid,
@@ -34,6 +30,7 @@ export default function Manual() {
   if (loading || !data) {
     return <div>Loading...</div>;
   }
+
   return (
     <div className="max-w-3xl">
       <div className="px-4 sm:px-0">
@@ -49,35 +46,43 @@ export default function Manual() {
           {metadata.description}
         </p>
       </div>
-      <div className={classNames(variables.length ? "" : "hidden", "mt-6")}>
-        <h2 className="uppercase border-b dark:border-slate-500/20 text-md font-medium dark:text-slate-500">
-          Variables
-        </h2>
-        {variables.map((variable) => (
-          <Variable {...variable} key={variable.uuid} />
-        ))}
-      </div>
-      <div className={classNames(outputs.length ? "" : "hidden", "mt-6")}>
-        <h2 className="uppercase border-b dark:border-slate-500/20 text-md font-medium dark:text-slate-500">
-          Outputs
-        </h2>
-        {outputs.map((output) => (
-          <Output {...output} key={output.uuid} />
-        ))}
-      </div>
-      <div
-        className={classNames(
-          stacksWalletInteractions.length ? "" : "hidden",
-          "mt-6",
-        )}
-      >
-        <h2 className="uppercase border-b dark:border-slate-500/20 text-md font-medium dark:text-slate-500">
-          Stacks Wallet Interactions
-        </h2>
-        {stacksWalletInteractions.map((interaction) => (
-          <StacksWalletInteraction {...interaction} key={interaction.uuid} />
-        ))}
-      </div>
+      {commandSections.map((commandSection, i) => {
+        let panel = (
+          <Disclosure.Panel as="div" className="ml-2">
+            {...commandSectionToElements(commandSection)}
+          </Disclosure.Panel>
+        );
+
+        return (
+          <CommandSection
+            type={commandSection.type}
+            panel={panel}
+            key={`${commandSection.type}-${i}-${commandSection.items.length}`}
+          />
+        );
+      })}
     </div>
   );
+}
+
+function commandSectionToElements(commandSection: CommandSectionIndex) {
+  switch (commandSection.type) {
+    case CommandSectionType.Input:
+      return commandSection.items.map((item) => (
+        <Variable {...(item as Variable)} key={item.uuid} />
+      ));
+    case CommandSectionType.Output:
+      return commandSection.items.map((item) => (
+        <Output {...(item as Output)} key={item.uuid} />
+      ));
+    case CommandSectionType.Action:
+      return commandSection.items.map((item) => (
+        <StacksWalletInteraction
+          {...(item as StacksWalletInteraction)}
+          key={item.uuid}
+        />
+      ));
+    default:
+      return [];
+  }
 }

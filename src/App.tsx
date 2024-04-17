@@ -5,18 +5,13 @@ import React, { useState } from "react";
 import Manual from "./components/main/manual";
 import { Logo } from "./components/header/logo";
 import { useQuery } from "@apollo/client";
-import { GET_MANUALS } from "./utils/queries";
-import { ManualMetadata } from "./components/main/types";
-import { SortNavItemsRecursive } from "./utils/helpers";
+import { GET_PROTOCOL } from "./utils/queries";
+import { ManualMetadata, Protocol } from "./components/main/types";
+import { sortNavItemsRecursive } from "./utils/helpers";
 import { useAppDispatch } from "./hooks";
 import { addManual } from "./reducers/manualsSlice";
 import ManualIcon from "./components/icons/manual";
 import DeploymentIcon from "./components/icons/deployment";
-
-const packageData = {
-  title: "Pyth",
-  versions: ["0.0.1", "0.0.2"],
-};
 
 enum PageNav {
   Manual,
@@ -26,12 +21,18 @@ export default function App() {
   // todo: we should probably introduce a router to actually have this on a separate page
   const [pageNav, setPageNav] = useState<PageNav>(PageNav.Manual);
   const [navGroups, setNavGroups] = useState<NavGroup[]>();
+  const [protocolName, setProtocolName] = useState<string>("");
   const dispatch = useAppDispatch();
 
-  const { loading } = useQuery(GET_MANUALS, {
+  const { loading } = useQuery(GET_PROTOCOL, {
     onCompleted: (result) => {
-      let metadatas: ManualMetadata[] = result.manuals;
-      let navGroup: NavGroup = { name: "Usage Manuals", children: [] };
+      const protocol: Protocol = result.protocol;
+      const protocolName = protocol.name;
+      const metadatas: ManualMetadata[] = protocol.manuals;
+      const navGroup: NavGroup = {
+        name: "Runbooks",
+        children: [],
+      };
       for (let i = 0; i < metadatas.length; i++) {
         const metadata = metadatas[i];
         navGroup.children.push({
@@ -41,8 +42,9 @@ export default function App() {
         dispatch(addManual([metadata, i === 0]));
       }
       let navGroups = [navGroup];
-      navGroups.forEach((group) => group.children.sort(SortNavItemsRecursive));
+      navGroups.forEach((group) => group.children.sort(sortNavItemsRecursive));
       setNavGroups(navGroups);
+      setProtocolName(protocolName);
     },
   });
 
@@ -72,7 +74,7 @@ export default function App() {
 
         {/* Header & main content */}
         <div className="xl:pl-20 dark:bg-slate-900">
-          <Header {...packageData}></Header>
+          <Header {...{ title: protocolName }}></Header>
           <main className="pl-80 xl:pl-96 dark:bg-slate-900">
             <div className="px-4 py-10 lg:px-8 lg:py-6 dark:bg-slate-900">
               {loading ? <div>Loading...</div> : <Manual />}

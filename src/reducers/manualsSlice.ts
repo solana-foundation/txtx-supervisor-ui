@@ -2,7 +2,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 import {
   CommandInputEvaluationResult,
-  ManualData,
+  CommandData,
   ManualMetadata,
 } from "../components/main/types";
 import { Output } from "../components/main/output";
@@ -11,13 +11,13 @@ import {
   StacksWalletInteraction,
   StacksWalletInteractionType,
 } from "../components/main/stacks/stacks-wallet-interaction";
+import { sortCommands } from "../utils/helpers";
+import { CommandSectionType } from "../components/main/command-section";
 
 export interface IndexedManual {
   metadata: ManualMetadata;
-  data?: ManualData[];
-  variables: Variable[];
-  outputs: Output[];
-  stacksWalletInteractions: StacksWalletInteraction[];
+  data?: CommandData[];
+  commandSections: CommandSectionIndex[];
   isDirty: boolean;
   fieldDirtinessMap: { [key: string]: boolean };
   isActive: boolean;
@@ -30,6 +30,11 @@ export interface SerializedManualData {
   uuid: string;
   data: string;
 }
+
+export type CommandSectionIndex = {
+  type: CommandSectionType;
+  items: (Variable | StacksWalletInteraction | Output)[];
+};
 
 // todo: move away from hard-coded strings (use state?)
 export namespace ConstructDisplayType {
@@ -73,10 +78,8 @@ export const manualsSlice = createSlice({
         }
         state.push({
           metadata,
-          variables: [],
-          outputs: [],
-          stacksWalletInteractions: [],
           isDirty: false,
+          commandSections: [],
           fieldDirtinessMap: {},
           isActive,
         });
@@ -90,13 +93,15 @@ export const manualsSlice = createSlice({
           console.error(`manual has not been initialized: ${uuid}`);
           return;
         }
-        const manualData: ManualData[] = JSON.parse(data);
-        const variables: Variable[] = [];
-        const outputs: Output[] = [];
-        const stacksWalletInteractions: StacksWalletInteraction[] = [];
+        let manualData: CommandData[] = JSON.parse(data);
+        manualData.sort(sortCommands);
         const fieldDirtinessMap: { [key: string]: boolean } = {};
+        let commandSections: CommandSectionIndex[] = [];
+        let currentSection: CommandSectionType | null = null;
+        let cursor = -1;
 
         for (const {
+          readonly,
           constructUuid,
           commandInstance,
           commandInputsEvaluationResult,
@@ -109,40 +114,71 @@ export const manualsSlice = createSlice({
             fieldDirtinessMap[`${key}-${constructUuid}`] = false;
           }
           let spec_name = commandInstance.specification.name;
-          if (ConstructDisplayType.Input.has(spec_name)) {
-            variables.push({
+
+          if (spec_name === ConstructDisplayType.StacksWalletSign) {
+            let interactionData = {
+              name: commandInstance.name,
+              inputs: commandInputsEvaluationResult,
+              uuid: constructUuid,
+              manualUuid: uuid,
+              interactionType: StacksWalletInteractionType.Sign,
+            };
+
+            if (currentSection === CommandSectionType.Action) {
+              commandSections[cursor].items.push(interactionData);
+            } else {
+              currentSection = CommandSectionType.Action;
+              commandSections.push({
+                type: currentSection,
+                items: [interactionData],
+              });
+              cursor++;
+            }
+          } else if (!readonly) {
+            let inputData = {
               name: commandInstance.name,
               inputs: commandInputsEvaluationResult,
               outputs: constructsExecutionResult,
               uuid: constructUuid,
               manualUuid: uuid,
-            });
-          } else if (ConstructDisplayType.Readonly.has(spec_name)) {
-            outputs.push({
+            };
+
+            if (currentSection === CommandSectionType.Input) {
+              commandSections[cursor].items.push(inputData);
+            } else {
+              currentSection = CommandSectionType.Input;
+              commandSections.push({
+                type: currentSection,
+                items: [inputData],
+              });
+              cursor++;
+            }
+          } else {
+            let outputData = {
               name: commandInstance.name,
               inputs: commandInputsEvaluationResult,
               outputs: constructsExecutionResult,
               state: commandInstance.state,
               uuid: constructUuid,
               manualUuid: uuid,
-            });
-          } else if (spec_name === ConstructDisplayType.StacksWalletSign) {
-            stacksWalletInteractions.push({
-              name: commandInstance.name,
-              inputs:
-                commandInputsEvaluationResult.web_interact as unknown as CommandInputEvaluationResult, // todo
-              uuid: constructUuid,
-              manualUuid: uuid,
-              interactionType: StacksWalletInteractionType.Sign,
-            });
+            };
+
+            if (currentSection === CommandSectionType.Output) {
+              commandSections[cursor].items.push(outputData);
+            } else {
+              currentSection = CommandSectionType.Output;
+              commandSections.push({
+                type: currentSection,
+                items: [outputData],
+              });
+              cursor++;
+            }
           }
         }
         state[manualIdx] = {
           ...state[manualIdx],
-          outputs,
-          variables,
-          stacksWalletInteractions,
           data: manualData,
+          commandSections,
           fieldDirtinessMap,
         };
       },

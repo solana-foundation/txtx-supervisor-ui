@@ -7,7 +7,7 @@ import { Connect } from "@stacks/connect-react";
 import { authOptions } from "./components/main/stacks/stacks-wallet-interaction";
 
 const client = new ApolloClient({
-  uri: "http://localhost:3210/graphql",
+  uri: "http://localhost:8488/graphql",
   cache: new InMemoryCache(),
 });
 

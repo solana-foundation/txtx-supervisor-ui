@@ -25,7 +25,7 @@ module.exports = {
       lime: { 300: "lime" },
       orange: { 500: "orange" },
       pink: { 500: "pink" },
-      purple: { 500: "purple" },
+      purple: { 500: "#715186" },
       red: { 600: "red" },
       rose: { 500: "rose" },
       sky: { 500: "sky" },
