@@ -27,8 +27,8 @@ jobs:
         with:
           node-version: "14.x"
 
-      - name: Build Project
-        run: npm run build
+      - run: npm ci
+      - run: npm run build
 
       - name: Compress Build
         run: tar -C dist -zcvf txtx-web-ui.tar.gz txtx-web-ui
