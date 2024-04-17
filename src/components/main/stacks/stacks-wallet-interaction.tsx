@@ -28,6 +28,7 @@ import { useMutation } from "@apollo/client";
 import { GET_MANUAL, UPDATE_COMMAND_INPUT } from "../../../utils/queries";
 import { setManualData } from "../../../reducers/manualsSlice";
 import { useAppDispatch } from "../../../hooks";
+import { StacksNetworkName } from "@stacks/network";
 
 export enum StacksWalletInteractionType {
   Sign,
@@ -54,6 +55,8 @@ export function StacksWalletInteraction({
     );
     deserializedPayload = deserializePayload(bytesReader);
   }
+  let networkId: StacksNetworkName =
+    (inputs?.network_id as StacksNetworkName) || "testnet";
 
   const codeBlockFieldName = `${interactionTypeToButtonTitle(
     interactionType,
@@ -104,6 +107,7 @@ export function StacksWalletInteraction({
             interactionType={interactionType}
             uuid={uuid}
             manualUuid={manualUuid}
+            networkId={networkId}
           />
         </Connect>
       </div>
@@ -133,6 +137,7 @@ interface StacksInteractionButton {
   interactionType: StacksWalletInteractionType;
   uuid: string;
   manualUuid: string;
+  networkId: StacksNetworkName;
 }
 
 function classNames(...classes) {
@@ -144,6 +149,7 @@ function StacksInteractButton({
   interactionType,
   uuid,
   manualUuid,
+  networkId,
 }: StacksInteractionButton) {
   const dispatch = useAppDispatch();
 
@@ -185,7 +191,7 @@ function StacksInteractButton({
           throw new Error("Unimplemented payload type");
       }
     } else if (interactionType === StacksWalletInteractionType.Sign) {
-      const txHex = await payloadToUnsignedTxHex(payload);
+      const txHex = await payloadToUnsignedTxHex(payload, networkId);
 
       // @ts-ignore
       const { result } = await window.LeatherProvider.request(
@@ -201,7 +207,7 @@ function StacksInteractButton({
         variables: {
           manualName: manualUuid,
           commandUuid: uuid.replace("local:", ""),
-          inputName: "web_interact",
+          inputName: "",
           value: JSON.stringify(value),
         },
       });

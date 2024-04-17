@@ -12,6 +12,7 @@ import {
 } from "@stacks/transactions";
 import { bytesToHex } from "@stacks/common";
 import { getAddress } from "sats-connect";
+import { StacksNetworkName } from "@stacks/network";
 
 export const interactionTypeToButtonTitle = (
   type: StacksWalletInteractionType,
@@ -45,6 +46,7 @@ export const getPublicKey = async () => {
 
 export const payloadToUnsignedTxHex = async (
   payload: Payload,
+  networkId: StacksNetworkName,
 ): Promise<string> => {
   switch (payload.payloadType) {
     case PayloadType.ContractCall:
@@ -56,7 +58,7 @@ export const payloadToUnsignedTxHex = async (
         contractName: contractCallPayload.contractName.content,
         functionName: contractCallPayload.functionName.content,
         functionArgs: contractCallPayload.functionArgs,
-        network: "testnet",
+        network: networkId,
         anchorMode: AnchorMode.Any,
       };
       const tx = await makeUnsignedContractCall(txOpts);
