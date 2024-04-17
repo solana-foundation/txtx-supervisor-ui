@@ -116,12 +116,9 @@ export const manualsSlice = createSlice({
           let spec_name = commandInstance.specification.name;
 
           if (spec_name === ConstructDisplayType.StacksWalletSign) {
-            let inputs =
-              (commandInputsEvaluationResult?.web_interact as unknown as CommandInputEvaluationResult) ||
-              null;
             let interactionData = {
               name: commandInstance.name,
-              inputs,
+              inputs: commandInputsEvaluationResult,
               uuid: constructUuid,
               manualUuid: uuid,
               interactionType: StacksWalletInteractionType.Sign,
