@@ -6,7 +6,7 @@ import { useAppDispatch } from "../../hooks";
 import {
   setManualData,
   updateFieldDirtinessMap,
-} from "../../reducers/manualsSlice";
+} from "../../reducers/runbooksSlice";
 import { GET_MANUAL, UPDATE_COMMAND_INPUT } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import debounce from "debounce";

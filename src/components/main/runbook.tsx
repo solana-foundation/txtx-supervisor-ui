@@ -8,7 +8,7 @@ import {
   setManualData,
   selectActiveManual,
   CommandSectionIndex,
-} from "../../reducers/manualsSlice";
+} from "../../reducers/runbooksSlice";
 import { StacksWalletInteraction } from "./stacks/stacks-wallet-interaction";
 import { Disclosure } from "@headlessui/react";
 import CommandSection, { CommandSectionType } from "./command-section";

@@ -8,7 +8,7 @@ import { LabeledCodeBlock } from "./labeled-code-block";
 import { useQuery } from "@apollo/client";
 import { GET_COMMAND_INSTANCE_STATE } from "../../utils/queries";
 import { useAppDispatch } from "../../hooks";
-import { setManualData } from "../../reducers/manualsSlice";
+import { setManualData } from "../../reducers/runbooksSlice";
 
 export interface Output {
   name: string;

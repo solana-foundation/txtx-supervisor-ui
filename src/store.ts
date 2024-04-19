@@ -2,14 +2,14 @@ import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { configureStore, combineSlices, createSlice } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import loggerMiddleware from "./middleware/logger";
-import { manualsSlice } from "./reducers/manualsSlice";
+import { runbooksSlice } from "./reducers/runbooksSlice";
 
 const numberSlice = createSlice({
   name: "number",
   initialState: 0,
   reducers: {},
 });
-export const rootReducer = combineSlices(manualsSlice, numberSlice);
+export const rootReducer = combineSlices(runbooksSlice, numberSlice);
 
 export type RootState = ReturnType<typeof rootReducer>;
 

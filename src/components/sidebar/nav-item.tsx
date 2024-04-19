@@ -4,7 +4,7 @@ import { useAppSelector, useAppDispatch } from "../../hooks";
 import {
   selectActiveManual,
   setActiveManual,
-} from "../../reducers/manualsSlice";
+} from "../../reducers/runbooksSlice";
 
 export interface NavItem {
   name: string;

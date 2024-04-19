@@ -26,7 +26,7 @@ import {
 import { CodeBlock } from "../code-block";
 import { useMutation } from "@apollo/client";
 import { GET_MANUAL, UPDATE_COMMAND_INPUT } from "../../../utils/queries";
-import { setManualData } from "../../../reducers/manualsSlice";
+import { setManualData } from "../../../reducers/runbooksSlice";
 import { useAppDispatch } from "../../../hooks";
 import { StacksNetworkName } from "@stacks/network";
 

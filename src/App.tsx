@@ -2,15 +2,15 @@ import { Header } from "./components/header/header";
 import { Search } from "./components/sidebar/search";
 import { Nav, NavGroup } from "./components/sidebar/nav";
 import React, { useState } from "react";
-import Manual from "./components/main/manual";
+import Manual from "./components/main/runbook";
 import { Logo } from "./components/header/logo";
 import { useQuery } from "@apollo/client";
 import { GET_PROTOCOL } from "./utils/queries";
 import { ManualMetadata, Protocol } from "./components/main/types";
 import { sortNavItemsRecursive } from "./utils/helpers";
 import { useAppDispatch } from "./hooks";
-import { addManual } from "./reducers/manualsSlice";
-import ManualIcon from "./components/icons/manual";
+import { addManual } from "./reducers/runbooksSlice";
+import ManualIcon from "./components/icons/runbook";
 import DeploymentIcon from "./components/icons/deployment";
 
 enum PageNav {

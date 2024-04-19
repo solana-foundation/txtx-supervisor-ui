@@ -1,10 +1,6 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice, createSelector } from "@reduxjs/toolkit";
-import {
-  CommandInputEvaluationResult,
-  CommandData,
-  ManualMetadata,
-} from "../components/main/types";
+import { CommandData, ManualMetadata } from "../components/main/types";
 import { Output } from "../components/main/output";
 import { Variable } from "../components/main/variable";
 import {
@@ -64,7 +60,7 @@ const findActiveManual = (manuals: IndexedManual[]): IndexedManual => {
   return manuals.find((manual) => manual.isActive === true) || EMPTY_MANUAL;
 };
 
-export const manualsSlice = createSlice({
+export const runbooksSlice = createSlice({
   name: "manuals",
   initialState,
   reducers: (create) => ({
@@ -234,7 +230,7 @@ export const {
   setManualData,
   updateFieldDirtinessMap,
   setActiveManual,
-} = manualsSlice.actions;
+} = runbooksSlice.actions;
 
 export const { selectManual, selectActiveManual, selectIsDirty } =
-  manualsSlice.selectors;
+  runbooksSlice.selectors;
