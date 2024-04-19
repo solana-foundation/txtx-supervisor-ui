@@ -4,14 +4,14 @@ import { CodeBlock } from "./code-block";
 export interface CodeBlockTabs {
   data: { [key: string]: string };
   uuid: string;
-  manualUuid: string;
+  runbookUuid: string;
   readonly?: boolean;
 }
 
 export function LabeledCodeBlock({
   data,
   uuid,
-  manualUuid,
+  runbookUuid,
   readonly = false,
 }: CodeBlockTabs) {
   const dataKeys = Object.keys(data);
@@ -56,7 +56,7 @@ export function LabeledCodeBlock({
           code={data[dataKey]}
           dataKey={keyUuid}
           fieldName={dataKey}
-          manualUuid={manualUuid}
+          runbookUuid={runbookUuid}
           constructUuid={uuid}
           readonly={readonly}
         />

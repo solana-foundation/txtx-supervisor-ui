@@ -5,25 +5,25 @@ import { GET_MANUAL } from "../../utils/queries";
 import { useQuery } from "@apollo/client";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import {
-  setManualData,
-  selectActiveManual,
+  setRunbookData,
+  selectActiveRunbook,
   CommandSectionIndex,
-} from "../../reducers/manualsSlice";
+} from "../../reducers/runbooksSlice";
 import { StacksWalletInteraction } from "./stacks/stacks-wallet-interaction";
 import { Disclosure } from "@headlessui/react";
 import CommandSection, { CommandSectionType } from "./command-section";
 
-export default function Manual() {
+export default function Runbook() {
   const dispatch = useAppDispatch();
   const { metadata, data, isDirty, commandSections } =
-    useAppSelector(selectActiveManual);
+    useAppSelector(selectActiveRunbook);
   const { loading, error } = useQuery(GET_MANUAL, {
     variables: {
-      manualName: metadata?.uuid,
+      runbookName: metadata?.uuid,
     },
     skip: !metadata?.uuid || isDirty,
     onCompleted: (result) => {
-      dispatch(setManualData(result.manual));
+      dispatch(setRunbookData(result.runbook));
     },
   });
 

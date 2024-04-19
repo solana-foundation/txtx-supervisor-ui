@@ -4,9 +4,9 @@ import * as monaco_editor from "monaco-editor";
 import { getCustomTheme } from "../../utils/monaco-theme";
 import { useAppDispatch } from "../../hooks";
 import {
-  setManualData,
+  setRunbookData,
   updateFieldDirtinessMap,
-} from "../../reducers/manualsSlice";
+} from "../../reducers/runbooksSlice";
 import { GET_MANUAL, UPDATE_COMMAND_INPUT } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import debounce from "debounce";
@@ -17,7 +17,7 @@ const MIN_LINE_HEIGHT = 32;
 export interface CodeBlock {
   code: string | object;
   dataKey: string;
-  manualUuid: string;
+  runbookUuid: string;
   fieldName: string;
   constructUuid: string;
   readonly: boolean;
@@ -25,7 +25,7 @@ export interface CodeBlock {
 export function CodeBlock({
   code,
   dataKey,
-  manualUuid,
+  runbookUuid,
   fieldName,
   constructUuid,
   readonly,
@@ -38,17 +38,17 @@ export function CodeBlock({
     UPDATE_COMMAND_INPUT,
     {
       update(cache, { data: { updateCommandInput } }) {
-        const manualData = {
-          uuid: manualUuid,
+        const runbookData = {
+          uuid: runbookUuid,
           data: updateCommandInput,
         };
         cache.writeQuery({
           query: GET_MANUAL,
           data: {
-            manual: manualData,
+            runbook: runbookData,
           },
         });
-        dispatch(setManualData(manualData));
+        dispatch(setRunbookData(runbookData));
       },
     },
   );
@@ -56,14 +56,14 @@ export function CodeBlock({
     if (!readonly) {
       dispatch(
         updateFieldDirtinessMap({
-          manualUuid,
+          runbookUuid,
           mapKey: dataKey,
           fieldIsDirty: value != code,
         }),
       );
       updateCommandInput({
         variables: {
-          manualName: manualUuid,
+          runbookName: runbookUuid,
           commandUuid: constructUuid.replace("local:", ""),
           inputName: fieldName,
           value: value,

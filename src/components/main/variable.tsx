@@ -11,7 +11,7 @@ export interface Variable {
   inputs: CommandInputEvaluationResult;
   outputs: ConstructExecutionResult;
   uuid: string;
-  manualUuid: string;
+  runbookUuid: string;
 }
 
 // todo: this is definitely not how we want to decide what inputs to display
@@ -24,7 +24,7 @@ const EDITABLE_INPUTS = [
   "args",
 ];
 
-export function Variable({ name, inputs, uuid, manualUuid }: Variable) {
+export function Variable({ name, inputs, uuid, runbookUuid }: Variable) {
   let filteredInputs = filterKeysFromObject(inputs, EDITABLE_INPUTS);
   if (Object.keys(filteredInputs).length === 0) {
     filteredInputs = { value: "" };
@@ -38,7 +38,7 @@ export function Variable({ name, inputs, uuid, manualUuid }: Variable) {
       <LabeledCodeBlock
         data={filteredInputs}
         uuid={uuid}
-        manualUuid={manualUuid}
+        runbookUuid={runbookUuid}
       />
     </div>
   );

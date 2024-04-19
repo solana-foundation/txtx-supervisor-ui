@@ -2,13 +2,13 @@ import { Disclosure, Transition } from "@headlessui/react";
 import React from "react";
 import { useAppSelector, useAppDispatch } from "../../hooks";
 import {
-  selectActiveManual,
-  setActiveManual,
-} from "../../reducers/manualsSlice";
+  selectActiveRunbook,
+  setActiveRunbook,
+} from "../../reducers/runbooksSlice";
 
 export interface NavItem {
   name: string;
-  manualUuid: string;
+  runbookUuid: string;
   children?: NavItem[];
 }
 
@@ -16,18 +16,18 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export function NavItem({ name, children, manualUuid }: NavItem) {
+export function NavItem({ name, children, runbookUuid }: NavItem) {
   const dispatch = useAppDispatch();
-  const { metadata } = useAppSelector(selectActiveManual);
-  const activeManualUuid = metadata?.uuid;
+  const { metadata } = useAppSelector(selectActiveRunbook);
+  const activeRunbookUuid = metadata?.uuid;
   const hasChildren = children != null;
   const childIsActive =
     hasChildren &&
-    children.some((child) => child.manualUuid == activeManualUuid);
+    children.some((child) => child.runbookUuid == activeRunbookUuid);
   return (
     <li
       onClick={() =>
-        !hasChildren ? dispatch(setActiveManual(manualUuid)) : null
+        !hasChildren ? dispatch(setActiveRunbook(runbookUuid)) : null
       }
     >
       {hasChildren ? (
@@ -52,7 +52,7 @@ export function NavItem({ name, children, manualUuid }: NavItem) {
           >
             <Disclosure.Panel as="ul" className="mt-1 px-2">
               {children?.map((navItemChild) => (
-                <NavItem key={navItemChild.manualUuid} {...navItemChild} />
+                <NavItem key={navItemChild.runbookUuid} {...navItemChild} />
               ))}
             </Disclosure.Panel>
           </Transition>
@@ -61,7 +61,7 @@ export function NavItem({ name, children, manualUuid }: NavItem) {
         <a
           href="#"
           className={classNames(
-            manualUuid == activeManualUuid
+            runbookUuid == activeRunbookUuid
               ? "border-l rounded-l-none dark:border-emerald-400 dark:text-emerald-400 "
               : "border-l rounded-l-none dark:border-slate-500/20 dark:text-slate-500",
             "block rounded-md py-1 pr-2 pl-9 text-sm leading-6 transition-colors",

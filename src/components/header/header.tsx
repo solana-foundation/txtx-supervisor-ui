@@ -12,7 +12,7 @@ export function Header({ title }: HeaderProps) {
           <h1 className="font-bold text-2xl dark:text-emerald-400">{title}</h1>
           {/* <VersionBadge versions={versions}></VersionBadge> */}
         </div>
-        <span className="font-bold dark:text-slate-500">Protocol Manual</span>
+        <span className="font-bold dark:text-slate-500">Protocol Runbook</span>
       </div>
     </div>
   );
