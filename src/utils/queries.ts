@@ -4,7 +4,7 @@ export const GET_PROTOCOL = gql`
   query GetProtocol {
     protocol {
       name
-      manuals {
+      runbooks {
         uuid
         name
         description
@@ -15,8 +15,8 @@ export const GET_PROTOCOL = gql`
 `;
 
 export const GET_MANUAL = gql`
-  query GetManual($manualName: String!) {
-    manual(manualName: $manualName) {
+  query GetRunbook($runbookName: String!) {
+    runbook(runbookName: $runbookName) {
       uuid
       data
     }
@@ -24,8 +24,11 @@ export const GET_MANUAL = gql`
 `;
 
 export const GET_COMMAND_INSTANCE_STATE = gql`
-  query GetCommandInstanceState($manualName: String!, $constructUuid: String!) {
-    manual(manualName: $manualName) {
+  query GetCommandInstanceState(
+    $runbookName: String!
+    $constructUuid: String!
+  ) {
+    runbook(runbookName: $runbookName) {
       commandInstanceState(constructUuidString: $constructUuid)
       data
       uuid
@@ -35,13 +38,13 @@ export const GET_COMMAND_INSTANCE_STATE = gql`
 
 export const UPDATE_COMMAND_INPUT = gql`
   mutation UpdateCommandInput(
-    $manualName: String!
+    $runbookName: String!
     $commandUuid: Uuid!
     $inputName: String!
     $value: String!
   ) {
     updateCommandInput(
-      manualName: $manualName
+      runbookName: $runbookName
       commandUuid: $commandUuid
       inputName: $inputName
       value: $value

@@ -1,6 +1,6 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice, createSelector } from "@reduxjs/toolkit";
-import { CommandData, ManualMetadata } from "../components/main/types";
+import { CommandData, RunbookMetadata } from "../components/main/types";
 import { Output } from "../components/main/output";
 import { Variable } from "../components/main/variable";
 import {
@@ -10,19 +10,19 @@ import {
 import { sortCommands } from "../utils/helpers";
 import { CommandSectionType } from "../components/main/command-section";
 
-export interface IndexedManual {
-  metadata: ManualMetadata;
+export interface IndexedRunbook {
+  metadata: RunbookMetadata;
   data?: CommandData[];
   commandSections: CommandSectionIndex[];
   isDirty: boolean;
   fieldDirtinessMap: { [key: string]: boolean };
   isActive: boolean;
 }
-export type ManualState = IndexedManual[];
-const EMPTY_MANUAL = {} as IndexedManual;
-const initialState: ManualState = [];
+export type RunbookState = IndexedRunbook[];
+const EMPTY_MANUAL = {} as IndexedRunbook;
+const initialState: RunbookState = [];
 
-export interface SerializedManualData {
+export interface SerializedRunbookData {
   uuid: string;
   data: string;
 }
@@ -46,29 +46,32 @@ export namespace ConstructDisplayType {
   export const StacksWalletInteraction = new Set(["Sign Stacks Transaction"]);
 }
 
-function findManualIdx(manuals: IndexedManual[], uuid: string): number {
-  return manuals.findIndex((manual) => manual.metadata.uuid === uuid);
+function findRunbookIdx(runbooks: IndexedRunbook[], uuid: string): number {
+  return runbooks.findIndex((runbook) => runbook.metadata.uuid === uuid);
 }
 
-const findManual = (manuals: IndexedManual[], uuid: string): IndexedManual => {
+const findRunbook = (
+  runbooks: IndexedRunbook[],
+  uuid: string,
+): IndexedRunbook => {
   return (
-    manuals.find((manual) => manual.metadata.uuid === uuid) || EMPTY_MANUAL
+    runbooks.find((runbook) => runbook.metadata.uuid === uuid) || EMPTY_MANUAL
   );
 };
 
-const findActiveManual = (manuals: IndexedManual[]): IndexedManual => {
-  return manuals.find((manual) => manual.isActive === true) || EMPTY_MANUAL;
+const findActiveRunbook = (runbooks: IndexedRunbook[]): IndexedRunbook => {
+  return runbooks.find((runbook) => runbook.isActive === true) || EMPTY_MANUAL;
 };
 
 export const runbooksSlice = createSlice({
-  name: "manuals",
+  name: "runbooks",
   initialState,
   reducers: (create) => ({
-    addManual: create.reducer(
-      (state, action: PayloadAction<[ManualMetadata, boolean]>) => {
+    addRunbook: create.reducer(
+      (state, action: PayloadAction<[RunbookMetadata, boolean]>) => {
         const [metadata, isActive] = action.payload;
         const { uuid } = metadata;
-        if (findManualIdx(state, uuid) !== -1) {
+        if (findRunbookIdx(state, uuid) !== -1) {
           console.error("uuid collision", uuid);
           return;
         }
@@ -81,16 +84,16 @@ export const runbooksSlice = createSlice({
         });
       },
     ),
-    setManualData: create.reducer(
-      (state, action: PayloadAction<SerializedManualData>) => {
+    setRunbookData: create.reducer(
+      (state, action: PayloadAction<SerializedRunbookData>) => {
         const { data, uuid } = action.payload;
-        const manualIdx = findManualIdx(state, uuid);
-        if (manualIdx === -1) {
-          console.error(`manual has not been initialized: ${uuid}`);
+        const runbookIdx = findRunbookIdx(state, uuid);
+        if (runbookIdx === -1) {
+          console.error(`runbook has not been initialized: ${uuid}`);
           return;
         }
-        let manualData: CommandData[] = JSON.parse(data);
-        manualData.sort(sortCommands);
+        let runbookData: CommandData[] = JSON.parse(data);
+        runbookData.sort(sortCommands);
         const fieldDirtinessMap: { [key: string]: boolean } = {};
         let commandSections: CommandSectionIndex[] = [];
         let currentSection: CommandSectionType | null = null;
@@ -102,7 +105,7 @@ export const runbooksSlice = createSlice({
           commandInstance,
           commandInputsEvaluationResult,
           constructsExecutionResult,
-        } of manualData) {
+        } of runbookData) {
           for (const key in commandInputsEvaluationResult) {
             fieldDirtinessMap[`${key}-${constructUuid}`] = false;
           }
@@ -116,7 +119,7 @@ export const runbooksSlice = createSlice({
               name: commandInstance.name,
               inputs: commandInputsEvaluationResult,
               uuid: constructUuid,
-              manualUuid: uuid,
+              runbookUuid: uuid,
               interactionType: StacksWalletInteractionType.Sign,
             };
 
@@ -136,7 +139,7 @@ export const runbooksSlice = createSlice({
               inputs: commandInputsEvaluationResult,
               outputs: constructsExecutionResult,
               uuid: constructUuid,
-              manualUuid: uuid,
+              runbookUuid: uuid,
             };
 
             if (currentSection === CommandSectionType.Input) {
@@ -156,7 +159,7 @@ export const runbooksSlice = createSlice({
               outputs: constructsExecutionResult,
               state: commandInstance.state,
               uuid: constructUuid,
-              manualUuid: uuid,
+              runbookUuid: uuid,
             };
 
             if (currentSection === CommandSectionType.Output) {
@@ -171,9 +174,9 @@ export const runbooksSlice = createSlice({
             }
           }
         }
-        state[manualIdx] = {
-          ...state[manualIdx],
-          data: manualData,
+        state[runbookIdx] = {
+          ...state[runbookIdx],
+          data: runbookData,
           commandSections,
           fieldDirtinessMap,
         };
@@ -183,54 +186,58 @@ export const runbooksSlice = createSlice({
       (
         state,
         action: PayloadAction<{
-          manualUuid: string;
+          runbookUuid: string;
           mapKey: string;
           fieldIsDirty: boolean;
         }>,
       ) => {
-        const { manualUuid, mapKey, fieldIsDirty } = action.payload;
-        const manualIdx = findManualIdx(state, manualUuid);
-        if (manualIdx === -1) {
-          console.error(`manual has not been initialized: ${manualUuid}`);
+        const { runbookUuid, mapKey, fieldIsDirty } = action.payload;
+        const runbookIdx = findRunbookIdx(state, runbookUuid);
+        if (runbookIdx === -1) {
+          console.error(`runbook has not been initialized: ${runbookUuid}`);
           return;
         }
 
-        const { fieldDirtinessMap } = state[manualIdx];
+        const { fieldDirtinessMap } = state[runbookIdx];
         fieldDirtinessMap[mapKey] = fieldIsDirty;
         const isDirty = Object.keys(fieldDirtinessMap).some(
           (key) => fieldDirtinessMap[key],
         );
-        state[manualIdx] = { ...state[manualIdx], isDirty, fieldDirtinessMap };
+        state[runbookIdx] = {
+          ...state[runbookIdx],
+          isDirty,
+          fieldDirtinessMap,
+        };
       },
     ),
-    setActiveManual: create.reducer((state, action: PayloadAction<string>) => {
+    setActiveRunbook: create.reducer((state, action: PayloadAction<string>) => {
       const newActiveUuid = action.payload;
-      const newActiveIdx = findManualIdx(state, newActiveUuid);
+      const newActiveIdx = findRunbookIdx(state, newActiveUuid);
       if (newActiveIdx === -1) {
-        console.error(`manual has not been initialized: ${newActiveUuid}`);
+        console.error(`runbook has not been initialized: ${newActiveUuid}`);
         return;
       }
       const currentActiveIdx = state.findIndex(
-        (manual) => manual.isActive === true,
+        (runbook) => runbook.isActive === true,
       );
       state[currentActiveIdx] = { ...state[currentActiveIdx], isActive: false };
       state[newActiveIdx] = { ...state[newActiveIdx], isActive: true };
     }),
   }),
   selectors: {
-    selectActiveManual: findActiveManual,
-    selectManual: findManual,
+    selectActiveRunbook: findActiveRunbook,
+    selectRunbook: findRunbook,
     selectIsDirty:
-      createSelector([findManual], (manual) => manual.isDirty) || false,
+      createSelector([findRunbook], (runbook) => runbook.isDirty) || false,
   },
 });
 
 export const {
-  addManual,
-  setManualData,
+  addRunbook,
+  setRunbookData,
   updateFieldDirtinessMap,
-  setActiveManual,
+  setActiveRunbook,
 } = runbooksSlice.actions;
 
-export const { selectManual, selectActiveManual, selectIsDirty } =
+export const { selectRunbook, selectActiveRunbook, selectIsDirty } =
   runbooksSlice.selectors;

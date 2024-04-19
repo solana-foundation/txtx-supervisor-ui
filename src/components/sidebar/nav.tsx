@@ -20,7 +20,7 @@ export function Nav({ navGroups }: NavGroupProp) {
               </h2>
               <ul role="list" className="-mx-2 space-y-1">
                 {navGroup.children.map((navItem) => (
-                  <NavItem key={navItem.manualUuid} {...navItem} />
+                  <NavItem key={navItem.runbookUuid} {...navItem} />
                 ))}
               </ul>
             </li>

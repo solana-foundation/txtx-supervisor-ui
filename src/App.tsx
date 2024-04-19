@@ -2,24 +2,24 @@ import { Header } from "./components/header/header";
 import { Search } from "./components/sidebar/search";
 import { Nav, NavGroup } from "./components/sidebar/nav";
 import React, { useState } from "react";
-import Manual from "./components/main/runbook";
+import Runbook from "./components/main/runbook";
 import { Logo } from "./components/header/logo";
 import { useQuery } from "@apollo/client";
 import { GET_PROTOCOL } from "./utils/queries";
-import { ManualMetadata, Protocol } from "./components/main/types";
+import { RunbookMetadata, Protocol } from "./components/main/types";
 import { sortNavItemsRecursive } from "./utils/helpers";
 import { useAppDispatch } from "./hooks";
-import { addManual } from "./reducers/runbooksSlice";
-import ManualIcon from "./components/icons/runbook";
+import { addRunbook } from "./reducers/runbooksSlice";
+import RunbookIcon from "./components/icons/runbook";
 import DeploymentIcon from "./components/icons/deployment";
 
 enum PageNav {
-  Manual,
+  Runbook,
   Deploy,
 }
 export default function App() {
   // todo: we should probably introduce a router to actually have this on a separate page
-  const [pageNav, setPageNav] = useState<PageNav>(PageNav.Manual);
+  const [pageNav, setPageNav] = useState<PageNav>(PageNav.Runbook);
   const [navGroups, setNavGroups] = useState<NavGroup[]>();
   const [protocolName, setProtocolName] = useState<string>("");
   const dispatch = useAppDispatch();
@@ -28,7 +28,7 @@ export default function App() {
     onCompleted: (result) => {
       const protocol: Protocol = result.protocol;
       const protocolName = protocol.name;
-      const metadatas: ManualMetadata[] = protocol.manuals;
+      const metadatas: RunbookMetadata[] = protocol.runbooks;
       const navGroup: NavGroup = {
         name: "Runbooks",
         children: [],
@@ -37,9 +37,9 @@ export default function App() {
         const metadata = metadatas[i];
         navGroup.children.push({
           name: metadata.name,
-          manualUuid: metadata.uuid,
+          runbookUuid: metadata.uuid,
         });
-        dispatch(addManual([metadata, i === 0]));
+        dispatch(addRunbook([metadata, i === 0]));
       }
       let navGroups = [navGroup];
       navGroups.forEach((group) => group.children.sort(sortNavItemsRecursive));
@@ -58,9 +58,9 @@ export default function App() {
           </div>
           <PageNavButton
             activePageNav={pageNav}
-            thisPageNav={PageNav.Manual}
-            name="Manuals"
-            icon={<ManualIcon />}
+            thisPageNav={PageNav.Runbook}
+            name="Runbooks"
+            icon={<RunbookIcon />}
             setPageNav={setPageNav}
           />
           <PageNavButton
@@ -77,7 +77,7 @@ export default function App() {
           <Header {...{ title: protocolName }}></Header>
           <main className="pl-80 xl:pl-96 dark:bg-slate-900">
             <div className="px-4 py-10 lg:px-8 lg:py-6 dark:bg-slate-900">
-              {loading ? <div>Loading...</div> : <Manual />}
+              {loading ? <div>Loading...</div> : <Runbook />}
             </div>
           </main>
         </div>

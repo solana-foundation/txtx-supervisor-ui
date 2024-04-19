@@ -53,9 +53,9 @@ export interface CommandData {
 
 export interface Protocol {
   name: string;
-  manuals: Array<ManualMetadata>;
+  runbooks: Array<RunbookMetadata>;
 }
-export interface ManualMetadata {
+export interface RunbookMetadata {
   name: string;
   description: string;
   uuid: string;

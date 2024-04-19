@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function ManualIcon() {
+export default function RunbookIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

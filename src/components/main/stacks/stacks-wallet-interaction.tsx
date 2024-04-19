@@ -26,7 +26,7 @@ import {
 import { CodeBlock } from "../code-block";
 import { useMutation } from "@apollo/client";
 import { GET_MANUAL, UPDATE_COMMAND_INPUT } from "../../../utils/queries";
-import { setManualData } from "../../../reducers/runbooksSlice";
+import { setRunbookData } from "../../../reducers/runbooksSlice";
 import { useAppDispatch } from "../../../hooks";
 import { StacksNetworkName } from "@stacks/network";
 
@@ -38,14 +38,14 @@ export interface StacksWalletInteraction {
   name: string;
   inputs: CommandInputEvaluationResult | null;
   uuid: string;
-  manualUuid: string;
+  runbookUuid: string;
   interactionType: StacksWalletInteractionType;
 }
 export function StacksWalletInteraction({
   name,
   inputs,
   uuid,
-  manualUuid,
+  runbookUuid,
   interactionType,
 }: StacksWalletInteraction) {
   let deserializedPayload;
@@ -90,7 +90,7 @@ export function StacksWalletInteraction({
         }
         dataKey={codeBlockDataKey}
         fieldName={codeBlockFieldName}
-        manualUuid={manualUuid}
+        runbookUuid={runbookUuid}
         constructUuid={uuid}
         readonly={true}
       />
@@ -106,7 +106,7 @@ export function StacksWalletInteraction({
             payload={deserializedPayload}
             interactionType={interactionType}
             uuid={uuid}
-            manualUuid={manualUuid}
+            runbookUuid={runbookUuid}
             networkId={networkId}
           />
         </Connect>
@@ -136,7 +136,7 @@ interface StacksInteractionButton {
   payload: Payload | null;
   interactionType: StacksWalletInteractionType;
   uuid: string;
-  manualUuid: string;
+  runbookUuid: string;
   networkId: StacksNetworkName;
 }
 
@@ -148,7 +148,7 @@ function StacksInteractButton({
   payload,
   interactionType,
   uuid,
-  manualUuid,
+  runbookUuid,
   networkId,
 }: StacksInteractionButton) {
   const dispatch = useAppDispatch();
@@ -157,17 +157,17 @@ function StacksInteractButton({
     UPDATE_COMMAND_INPUT,
     {
       update(cache, { data: { updateCommandInput } }) {
-        const manualData = {
-          uuid: manualUuid,
+        const runbookData = {
+          uuid: runbookUuid,
           data: updateCommandInput,
         };
         cache.writeQuery({
           query: GET_MANUAL,
           data: {
-            manual: manualData,
+            runbook: runbookData,
           },
         });
-        dispatch(setManualData(manualData));
+        dispatch(setRunbookData(runbookData));
       },
     },
   );
@@ -205,7 +205,7 @@ function StacksInteractButton({
 
       updateCommandInput({
         variables: {
-          manualName: manualUuid,
+          runbookName: runbookUuid,
           commandUuid: uuid.replace("local:", ""),
           inputName: "",
           value: JSON.stringify(value),
