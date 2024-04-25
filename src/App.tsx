@@ -75,7 +75,7 @@ export default function App() {
         {/* Header & main content */}
         <div className="xl:pl-20 dark:bg-slate-900">
           <Header {...{ title: protocolName }}></Header>
-          <main className="pt-0 mt-0 pl-80 xl:pl-96 dark:bg-slate-900">
+          <main className="min-h-screen pt-0 mt-0 pl-80 xl:pl-96 dark:bg-slate-900">
             <div className="px-4 py-10 lg:px-8 lg:py-6 dark:bg-slate-900">
               {loading ? <div>Loading...</div> : <Runbook />}
             </div>
