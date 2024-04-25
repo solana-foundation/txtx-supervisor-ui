@@ -1,5 +1,7 @@
 import React from "react";
 import CheckMark from "../icons/check-mark";
+import { selectActiveRunbookActiveStep } from "../../reducers/runbooks-slice";
+import { useAppSelector } from "../../hooks";
 
 export enum RunbookStepStatus {
   Complete,
@@ -7,35 +9,57 @@ export enum RunbookStepStatus {
   Queued,
 }
 
-interface RunbookStatusBarProps {
-  steps: RunbookStepStatusProps[];
+export interface RunbookStepStatusProps {
+  status: RunbookStepStatus;
+  index: number;
 }
-
+interface RunbookStatusBarProps {
+  steps: number;
+}
+export function statusForStepNumber(
+  stepNumber: number,
+  activeStepNumber: number,
+) {
+  if (stepNumber < activeStepNumber) {
+    return RunbookStepStatus.Complete;
+  } else if (stepNumber === activeStepNumber) {
+    return RunbookStepStatus.Active;
+  } else {
+    return RunbookStepStatus.Queued;
+  }
+}
 export default function RunbookStatusBar({ steps }: RunbookStatusBarProps) {
+  const activeStep = useAppSelector(selectActiveRunbookActiveStep);
   return (
-    <div className="w-[432px] h-8 px-8 flex-col justify-start items-start gap-2.5 inline-flex">
+    <div className="w-full h-8 px-8 flex-col justify-start items-start gap-2.5 inline-flex">
       <div className="justify-start items-start inline-flex">
-        {steps.map((step) => {
-          return step.index === 0 ? (
-            <div className="flex">
-              <RunbookStepStatusItem {...step} />
-            </div>
-          ) : (
-            <div className="flex">
-              <RunbookStatusTrail {...step} />
-              <RunbookStepStatusItem {...step} />
-            </div>
-          );
-        })}
+        {
+          // create an array with 0 to steps elements
+          Array.from(Array(steps).keys()).map((stepNumber) => {
+            let status = statusForStepNumber(stepNumber, activeStep);
+            return stepNumber === 0 ? (
+              <div
+                className="flex"
+                key={`runbook-step-status-item-${stepNumber}`}
+              >
+                <RunbookStepStatusItem index={stepNumber} status={status} />
+              </div>
+            ) : (
+              <div
+                className="flex"
+                key={`runbook-step-status-item-${stepNumber}`}
+              >
+                <RunbookStatusTrail index={stepNumber} status={status} />
+                <RunbookStepStatusItem index={stepNumber} status={status} />
+              </div>
+            );
+          })
+        }
       </div>
     </div>
   );
 }
 
-export interface RunbookStepStatusProps {
-  status: RunbookStepStatus;
-  index: number;
-}
 function RunbookStepStatusItem({ status, index }: RunbookStepStatusProps) {
   let inner;
   switch (status) {

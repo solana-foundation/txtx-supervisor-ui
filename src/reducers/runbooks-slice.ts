@@ -1,50 +1,30 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice, createSelector } from "@reduxjs/toolkit";
-import { CommandData, RunbookMetadata } from "../components/main/types";
-import { Output } from "../components/main/output";
-import { Variable } from "../components/main/variable";
 import {
-  StacksWalletInteraction,
-  StacksWalletInteractionType,
-} from "../components/main/stacks/stacks-wallet-interaction";
+  CommandData,
+  CommandSectionIndex,
+  CommandSectionType,
+  Input,
+  Output,
+  Prompt,
+  Action,
+  RunbookMetadata,
+  SerializedRunbookData,
+} from "../components/main/types";
 import { sortCommands } from "../utils/helpers";
-import { CommandSectionType } from "../components/main/command-section";
 
 export interface IndexedRunbook {
   metadata: RunbookMetadata;
-  data?: CommandData[];
+  data?: CommandData[]; // todo: see if we can remove
   commandSections: CommandSectionIndex[];
   isDirty: boolean;
   fieldDirtinessMap: { [key: string]: boolean };
   isActive: boolean;
+  activeStep: number;
 }
 export type RunbookState = IndexedRunbook[];
 const EMPTY_MANUAL = {} as IndexedRunbook;
 const initialState: RunbookState = [];
-
-export interface SerializedRunbookData {
-  uuid: string;
-  data: string;
-}
-
-export type CommandSectionIndex = {
-  type: CommandSectionType;
-  items: (Variable | StacksWalletInteraction | Output)[];
-};
-
-// todo: move away from hard-coded strings (use state?)
-export namespace ConstructDisplayType {
-  export const Input = new Set(["Variable"]);
-  export const Readonly = new Set([
-    "Output",
-    "Stacks Contract Call",
-    "Decode Stacks Contract Call",
-    "Send Stacks Transaction",
-    "Broadcast Stacks Transaction",
-  ]);
-  export const StacksWalletSign = "Sign Stacks Transaction";
-  export const StacksWalletInteraction = new Set(["Sign Stacks Transaction"]);
-}
 
 function findRunbookIdx(runbooks: IndexedRunbook[], uuid: string): number {
   return runbooks.findIndex((runbook) => runbook.metadata.uuid === uuid);
@@ -81,6 +61,7 @@ export const runbooksSlice = createSlice({
           commandSections: [],
           fieldDirtinessMap: {},
           isActive,
+          activeStep: 0,
         });
       },
     ),
@@ -98,9 +79,9 @@ export const runbooksSlice = createSlice({
         let commandSections: CommandSectionIndex[] = [];
         let currentSection: CommandSectionType | null = null;
         let cursor = -1;
+        let outputs: Output[] = [];
 
         for (const {
-          readonly,
           constructUuid,
           commandInstance,
           commandInputsEvaluationResult,
@@ -112,68 +93,88 @@ export const runbooksSlice = createSlice({
           for (const key in constructsExecutionResult) {
             fieldDirtinessMap[`${key}-${constructUuid}`] = false;
           }
-          let spec_name = commandInstance.specification.name;
 
-          if (spec_name === ConstructDisplayType.StacksWalletSign) {
-            let interactionData = {
-              name: commandInstance.name,
+          const type = commandInstance.typing;
+          if (type === "Prompt") {
+            if (commandInstance.namespace === null) {
+              console.error("prompt must have namespace");
+              continue;
+            }
+            let promptData: Prompt = {
+              name: commandInstance.specification.name,
+              instanceName: commandInstance.name,
               inputs: commandInputsEvaluationResult,
               uuid: constructUuid,
               runbookUuid: uuid,
-              interactionType: StacksWalletInteractionType.Sign,
+              namespace: commandInstance.namespace,
             };
 
+            if (currentSection === CommandSectionType.Prompt) {
+              commandSections[cursor].items.push(promptData);
+            } else {
+              currentSection = CommandSectionType.Prompt;
+              commandSections.push({
+                type: currentSection,
+                items: [promptData],
+              });
+              cursor++;
+            }
+          } else if (type === "Action") {
+            if (commandInstance.namespace === null) {
+              console.error("action must have namespace");
+              continue;
+            }
+            let actionData: Action = {
+              name: commandInstance.specification.name,
+              instanceName: commandInstance.name,
+              inputs: commandInputsEvaluationResult,
+              uuid: constructUuid,
+              runbookUuid: uuid,
+              namespace: commandInstance.namespace,
+            };
+            // todo
             if (currentSection === CommandSectionType.Action) {
-              commandSections[cursor].items.push(interactionData);
+              commandSections[cursor].items.push(actionData);
             } else {
               currentSection = CommandSectionType.Action;
               commandSections.push({
                 type: currentSection,
-                items: [interactionData],
+                items: [actionData],
               });
               cursor++;
             }
-          } else if (!readonly) {
-            let inputData = {
-              name: commandInstance.name,
-              inputs: commandInputsEvaluationResult,
-              outputs: constructsExecutionResult,
-              uuid: constructUuid,
-              runbookUuid: uuid,
+          } else if (type === "Input") {
+            let input: Input = {
+              commandUuid: constructUuid,
+              value: commandInputsEvaluationResult.value,
+              default: commandInputsEvaluationResult.default,
+              description: commandInputsEvaluationResult.description,
             };
 
             if (currentSection === CommandSectionType.Input) {
-              commandSections[cursor].items.push(inputData);
+              commandSections[cursor].items.push(input);
             } else {
               currentSection = CommandSectionType.Input;
               commandSections.push({
                 type: currentSection,
-                items: [inputData],
+                items: [input],
               });
               cursor++;
             }
+          } else if (type === "Output") {
+            outputs.push({
+              commandUuid: constructUuid,
+              value: commandInputsEvaluationResult.value,
+              description: commandInputsEvaluationResult.description,
+            });
           } else {
-            let outputData = {
-              name: commandInstance.name,
-              inputs: commandInputsEvaluationResult,
-              outputs: constructsExecutionResult,
-              state: commandInstance.state,
-              uuid: constructUuid,
-              runbookUuid: uuid,
-            };
-
-            if (currentSection === CommandSectionType.Output) {
-              commandSections[cursor].items.push(outputData);
-            } else {
-              currentSection = CommandSectionType.Output;
-              commandSections.push({
-                type: currentSection,
-                items: [outputData],
-              });
-              cursor++;
-            }
+            console.error(
+              `invalid command type ${type} for command ${constructUuid}`,
+            );
+            continue;
           }
         }
+
         state[runbookIdx] = {
           ...state[runbookIdx],
           data: runbookData,
@@ -223,12 +224,21 @@ export const runbooksSlice = createSlice({
       state[currentActiveIdx] = { ...state[currentActiveIdx], isActive: false };
       state[newActiveIdx] = { ...state[newActiveIdx], isActive: true };
     }),
+    setActiveRunbookActiveStep: create.reducer(
+      (state, action: PayloadAction<number>) => {
+        const activeRunbook = findActiveRunbook(state);
+        const idx = findRunbookIdx(state, activeRunbook.metadata.uuid);
+        state[idx] = { ...state[idx], activeStep: action.payload };
+      },
+    ),
   }),
   selectors: {
     selectActiveRunbook: findActiveRunbook,
     selectRunbook: findRunbook,
     selectIsDirty:
       createSelector([findRunbook], (runbook) => runbook.isDirty) || false,
+    selectActiveRunbookActiveStep:
+      createSelector([findActiveRunbook], (runbook) => runbook.activeStep) || 0,
   },
 });
 
@@ -237,7 +247,12 @@ export const {
   setRunbookData,
   updateFieldDirtinessMap,
   setActiveRunbook,
+  setActiveRunbookActiveStep,
 } = runbooksSlice.actions;
 
-export const { selectRunbook, selectActiveRunbook, selectIsDirty } =
-  runbooksSlice.selectors;
+export const {
+  selectRunbook,
+  selectActiveRunbook,
+  selectIsDirty,
+  selectActiveRunbookActiveStep,
+} = runbooksSlice.selectors;

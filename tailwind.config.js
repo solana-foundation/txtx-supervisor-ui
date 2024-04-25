@@ -30,7 +30,7 @@ module.exports = {
       },
       orange: { 500: "orange" },
       pink: { 500: "pink" },
-      purple: { 500: "#9747FF" },
+      purple: { 400: "#9f74d7", 500: "#9747FF" },
       red: { 600: "red" },
       rose: { 500: "rose" },
       sky: { 500: "sky" },
@@ -46,11 +46,11 @@ module.exports = {
       teal: { 600: "teal" },
       violet: { 500: "violet" },
       white: "#FFFFFF",
-      yellow: { 500: "#FFB200" },
+      yellow: { 400: "#e9ba4c", 500: "#FFB200" },
       zinc: {
         100: "#F0F1F1",
         200: "zinc",
-        300: "zinc",
+        300: "#DBDBDB",
         400: "zinc",
         500: "#6c7375",
         600: "#616161",
@@ -62,7 +62,7 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter var", ...defaultTheme.fontFamily.sans],
+        sans: ["Inter var", "Poppins", ...defaultTheme.fontFamily.sans],
       },
     },
   },

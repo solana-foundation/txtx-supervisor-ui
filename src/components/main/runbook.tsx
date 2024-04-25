@@ -1,17 +1,23 @@
 import React from "react";
-import { Variable } from "./variable";
-import { Output } from "./output";
 import { GET_MANUAL } from "../../utils/queries";
 import { useQuery } from "@apollo/client";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import {
   setRunbookData,
   selectActiveRunbook,
+} from "../../reducers/runbooks-slice";
+import RunbookStatusBar from "./runbook-status-bar";
+import { Panel, PanelButton, PanelColor, PanelContent } from "./panel";
+import {
+  Action,
   CommandSectionIndex,
-} from "../../reducers/runbooksSlice";
-import { StacksWalletInteraction } from "./stacks/stacks-wallet-interaction";
-import { Disclosure } from "@headlessui/react";
-import CommandSection, { CommandSectionType } from "./command-section";
+  CommandSectionType,
+  Input,
+  Prompt,
+} from "./types";
+import addonManager from "../../utils/addons-initializer";
+import { InputFieldSet } from "./input-field";
+import RunbookReviewPanel from "./runbook-review-panel";
 
 export default function Runbook() {
   const dispatch = useAppDispatch();
@@ -30,59 +36,119 @@ export default function Runbook() {
   if (loading || !data) {
     return <div>Loading...</div>;
   }
-
   return (
-    <div className="max-w-3xl">
-      <div className="px-4 sm:px-0">
-        <div className={isDirty ? "w-full flex justify-center" : "hidden"}>
-          <div className="text-center w-10/12 py-1 mb-10   rounded-xl dark:bg-orange-500/20 dark:text-orange-500">
-            Preview Mode: Some notice to user communicating information.
-          </div>
-        </div>
-        <h1 className="text-3xl font-medium leading-7 dark:text-emerald-400">
+    <div className="w-full min-h-full px-6 pt-6 flex-col justify-start items-start gap-8 inline-flex">
+      <div className="self-stretch h-[69px] px-8 flex-col justify-start items-start gap-2 flex">
+        <div className="self-stretch text-emerald-300 text-4xl font-bold font-['Inter']">
           {metadata.name}
-        </h1>
-        <p className="mt-1 max-w-2xl font-medium leading-6 dark:text-white/90">
+        </div>
+        <div className="self-stretch text-white text-sm font-normal font-['Inter']">
           {metadata.description}
-        </p>
+        </div>
       </div>
-      {commandSections.map((commandSection, i) => {
-        let panel = (
-          <Disclosure.Panel as="div" className="ml-2">
-            {...commandSectionToElements(commandSection)}
-          </Disclosure.Panel>
-        );
-
-        return (
-          <CommandSection
-            type={commandSection.type}
-            panel={panel}
-            key={`${commandSection.type}-${i}-${commandSection.items.length}`}
-          />
-        );
-      })}
+      {<RunbookStatusBar steps={commandSections.length + 1} />}
+      {<RunbookReviewPanel />}
+      {commandSections.map((commandSection, i) => (
+        <Panel
+          key={`command-section-${i}-${commandSection.type}`}
+          panelIndex={i + 1}
+          color={PanelColor.Yellow}
+          title={commandSectionToTitle(commandSection)}
+          primaryButton={commandSectionToPrimaryButton(commandSection)}
+          secondaryButton={commandSectionToSecondaryButton(commandSection)}
+          content={commandSectionToContent(commandSection)}
+        />
+      ))}
     </div>
   );
 }
 
-function commandSectionToElements(commandSection: CommandSectionIndex) {
-  switch (commandSection.type) {
-    case CommandSectionType.Input:
-      return commandSection.items.map((item) => (
-        <Variable {...(item as Variable)} key={item.uuid} />
-      ));
-    case CommandSectionType.Output:
-      return commandSection.items.map((item) => (
-        <Output {...(item as Output)} key={item.uuid} />
-      ));
-    case CommandSectionType.Action:
-      return commandSection.items.map((item) => (
-        <StacksWalletInteraction
-          {...(item as StacksWalletInteraction)}
-          key={item.uuid}
-        />
-      ));
-    default:
-      return [];
+function commandSectionToTitle(commandSection: CommandSectionIndex): string {
+  if (commandSection.type === CommandSectionType.Input) return "inputs review";
+  else if (commandSection.type === CommandSectionType.Output) {
+    throw new Error("todo");
+  } else if (commandSection.type === CommandSectionType.Action) {
+    let action = commandSection.items[0] as Action;
+    return action.name;
+  } else {
+    let prompt = commandSection.items[0] as Prompt;
+    return prompt.name;
+  }
+}
+
+function commandSectionToContent(
+  commandSection: CommandSectionIndex,
+): JSX.Element {
+  if (commandSection.type === CommandSectionType.Input) {
+    return (
+      <PanelContent
+        children={commandSection.items.map((item, j) => {
+          let input = item as Input;
+          return <InputFieldSet {...input} />;
+        })}
+      />
+    );
+  } else if (commandSection.type === CommandSectionType.Output) {
+    throw new Error("todo");
+  } else if (commandSection.type === CommandSectionType.Action) {
+    let action = commandSection.items[0] as Action;
+    let namespace = action.namespace;
+    let addon = addonManager.getAddonFromNamespace(namespace);
+
+    return addon.getActionElement(action);
+  } else {
+    let prompt = commandSection.items[0] as Prompt;
+    let namespace = prompt.namespace;
+    let addon = addonManager.getAddonFromNamespace(namespace);
+
+    return addon.getPromptElement(prompt);
+  }
+}
+
+function commandSectionToPrimaryButton(
+  commandSection: CommandSectionIndex,
+): PanelButton | undefined {
+  if (commandSection.type === CommandSectionType.Input) {
+    return {
+      title: "Confirm",
+    };
+  } else if (commandSection.type === CommandSectionType.Output) {
+    throw new Error("todo");
+  } else if (commandSection.type === CommandSectionType.Action) {
+    let action = commandSection.items[0] as Action;
+    let namespace = action.namespace;
+    let addon = addonManager.getAddonFromNamespace(namespace);
+
+    return addon.getActionPrimaryButton(action);
+  } else {
+    let prompt = commandSection.items[0] as Prompt;
+    let namespace = prompt.namespace;
+    let addon = addonManager.getAddonFromNamespace(namespace);
+
+    return addon.getPromptPrimaryButton(prompt);
+  }
+}
+
+function commandSectionToSecondaryButton(
+  commandSection: CommandSectionIndex,
+): PanelButton | undefined {
+  if (commandSection.type === CommandSectionType.Input) {
+    return {
+      title: "Confirm",
+    };
+  } else if (commandSection.type === CommandSectionType.Output) {
+    throw new Error("todo");
+  } else if (commandSection.type === CommandSectionType.Action) {
+    let action = commandSection.items[0] as Action;
+    let namespace = action.namespace;
+    let addon = addonManager.getAddonFromNamespace(namespace);
+
+    return addon.getActionSecondaryButton(action);
+  } else {
+    let prompt = commandSection.items[0] as Prompt;
+    let namespace = prompt.namespace;
+    let addon = addonManager.getAddonFromNamespace(namespace);
+
+    return addon.getPromptSecondaryButton(prompt);
   }
 }

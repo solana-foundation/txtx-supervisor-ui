@@ -1,5 +1,4 @@
 import React from "react";
-import { VersionBadge } from "./version-badge";
 
 export interface HeaderProps {
   title: string;

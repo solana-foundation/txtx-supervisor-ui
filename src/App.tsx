@@ -9,7 +9,7 @@ import { GET_PROTOCOL } from "./utils/queries";
 import { RunbookMetadata, Protocol } from "./components/main/types";
 import { sortNavItemsRecursive } from "./utils/helpers";
 import { useAppDispatch } from "./hooks";
-import { addRunbook } from "./reducers/runbooksSlice";
+import { addRunbook } from "./reducers/runbooks-slice";
 import RunbookIcon from "./components/icons/runbook";
 import DeploymentIcon from "./components/icons/deployment";
 
@@ -75,7 +75,7 @@ export default function App() {
         {/* Header & main content */}
         <div className="xl:pl-20 dark:bg-slate-900">
           <Header {...{ title: protocolName }}></Header>
-          <main className="pl-80 xl:pl-96 dark:bg-slate-900">
+          <main className="pt-0 mt-0 pl-80 xl:pl-96 dark:bg-slate-900">
             <div className="px-4 py-10 lg:px-8 lg:py-6 dark:bg-slate-900">
               {loading ? <div>Loading...</div> : <Runbook />}
             </div>

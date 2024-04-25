@@ -4,9 +4,10 @@ import App from "./App";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { Connect } from "@stacks/connect-react";
-import { authOptions } from "./components/main/stacks/stacks-wallet-interaction";
+import { authOptions } from "./components/main/stacks/sign-transaction";
+import "./utils/addons-initializer";
 
-const client = new ApolloClient({
+export const apolloClient = new ApolloClient({
   uri: "http://localhost:8488/graphql",
   cache: new InMemoryCache(),
 });
@@ -16,7 +17,7 @@ const root = createRoot(container);
 
 root.render(
   <Provider store={store}>
-    <ApolloProvider client={client}>
+    <ApolloProvider client={apolloClient}>
       <Connect authOptions={authOptions}>
         <App />
       </Connect>

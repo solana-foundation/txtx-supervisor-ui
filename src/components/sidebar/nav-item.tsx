@@ -4,7 +4,7 @@ import { useAppSelector, useAppDispatch } from "../../hooks";
 import {
   selectActiveRunbook,
   setActiveRunbook,
-} from "../../reducers/runbooksSlice";
+} from "../../reducers/runbooks-slice";
 
 export interface NavItem {
   name: string;
