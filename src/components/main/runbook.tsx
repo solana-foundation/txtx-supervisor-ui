@@ -86,14 +86,22 @@ function commandSectionToContent(
   commandSection: CommandSectionIndex,
 ): JSX.Element | undefined {
   if (commandSection.type === CommandSectionType.Input) {
-    return (
-      <PanelContent
-        children={commandSection.items.map((item, j) => {
-          let input = item as Input;
-          return <InputFieldSet {...input} />;
-        })}
-      />
+    let [mutableChildren, immutableChildren] = commandSection.items.reduce(
+      (children, item) => {
+        let [mutableChildren, immutableChildren] = children;
+        let input = item as Input;
+        if (input.value === undefined) {
+          mutableChildren.push(<InputFieldSet {...input} />);
+        } else {
+          immutableChildren.push(<InputFieldSet {...input} />);
+        }
+        return [mutableChildren, immutableChildren];
+      },
+      [[] as JSX.Element[], [] as JSX.Element[]],
     );
+    if (mutableChildren.length) {
+      return <PanelContent children={mutableChildren} />;
+    } else return;
   } else if (commandSection.type === CommandSectionType.Output) {
     throw new Error("todo");
   } else if (commandSection.type === CommandSectionType.Action) {
