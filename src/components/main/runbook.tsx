@@ -48,17 +48,23 @@ export default function Runbook() {
       </div>
       {<RunbookStatusBar steps={commandSections.length + 1} />}
       {<RunbookReviewPanel />}
-      {commandSections.map((commandSection, i) => (
-        <Panel
-          key={`command-section-${i}-${commandSection.type}`}
-          panelIndex={i + 1}
-          color={PanelColor.Yellow}
-          title={commandSectionToTitle(commandSection)}
-          primaryButton={commandSectionToPrimaryButton(commandSection)}
-          secondaryButton={commandSectionToSecondaryButton(commandSection)}
-          content={commandSectionToContent(commandSection)}
-        />
-      ))}
+      {commandSections.reduce((sectionPanels, commandSection, i) => {
+        const content = commandSectionToContent(commandSection);
+        if (content) {
+          sectionPanels.push(
+            <Panel
+              key={`command-section-${i}-${commandSection.type}`}
+              panelIndex={i + 1}
+              color={PanelColor.Yellow}
+              title={commandSectionToTitle(commandSection)}
+              primaryButton={commandSectionToPrimaryButton(commandSection)}
+              secondaryButton={commandSectionToSecondaryButton(commandSection)}
+              content={content}
+            />,
+          );
+        }
+        return sectionPanels;
+      }, [] as any[])}
     </div>
   );
 }
@@ -78,7 +84,7 @@ function commandSectionToTitle(commandSection: CommandSectionIndex): string {
 
 function commandSectionToContent(
   commandSection: CommandSectionIndex,
-): JSX.Element {
+): JSX.Element | undefined {
   if (commandSection.type === CommandSectionType.Input) {
     return (
       <PanelContent

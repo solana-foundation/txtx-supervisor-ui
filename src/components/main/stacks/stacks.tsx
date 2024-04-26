@@ -74,22 +74,10 @@ export class StacksAddon implements Addon {
   }
 
   // actions
-  public getActionElement(action: Action): React.JSX.Element {
+  public getActionElement(action: Action): React.JSX.Element | undefined {
     switch (action.name) {
-      case "Broadcast Stacks Transaction":
-      case "Stacks Contract Call":
-        let inputs = action.inputs || {};
-        return (
-          <PanelContent
-            children={Object.keys(inputs).map((key) => (
-              <div>
-                {key}: {inputs[key]}
-              </div>
-            ))}
-          />
-        );
       default:
-        throw new Error(`unimplemented action ${action.name} for stacks addon`);
+        return;
     }
   }
   public getActionPrimaryButton(prompt: Action): PanelButton | undefined {

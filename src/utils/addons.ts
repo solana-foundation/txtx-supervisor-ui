@@ -53,7 +53,9 @@ export abstract class Addon {
   ): PanelButton | undefined;
 
   // actions
-  public abstract getActionElement(prompt: Action): React.JSX.Element;
+  public abstract getActionElement(
+    prompt: Action,
+  ): React.JSX.Element | undefined;
 
   public abstract getActionPrimaryButton(
     prompt: Action,
