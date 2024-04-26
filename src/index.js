@@ -4,7 +4,7 @@ import App from "./App";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { Connect } from "@stacks/connect-react";
-import { authOptions } from "./components/main/stacks/sign-transaction";
+import { authOptions } from "./components/main/stacks/stacks";
 import "./utils/addons-initializer";
 
 export const apolloClient = new ApolloClient({
