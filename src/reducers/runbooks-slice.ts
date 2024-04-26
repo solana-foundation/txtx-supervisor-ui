@@ -12,6 +12,7 @@ import {
   SerializedRunbookData,
 } from "../components/main/types";
 import { sortCommands } from "../utils/helpers";
+// import addonManager from "../utils/addons-initializer";
 
 export interface IndexedRunbook {
   metadata: RunbookMetadata;
@@ -100,7 +101,7 @@ export const runbooksSlice = createSlice({
               console.error("prompt must have namespace");
               continue;
             }
-            let promptData: Prompt = {
+            let prompt: Prompt = {
               name: commandInstance.specification.name,
               instanceName: commandInstance.name,
               inputs: commandInputsEvaluationResult,
@@ -110,12 +111,12 @@ export const runbooksSlice = createSlice({
             };
 
             if (currentSection === CommandSectionType.Prompt) {
-              commandSections[cursor].items.push(promptData);
+              commandSections[cursor].items.push(prompt);
             } else {
               currentSection = CommandSectionType.Prompt;
               commandSections.push({
                 type: currentSection,
-                items: [promptData],
+                items: [prompt],
               });
               cursor++;
             }
@@ -124,7 +125,7 @@ export const runbooksSlice = createSlice({
               console.error("action must have namespace");
               continue;
             }
-            let actionData: Action = {
+            let action: Action = {
               name: commandInstance.specification.name,
               instanceName: commandInstance.name,
               inputs: commandInputsEvaluationResult,
@@ -132,16 +133,37 @@ export const runbooksSlice = createSlice({
               runbookUuid: uuid,
               namespace: commandInstance.namespace,
             };
-            // todo
-            if (currentSection === CommandSectionType.Action) {
-              commandSections[cursor].items.push(actionData);
-            } else {
-              currentSection = CommandSectionType.Action;
-              commandSections.push({
-                type: currentSection,
-                items: [actionData],
-              });
-              cursor++;
+            // TODO: our addons need to provide onclick handlers that perform a
+            // dispatch. However, you can only perform a dispatch from inside of
+            // a react component. We can directly call store.dispatch(), and this
+            // was working before, but once we import the addonManager here,
+            // which has dependencies that import the store, we create weird
+            // circular dependency issues. Apparently it's a big no-no with redux.
+            // So we need to find a workaround. One idea I don't like is to
+            // have the addon return a button rather than the onclick handler
+            // I don't like this because we can't enforce properties of that
+            // component with types. When just providing the onclick handler,
+            // we can enable/disable and style all buttons without giving
+            // addons any control
+
+            // let namespace = action.namespace;
+            // let addon = addonManager.getAddonFromNamespace(namespace);
+
+            // let actionContent = addon.getActionElement(action);
+
+            // if (actionContent !== undefined) {
+            if (false) {
+              if (currentSection === CommandSectionType.Action) {
+                commandSections[cursor].items.push(action);
+              } else {
+                currentSection = CommandSectionType.Action;
+                commandSections.push({
+                  //@ts-ignore
+                  type: currentSection,
+                  items: [action],
+                });
+                cursor++;
+              }
             }
           } else if (type === "Input") {
             let input: Input = {
@@ -150,16 +172,17 @@ export const runbooksSlice = createSlice({
               default: commandInputsEvaluationResult.default,
               description: commandInputsEvaluationResult.description,
             };
-
-            if (currentSection === CommandSectionType.Input) {
-              commandSections[cursor].items.push(input);
-            } else {
-              currentSection = CommandSectionType.Input;
-              commandSections.push({
-                type: currentSection,
-                items: [input],
-              });
-              cursor++;
+            if (input.value === undefined) {
+              if (currentSection === CommandSectionType.Input) {
+                commandSections[cursor].items.push(input);
+              } else {
+                currentSection = CommandSectionType.Input;
+                commandSections.push({
+                  type: currentSection,
+                  items: [input],
+                });
+                cursor++;
+              }
             }
           } else if (type === "Output") {
             outputs.push({
