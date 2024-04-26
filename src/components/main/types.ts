@@ -103,7 +103,7 @@ export interface Input {
 
 export interface Output {
   value?: string | boolean | number;
-  description?: string;
+  name: string;
   commandUuid: string;
 }
 

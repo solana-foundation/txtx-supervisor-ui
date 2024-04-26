@@ -18,6 +18,7 @@ export interface IndexedRunbook {
   metadata: RunbookMetadata;
   data?: CommandData[]; // todo: see if we can remove
   commandSections: CommandSectionIndex[];
+  outputs: Output[];
   isDirty: boolean;
   fieldDirtinessMap: { [key: string]: boolean };
   isActive: boolean;
@@ -60,6 +61,7 @@ export const runbooksSlice = createSlice({
           metadata,
           isDirty: false,
           commandSections: [],
+          outputs: [],
           fieldDirtinessMap: {},
           isActive,
           activeStep: 0,
@@ -188,7 +190,7 @@ export const runbooksSlice = createSlice({
             outputs.push({
               commandUuid: constructUuid,
               value: commandInputsEvaluationResult.value,
-              description: commandInputsEvaluationResult.description,
+              name: commandInstance.name,
             });
           } else {
             console.error(
@@ -203,6 +205,7 @@ export const runbooksSlice = createSlice({
           data: runbookData,
           commandSections,
           fieldDirtinessMap,
+          outputs,
         };
       },
     ),

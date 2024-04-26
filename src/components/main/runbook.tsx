@@ -18,10 +18,11 @@ import {
 import addonManager from "../../utils/addons-initializer";
 import { InputFieldSet } from "./input-field";
 import RunbookReviewPanel from "./runbook-review-panel";
+import OutputReviewPanel from "./output-review-panel";
 
 export default function Runbook() {
   const dispatch = useAppDispatch();
-  const { metadata, data, isDirty, commandSections } =
+  const { metadata, data, isDirty, commandSections, outputs } =
     useAppSelector(selectActiveRunbook);
   const { loading, error } = useQuery(GET_MANUAL, {
     variables: {
@@ -46,7 +47,7 @@ export default function Runbook() {
           {metadata.description}
         </div>
       </div>
-      {<RunbookStatusBar steps={commandSections.length + 1} />}
+      {<RunbookStatusBar steps={commandSections.length + 2} />}
       {<RunbookReviewPanel />}
       {commandSections.reduce((sectionPanels, commandSection, i) => {
         const content = commandSectionToContent(commandSection);
@@ -65,6 +66,10 @@ export default function Runbook() {
         }
         return sectionPanels;
       }, [] as any[])}
+      <OutputReviewPanel
+        outputs={outputs}
+        panelIndex={commandSections.length + 1}
+      />
     </div>
   );
 }
