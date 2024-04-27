@@ -18,6 +18,7 @@ export interface RunbookStepStatusProps {
 }
 interface RunbookStatusBarProps {
   steps: number;
+  scrollHandler: any;
 }
 export function statusForStepNumber(
   stepNumber: number,
@@ -31,7 +32,10 @@ export function statusForStepNumber(
     return RunbookStepStatus.Queued;
   }
 }
-export default function RunbookStatusBar({ steps }: RunbookStatusBarProps) {
+export default function RunbookStatusBar({
+  steps,
+  scrollHandler,
+}: RunbookStatusBarProps) {
   const activeStep = useAppSelector(selectActiveRunbookActiveStep);
   return (
     <div className="w-full h-8 px-8 flex-col justify-start items-start gap-2.5 inline-flex">
@@ -45,7 +49,11 @@ export default function RunbookStatusBar({ steps }: RunbookStatusBarProps) {
                 className="flex"
                 key={`runbook-step-status-item-${stepNumber}`}
               >
-                <RunbookStepStatusItem index={stepNumber} status={status} />
+                <RunbookStepStatusItem
+                  index={stepNumber}
+                  status={status}
+                  scrollHandler={scrollHandler}
+                />
               </div>
             ) : (
               <div
@@ -53,7 +61,11 @@ export default function RunbookStatusBar({ steps }: RunbookStatusBarProps) {
                 key={`runbook-step-status-item-${stepNumber}`}
               >
                 <RunbookStatusTrail index={stepNumber} status={status} />
-                <RunbookStepStatusItem index={stepNumber} status={status} />
+                <RunbookStepStatusItem
+                  index={stepNumber}
+                  status={status}
+                  scrollHandler={scrollHandler}
+                />
               </div>
             );
           })
@@ -63,9 +75,16 @@ export default function RunbookStatusBar({ steps }: RunbookStatusBarProps) {
   );
 }
 
-function RunbookStepStatusItem({ status, index }: RunbookStepStatusProps) {
+function RunbookStepStatusItem({
+  status,
+  index,
+  scrollHandler,
+}: RunbookStepStatusProps & { scrollHandler: any }) {
   const dispatch = useAppDispatch();
-  const onClick = () => dispatch(setActiveRunbookActiveStep(index));
+  const onClick = () => {
+    dispatch(setActiveRunbookActiveStep(index));
+    scrollHandler(index);
+  };
   let inner;
   switch (status) {
     case RunbookStepStatus.Complete:

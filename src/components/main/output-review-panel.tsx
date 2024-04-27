@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { Panel, PanelColor, PanelContent } from "./panel";
 import { Output } from "./types";
 
@@ -6,10 +6,14 @@ export interface OutputReviewPanelProps {
   outputs: Output[];
   panelIndex: number;
 }
-export default function OutputReviewPanel({
-  outputs,
-  panelIndex,
-}: OutputReviewPanelProps) {
+export const OutputReviewPanel = forwardRef(function OutputReviewPanel(
+  {
+    outputs,
+    panelIndex,
+    scrollHandler,
+  }: OutputReviewPanelProps & { scrollHandler: any },
+  ref,
+) {
   return (
     <Panel
       panelIndex={panelIndex}
@@ -24,9 +28,11 @@ export default function OutputReviewPanel({
           ]}
         />
       }
+      ref={ref}
+      scrollHandler={scrollHandler}
     />
   );
-}
+});
 
 function OutputReviewField({ outputs }: OutputReviewPanelProps) {
   let values = outputs.map((output) => (

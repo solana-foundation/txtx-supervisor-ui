@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createRef, useRef } from "react";
 import { GET_MANUAL } from "../../utils/queries";
 import { useQuery } from "@apollo/client";
 import { useAppDispatch, useAppSelector } from "../../hooks";
@@ -17,13 +17,15 @@ import {
 } from "./types";
 import addonManager from "../../utils/addons-initializer";
 import { InputFieldSet } from "./input-field";
-import RunbookReviewPanel from "./runbook-review-panel";
-import OutputReviewPanel from "./output-review-panel";
+import { RunbookReviewPanel } from "./runbook-review-panel";
+import { OutputReviewPanel } from "./output-review-panel";
 
 export default function Runbook() {
   const dispatch = useAppDispatch();
+  const panelRefs = useRef<any[]>([]);
   const { metadata, data, isDirty, commandSections, outputs } =
     useAppSelector(selectActiveRunbook);
+
   const { loading, error } = useQuery(GET_MANUAL, {
     variables: {
       runbookName: metadata?.uuid,
@@ -37,6 +39,26 @@ export default function Runbook() {
   if (loading || !data) {
     return <div>Loading...</div>;
   }
+
+  panelRefs.current = Array.from(Array(commandSections.length + 2).keys()).map(
+    (_, i) => {
+      return panelRefs.current[i] ?? createRef();
+    },
+  );
+  console.log(panelRefs);
+  const scrollPanelIntoViewHandler = (index) => {
+    console.log("scrolling");
+    // when we select a new panel, the panels resize some, which makes the
+    // location of the ref change. set a timeout to give the css resizing a
+    // head start, so this scroll into view has the correct position to scroll to
+    setTimeout(() => {
+      panelRefs.current[index].current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "start",
+      });
+    }, 5);
+  };
   return (
     <div className="w-full min-h-full px-6 pt-6 flex-col justify-start items-start gap-8 inline-flex">
       <div className="self-stretch h-[69px] px-8 flex-col justify-start items-start gap-2 flex">
@@ -47,8 +69,18 @@ export default function Runbook() {
           {metadata.description}
         </div>
       </div>
-      {<RunbookStatusBar steps={commandSections.length + 2} />}
-      {<RunbookReviewPanel />}
+      {
+        <RunbookStatusBar
+          steps={commandSections.length + 2}
+          scrollHandler={scrollPanelIntoViewHandler}
+        />
+      }
+      {
+        <RunbookReviewPanel
+          ref={panelRefs.current[0]}
+          scrollHandler={scrollPanelIntoViewHandler}
+        />
+      }
       {commandSections.reduce((sectionPanels, commandSection, i) => {
         const content = commandSectionToContent(commandSection);
         if (content) {
@@ -61,6 +93,8 @@ export default function Runbook() {
               primaryButton={commandSectionToPrimaryButton(commandSection)}
               secondaryButton={commandSectionToSecondaryButton(commandSection)}
               content={content}
+              scrollHandler={scrollPanelIntoViewHandler}
+              ref={panelRefs.current[i + 1]}
             />,
           );
         }
@@ -69,6 +103,8 @@ export default function Runbook() {
       <OutputReviewPanel
         outputs={outputs}
         panelIndex={commandSections.length + 1}
+        ref={panelRefs.current[commandSections.length + 1]}
+        scrollHandler={scrollPanelIntoViewHandler}
       />
     </div>
   );

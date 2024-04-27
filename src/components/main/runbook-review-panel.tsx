@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import CheckMark, { CheckMarkColor } from "../icons/check-mark";
 import addonManager from "../../utils/addons-initializer";
 import { Panel, PanelColor, PanelContent } from "./panel";
@@ -16,7 +16,10 @@ const runbookReviewContent: RunbookReviewItemProps[] = [
   },
 ];
 
-export default function RunbookReviewPanel() {
+export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
+  { scrollHandler }: { scrollHandler: any },
+  ref,
+) {
   let children = [...walletConnections()];
   runbookReviewContent.forEach((item) => {
     children.push(<RunbookReviewItem {...item} />);
@@ -29,9 +32,11 @@ export default function RunbookReviewPanel() {
       title="runbook requirement review"
       primaryButton={{ title: "start runbook" }}
       content={<PanelContent children={children} />}
+      ref={ref}
+      scrollHandler={scrollHandler}
     />
   );
-}
+});
 
 export function walletConnections() {
   let connection = addonManager.getWalletConnectionPrompts();
