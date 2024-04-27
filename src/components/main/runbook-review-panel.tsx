@@ -11,12 +11,16 @@ const runbookReviewContent: RunbookReviewItemProps[] = [
   },
   {
     title: "wallet provisioning",
-    subtitle: "stx",
+    subtitle: "STX",
     data: { available: "150 STX", required: "100 STX" },
   },
 ];
 
 export default function RunbookReviewPanel() {
+  let children = [...walletConnections()];
+  runbookReviewContent.forEach((item) => {
+    children.push(<RunbookReviewItem {...item} />);
+  });
   return (
     <Panel
       panelIndex={0}
@@ -24,7 +28,7 @@ export default function RunbookReviewPanel() {
       color={PanelColor.Purple}
       title="runbook requirement review"
       primaryButton={{ title: "start runbook" }}
-      content={<PanelContent children={walletConnections()} />}
+      content={<PanelContent children={children} />}
     />
   );
 }
