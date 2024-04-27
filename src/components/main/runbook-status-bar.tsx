@@ -1,7 +1,10 @@
 import React from "react";
 import CheckMark from "../icons/check-mark";
-import { selectActiveRunbookActiveStep } from "../../reducers/runbooks-slice";
-import { useAppSelector } from "../../hooks";
+import {
+  selectActiveRunbookActiveStep,
+  setActiveRunbookActiveStep,
+} from "../../reducers/runbooks-slice";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 
 export enum RunbookStepStatus {
   Complete,
@@ -61,6 +64,8 @@ export default function RunbookStatusBar({ steps }: RunbookStatusBarProps) {
 }
 
 function RunbookStepStatusItem({ status, index }: RunbookStepStatusProps) {
+  const dispatch = useAppDispatch();
+  const onClick = () => dispatch(setActiveRunbookActiveStep(index));
   let inner;
   switch (status) {
     case RunbookStepStatus.Complete:
@@ -104,7 +109,10 @@ function RunbookStepStatusItem({ status, index }: RunbookStepStatusProps) {
       break;
   }
   return (
-    <div className="flex-col justify-start items-center gap-2.5 inline-flex">
+    <div
+      onClick={onClick}
+      className="flex-col justify-start items-center gap-2.5 inline-flex cursor-pointer"
+    >
       {inner}
     </div>
   );
