@@ -56,7 +56,7 @@ export default function App() {
           <div className="flex h-20 shrink-0 items-center justify-center px-4 py-1">
             <Logo />
           </div>
-          <PageNavButton
+          {/* <PageNavButton
             activePageNav={pageNav}
             thisPageNav={PageNav.Runbook}
             name="Runbooks"
@@ -69,7 +69,7 @@ export default function App() {
             name="Deploy"
             icon={<DeploymentIcon />}
             setPageNav={setPageNav}
-          />
+          /> */}
         </div>
 
         {/* Header & main content */}
