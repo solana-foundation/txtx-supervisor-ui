@@ -40,6 +40,7 @@ export const Panel = forwardRef(function Panel(
   }: PanelProps,
   ref: React.ForwardedRef<any>,
 ) {
+  const dispatch = useAppDispatch();
   const activeStep = useAppSelector(selectActiveRunbookActiveStep);
 
   let status = statusForStepNumber(panelIndex, activeStep);
@@ -65,14 +66,24 @@ export const Panel = forwardRef(function Panel(
 
   const contentVisibility = statusIsComplete ? "invisible" : "";
   const height = statusIsComplete ? "max-h-[88px]" : "max-h-[10000px]";
+  const cursor = statusIsComplete ? "cursor-pointer" : "";
+  // if a panel is closed/complete, allow clicking on it to re-expand
+  const panelOnClick = statusIsComplete
+    ? () => {
+        scrollHandler(panelIndex);
+        dispatch(setActiveRunbookActiveStep(panelIndex));
+      }
+    : () => {};
 
   return (
     <div
+      onClick={panelOnClick}
       className={classNames(
         "transition-all duration-150 w-full max-w-3xl flex-col justify-start items-start gap-2.5 inline-flex",
         opacity,
         height,
         mainTiming,
+        cursor,
       )}
     >
       <div
