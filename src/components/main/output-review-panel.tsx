@@ -16,7 +16,7 @@ export default function OutputReviewPanel({
       key="runbook-outputs"
       color={PanelColor.Purple}
       title="Runbook Outputs"
-      primaryButton={{ title: "Copy txtx Link" }}
+      primaryButton={{ title: "publish runbook" }}
       content={
         <PanelContent
           children={[
