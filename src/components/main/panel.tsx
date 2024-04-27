@@ -97,7 +97,7 @@ export const Panel = forwardRef(function Panel(
         <div className="self-stretch px-2 justify-start items-start gap-2.5 inline-flex">
           <div
             className={classNames(
-              "scroll-mt-32 uppercase grow shrink basis-0 text-base font-medium font-['Poppins']",
+              "scroll-mt-32 uppercase grow shrink basis-0 text-base font-medium font-['Inter']",
               color == PanelColor.Purple
                 ? "text-purple-500"
                 : "text-yellow-500",
