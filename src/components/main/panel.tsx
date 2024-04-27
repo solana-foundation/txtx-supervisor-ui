@@ -62,7 +62,7 @@ function PanelActive({
   }
 
   return (
-    <div className="w-full flex-col justify-start items-start gap-2.5 inline-flex">
+    <div className="w-full max-w-3xl flex-col justify-start items-start gap-2.5 inline-flex">
       <div
         className={classNames(
           "self-stretch px-6 py-8 rounded flex-col justify-start items-start gap-4 flex",
@@ -103,7 +103,7 @@ function PanelQueued({
   panelIndex,
 }: PanelProps) {
   return (
-    <div className="w-full opacity-20 flex-col justify-start items-start gap-2.5 inline-flex">
+    <div className="w-full max-w-3xl opacity-20 flex-col justify-start items-start gap-2.5 inline-flex">
       <div
         className={classNames(
           "self-stretch px-6 py-8 rounded flex-col justify-start items-start gap-4 flex",
@@ -177,7 +177,7 @@ function PrimaryPanelButton({
 
 function PanelComplete({ title }: PanelProps) {
   return (
-    <div className="w-full h-[88px] flex-col justify-start items-start gap-2.5 inline-flex">
+    <div className="w-full max-w-3xl h-[88px] flex-col justify-start items-start gap-2.5 inline-flex">
       <div className="self-stretch h-[88px] px-6 py-8 bg-white bg-opacity-5 rounded flex-col justify-start items-start gap-6 flex">
         <div className="self-stretch px-2 justify-start items-start gap-2.5 inline-flex">
           <div className="uppercase grow shrink basis-0 text-slate-300 text-base font-medium font-['Poppins']">
