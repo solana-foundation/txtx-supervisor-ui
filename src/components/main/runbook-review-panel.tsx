@@ -60,14 +60,14 @@ export function walletConnections() {
               </div>
             </div>
             <div className="flex-col justify-start items-start gap-1 inline-flex">
-              <div className="text-white text-sm font-bold font-['Inter']">
+              <div className="text-base text-white font-bold font-['Inter']">
                 {walletConnection.walletName}
               </div>
               <div className="self-stretch justify-start items-start gap-1 inline-flex">
-                <div className="uppercase text-white text-[10px] font-bold font-['Inter']">
+                <div className="text-xs uppercase text-white text-[10px] font-bold font-['Inter']">
                   Address
                 </div>
-                <div className="text-right text-emerald-300 text-[10px] font-bold font-['Inter']">
+                <div className="text-xs text-right text-emerald-300 text-[10px] font-bold font-['Inter']">
                   {walletConnection.address}
                 </div>
               </div>
@@ -111,12 +111,12 @@ export function RunbookReviewItem({
     return (
       <div
         key={key}
-        className="self-stretch justify-start items-start gap-1 inline-flex"
+        className="text-nowrap self-stretch justify-start items-start gap-1 inline-flex"
       >
-        <div className="uppercase text-white text-[10px] font-bold font-['Inter']">
+        <div className="text-xs uppercase text-white text-[10px] font-bold font-['Inter']">
           {key}
         </div>
-        <div className="uppercase text-right text-emerald-300 text-[10px] font-bold font-['Inter']">
+        <div className="text-xs uppercase text-right text-emerald-300 text-[10px] font-bold font-['Inter']">
           {value}
         </div>
       </div>
