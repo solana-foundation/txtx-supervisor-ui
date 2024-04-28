@@ -79,7 +79,7 @@ export function walletConnections() {
           </div>
           <button
             onClick={walletConnection}
-            className="mt-2 py-2 bg-white bg-opacity-20 hover:bg-opacity-10 rounded-md px-3.5 py-2.5 text-sm font-semibold text-white uppercase shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="mt-2 py-2 bg-purple-500 hover:bg-purple-400 focus-visible:outline-purple-500 rounded-md px-3.5 py-2.5 text-sm font-semibold text-white uppercase shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             Connect Wallet
           </button>
