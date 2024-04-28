@@ -27,8 +27,7 @@ export function InputFieldSet({
         <input
           id={commandUuid}
           className="self-stretch bg-zinc-950 text-zinc-300 rounded-sm text-sm font-medium font-['Inter'] focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus-ring"
-          placeholder={defaultValue?.toString() || undefined}
-          value={value?.toString() || undefined}
+          value={defaultValue?.toString() || undefined}
           onChange={console.log}
         />
       </div>
