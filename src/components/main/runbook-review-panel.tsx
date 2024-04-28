@@ -24,13 +24,17 @@ export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
   runbookReviewContent.forEach((item) => {
     children.push(<RunbookReviewItem {...item} />);
   });
+  console.log("all connected?", addonManager.areAllWalletsConnected());
   return (
     <Panel
       panelIndex={0}
       key="runbook-requirement-preview"
       color={PanelColor.Purple}
       title="runbook requirement review"
-      primaryButton={{ title: "start runbook" }}
+      primaryButton={{
+        title: "start runbook",
+        disabled: !addonManager.areAllWalletsConnected(),
+      }}
       content={<PanelContent children={children} />}
       ref={ref}
       scrollHandler={scrollHandler}

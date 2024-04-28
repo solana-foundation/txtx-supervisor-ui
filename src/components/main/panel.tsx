@@ -16,6 +16,7 @@ export enum PanelColor {
 export interface PanelButton {
   title: string;
   onClick?: (e: MouseEventHandler<HTMLButtonElement>) => Promise<void>;
+  disabled?: boolean;
 }
 
 export interface PanelProps {
@@ -158,15 +159,19 @@ function PrimaryPanelButton({
       dispatch(setActiveRunbookActiveStep(panelIndex + 1));
     };
   }
+  const isDisabled = disabled || button?.disabled;
+  let colorClass = isDisabled
+    ? "bg-white bg-opacity-20 hover:bg-opacity-10"
+    : color == PanelColor.Purple
+      ? "bg-purple-500 hover:bg-purple-400 focus-visible:outline-purple-500"
+      : "bg-yellow-500 hover:bg-yellow-400 focus-visible:outline-yellow-500";
   return (
     <button
-      disabled={disabled}
+      disabled={isDisabled}
       onClick={onClick}
       className={classNames(
         "rounded-md px-3.5 py-2.5 text-sm font-semibold text-white uppercase shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
-        color == PanelColor.Purple
-          ? "bg-purple-500 hover:bg-purple-400 focus-visible:outline-purple-500"
-          : "bg-yellow-500 hover:bg-yellow-400 focus-visible:outline-yellow-500",
+        colorClass,
       )}
     >
       {button?.title || "Continue"}

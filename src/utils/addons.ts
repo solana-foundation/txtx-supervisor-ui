@@ -28,6 +28,17 @@ export class AddonManager {
       };
     });
   }
+
+  public areAllWalletsConnected() {
+    const addons = this.addons;
+    for (let namespace of Object.keys(addons)) {
+      let addon = addons[namespace];
+      if (!addon.isWalletConnected()) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
 export interface ConnectedWalletInfo {
@@ -40,6 +51,7 @@ export abstract class Addon {
   public abstract walletConnection():
     | ConnectedWalletInfo
     | ConnectWalletFunction;
+  public abstract isWalletConnected(): boolean;
 
   // prompts
   public abstract getPromptElement(prompt: Prompt): React.JSX.Element;

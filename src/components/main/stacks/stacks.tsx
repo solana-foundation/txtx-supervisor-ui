@@ -48,6 +48,11 @@ export class StacksAddon implements Addon {
       };
     }
   }
+
+  public isWalletConnected(): boolean {
+    return userSession.isUserSignedIn();
+  }
+
   // prompts
   public getPromptElement(prompt: Prompt): JSX.Element {
     switch (prompt.name) {
