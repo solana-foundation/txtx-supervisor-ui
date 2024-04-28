@@ -116,7 +116,7 @@ export function RunbookReviewItem({
         <div className="uppercase text-white text-[10px] font-bold font-['Inter']">
           {key}
         </div>
-        <div className="text-right text-emerald-300 text-[10px] font-bold font-['Inter']">
+        <div className="uppercase text-right text-emerald-300 text-[10px] font-bold font-['Inter']">
           {value}
         </div>
       </div>
