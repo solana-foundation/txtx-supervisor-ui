@@ -20,25 +20,26 @@ export interface AddonPanelProps {
 
 export function SignTransactionPanel({ prompt }: AddonPanelProps) {
   let inputs = prompt.inputs;
-  let hex;
+  let deserializedPayload;
   if (!inputs?.transaction_payload_bytes) {
-    hex = "empty";
+    deserializedPayload = {};
   } else {
-    // I couldn't get the css to work to break the long line of hex, so I'm injecting
-    // some invisible whitespace
-    hex = inputs?.transaction_payload_bytes.split("").reduce((hex, char, i) => {
-      if (i % 5 === 0) {
-        hex += "​" + char;
-      } else {
-        hex += char;
-      }
-      return hex;
-    }, "");
+    const bytesReader = new BytesReader(
+      Buffer.from(inputs.transaction_payload_bytes.slice(2), "hex"),
+    );
+    deserializedPayload = deserializePayload(bytesReader);
   }
+  const jsonPayload = JSON.stringify(
+    deserializedPayload,
+    (key, value) => (typeof value === "bigint" ? value.toString() : value),
+    "\t",
+  );
   return (
-    <div className="w-full px-2 py-4 bg-zinc-950 rounded border border-zinc-600 flex-col justify-start items-start gap-2.5 inline-flex">
-      <div className="w-full block self-stretch bg-zinc-950 break-all text-wrap text-zinc-300 rounded-sm text-sm font-medium font-['Inter']">
-        {hex}
+    <div className="w-full max-h-[500px] px-2 py-4 bg-zinc-950 rounded border border-zinc-600 flex-col justify-start items-start gap-2.5 inline-flex">
+      <div className="w-full max-h-[500px] overflow-y-auto bg-zinc-950 text-zinc-300 rounded-sm text-sm font-medium font-['Inter'] scrollbar-thin scrollbar scrollbar-thumb-slate-zinc-950/50 scrollbar-track-zinc-950 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
+        <pre className="scrollbar-w-1 scrollbar-h-1 scrollbar scrollbar-thumb-slate-zinc-950/50 scrollbar-track-zinc-950 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
+          {jsonPayload}
+        </pre>
       </div>
     </div>
   );
