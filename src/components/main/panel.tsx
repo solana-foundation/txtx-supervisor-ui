@@ -77,76 +77,193 @@ export const Panel = forwardRef(function Panel(
     : () => {};
 
   return (
-    <div
-      onClick={panelOnClick}
-      className={classNames(
-        "transition-all duration-150 w-full max-w-3xl flex-col justify-start items-start gap-2.5 inline-flex",
-        opacity,
-        height,
-        mainTiming,
-        cursor,
-      )}
-    >
-      <div
-        className={classNames(
-          "transition-colors duration-150 self-stretch px-6 py-8 rounded flex-col justify-start items-start gap-4 flex",
-          panelColor,
-          height,
-          colorTiming,
-        )}
-      >
-        <div className="self-stretch justify-start items-start gap-2.5 inline-flex">
-          <div
-            className={classNames(
-              "scroll-mt-32 uppercase grow shrink basis-0 text-base font-medium font-['Inter']",
-              color == PanelColor.Purple
-                ? "text-purple-500"
-                : "text-yellow-500",
-            )}
-            ref={ref}
-          >
-            {title}
+    <div className="w-[1024px] h-[399px] p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex">
+      <div className="self-stretch justify-start items-start inline-flex">
+        <div className="grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono']">
+          RUNBOOK CHECKLIST
+        </div>
+      </div>
+      <div className="w-[488px] h-[19px] text-gray-400 text-sm font-normal font-['Inter']">
+        Review and check the items from the list below
+      </div>
+      <div className="w-[976px] h-[167px] flex-col justify-start items-start inline-flex">
+        <div className="self-stretch h-[167px] bg-neutral-700 rounded border border-zinc-600 flex-col justify-start items-start flex">
+          <div className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex">
+            <div className="w-8 self-stretch bg-gray-950 border-l border-t border-gray-800 flex-col justify-between items-start inline-flex">
+              <div className="self-stretch py-2.5 justify-center items-center inline-flex">
+                <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
+                  #
+                </div>
+                <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
+                  1
+                </div>
+              </div>
+            </div>
+            <div className="grow shrink basis-0 self-stretch bg-gray-950 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
+              <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
+                <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
+                  Check Stacks blockchain Mainnet liveness
+                </div>
+              </div>
+            </div>
+            <div className="self-stretch bg-gray-950 border-t border-neutral-800 flex-col justify-center items-start inline-flex">
+              <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
+                <div className="px-2 py-0.5 bg-neutral-800 rounded-sm flex-col justify-end items-start gap-2.5 inline-flex">
+                  <div className="text-gray-400 text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px]">
+                    140,349 Blocks
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-8 self-stretch bg-gray-950 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
+              <div className="self-stretch py-2.5 justify-center items-start inline-flex">
+                <div className="text-white text-xs font-normal font-['Inter'] leading-none">
+                  ✓
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex">
+            <div className="w-8 self-stretch bg-neutral-900 border-l border-t border-neutral-800 flex-col justify-between items-start inline-flex">
+              <div className="self-stretch py-2.5 justify-center items-center inline-flex">
+                <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
+                  #
+                </div>
+                <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
+                  2
+                </div>
+              </div>
+            </div>
+            <div className="grow shrink basis-0 self-stretch bg-neutral-900 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
+              <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
+                <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
+                  Check wallet address executing the Runbook
+                </div>
+              </div>
+            </div>
+            <div className="self-stretch bg-neutral-900 border-t border-neutral-800 flex-col justify-center items-start inline-flex">
+              <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
+                <div className="px-2 py-0.5 bg-neutral-800 rounded-sm flex-col justify-end items-start gap-2.5 inline-flex">
+                  <div className="text-gray-400 text-sm font-normal font-['GT America Mono'] uppercase">
+                    SP12293498239481941230912309543
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-8 self-stretch bg-neutral-900 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
+              <div className="self-stretch py-2.5 justify-center items-start inline-flex">
+                <div className="text-white text-xs font-normal font-['Inter'] leading-none">
+                  ✓
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex">
+            <div className="w-8 self-stretch bg-gray-950 border-l border-t border-neutral-800 flex-col justify-between items-start inline-flex">
+              <div className="self-stretch py-2.5 justify-center items-center inline-flex">
+                <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
+                  #
+                </div>
+                <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
+                  3
+                </div>
+              </div>
+            </div>
+            <div className="grow shrink basis-0 self-stretch bg-gray-950 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
+              <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
+                <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
+                  Check estimated cost for executing the Runbook (STX)
+                </div>
+              </div>
+            </div>
+            <div className="self-stretch bg-gray-950 border-t border-neutral-800 flex-col justify-center items-start inline-flex">
+              <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
+                <div className="px-2 py-0.5 bg-neutral-800 rounded-sm flex-col justify-end items-start gap-2.5 inline-flex">
+                  <div className="text-gray-400 text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px]">
+                    150 STX
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-8 self-stretch bg-gray-950 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
+              <div className="self-stretch py-2.5 justify-center items-start inline-flex">
+                <div className="text-white text-xs font-normal font-['Inter'] leading-none">
+                  ✓
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex">
+            <div className="w-8 self-stretch bg-neutral-900 border-l border-t border-neutral-800 flex-col justify-between items-start inline-flex">
+              <div className="self-stretch py-2.5 justify-center items-center inline-flex">
+                <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
+                  #
+                </div>
+                <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
+                  4
+                </div>
+              </div>
+            </div>
+            <div className="grow shrink basis-0 self-stretch bg-neutral-900 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
+              <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
+                <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
+                  Check wallet provisioning (STX)
+                </div>
+              </div>
+            </div>
+            <div className="self-stretch bg-neutral-900 border-t border-neutral-800 flex-col justify-center items-start inline-flex">
+              <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
+                <div className="px-2 py-0.5 bg-neutral-800 rounded-sm flex-col justify-end items-start gap-2.5 inline-flex">
+                  <div className="text-gray-400 text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px]">
+                    100 STX
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-8 self-stretch bg-neutral-900 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
+              <div className="self-stretch py-2.5 justify-center items-start inline-flex">
+                <div className="text-white text-xs font-normal font-['Inter'] leading-none">
+                  ✓
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div
-          className={classNames(
-            "self-stretch flex-col justify-start items-start gap-4 flex w-full h-full",
-            contentVisibility,
-          )}
-        >
-          {content}
-          <div className="self-stretch px-2 pt-6 justify-end items-center gap-2.5 inline-flex">
-            <PrimaryPanelButton
-              button={primaryButton}
-              panelIndex={panelIndex}
-              color={color}
-              scrollHandler={scrollHandler}
-            />
-          </div>
+      </div>
+      <div className="self-stretch justify-end items-center gap-2.5 inline-flex">
+        <div className="flex-col justify-center items-end gap-8 inline-flex">
+          <PrimaryPanelButton
+            panelIndex={panelIndex}
+            button={{ title: "Check All" }}
+            scrollHandler={scrollHandler}
+          />
+          <PrimaryPanelButton
+            panelIndex={panelIndex}
+            disabled={true}
+            button={{ title: "Start Runbook" }}
+            scrollHandler={scrollHandler}
+          />
         </div>
       </div>
     </div>
   );
 });
-interface PanelButtonProps {
+interface PrimaryPanelButtonProps {
   button?: PanelButton;
   panelIndex: number;
-  color: PanelColor;
   disabled?: boolean;
   scrollHandler: any;
 }
 function PrimaryPanelButton({
   button,
   panelIndex,
-  color,
   disabled = false,
   scrollHandler,
-}: PanelButtonProps) {
+}: PrimaryPanelButtonProps) {
   const dispatch = useAppDispatch();
   let onClick;
   if (button !== undefined && button.onClick !== undefined) {
     onClick = async (mouseEvent) => {
-      console.log(scrollHandler);
       // @ts-ignore (I don't know why typescript says this could be undefined)
       await button.onClick(mouseEvent);
       scrollHandler(panelIndex + 1);
@@ -154,27 +271,61 @@ function PrimaryPanelButton({
     };
   } else {
     onClick = () => {
-      console.log(scrollHandler);
       scrollHandler(panelIndex + 1);
       dispatch(setActiveRunbookActiveStep(panelIndex + 1));
     };
   }
-  const isDisabled = disabled || button?.disabled;
+  const isDisabled = disabled || button?.disabled || false;
+  return (
+    <PanelButton
+      title={button?.title || "Continue"}
+      onClick={onClick}
+      isDisabled={isDisabled}
+    />
+  );
+}
+
+export enum ElementSize {
+  XS,
+  S,
+  M,
+  L,
+  XL,
+}
+export interface PanelButtonProps {
+  title: String;
+  isDisabled: boolean;
+  onClick: MouseEventHandler<HTMLButtonElement>;
+  size?: ElementSize;
+}
+
+function PanelButton({
+  title,
+  isDisabled,
+  onClick,
+  size = ElementSize.M,
+}: PanelButtonProps) {
   let colorClass = isDisabled
-    ? "bg-white bg-opacity-20 hover:bg-opacity-10"
-    : color == PanelColor.Purple
-      ? "bg-purple-500 hover:bg-purple-400 focus-visible:outline-purple-500"
-      : "bg-yellow-500 hover:bg-yellow-400 focus-visible:outline-yellow-500";
+    ? "opacity-30 bg-black text-zinc-400"
+    : "bg-teal-950 text-emerald-500";
+  let sizeClass =
+    size === ElementSize.XL
+      ? "w-20 h-16"
+      : size === ElementSize.L
+        ? "w-16 h-12"
+        : size === ElementSize.M
+          ? "w-16 h-12"
+          : "w-16 h-8";
   return (
     <button
       disabled={isDisabled}
       onClick={onClick}
       className={classNames(
-        "rounded-md px-3.5 py-2.5 text-sm font-semibold text-white uppercase shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
+        "max-w-[150px] h-8 px-4 py-2 rounded flex-col justify-center items-center gap-2.5 inline-flex text-center text-xs font-normal font-['GT America Mono'] uppercase leading-none tracking-tight",
         colorClass,
       )}
     >
-      {button?.title || "Continue"}
+      {title}
     </button>
   );
 }
