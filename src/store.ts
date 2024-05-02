@@ -2,7 +2,7 @@ import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { configureStore, combineSlices, createSlice } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import loggerMiddleware from "./middleware/logger";
-import { runbooksSlice } from "./reducers/runbooksSlice";
+import { runbooksSlice } from "./reducers/runbooks-slice";
 
 const numberSlice = createSlice({
   name: "number",

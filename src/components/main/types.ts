@@ -18,11 +18,14 @@ export interface CommandSpecification {
   outputs: CommandOutput[];
 }
 
+export type CommandInstanceType = CommandSectionTypeString;
 export interface CommandInstance {
   name: string;
   packageUuid: string;
   specification: CommandSpecification;
   state: CommandInstanceState;
+  namespace: string | null;
+  typing: CommandInstanceType;
 }
 
 export interface ConstructExecutionResult {
@@ -44,12 +47,23 @@ export enum CommandInstanceState {
 
 export interface CommandData {
   index: number;
-  readonly: boolean;
   constructUuid: string;
   commandInstance: CommandInstance;
   constructsExecutionResult: ConstructExecutionResult;
   commandInputsEvaluationResult: CommandInputEvaluationResult;
 }
+export enum CommandSectionType {
+  Input,
+  Action,
+  Prompt,
+  Output,
+}
+export type CommandSectionTypeString =
+  | "Input"
+  | "Action"
+  | "Prompt"
+  | "Output"
+  | "Module";
 
 export interface Protocol {
   name: string;
@@ -61,3 +75,44 @@ export interface RunbookMetadata {
   uuid: string;
   constructUuids: string[];
 }
+
+export interface Prompt {
+  name: string;
+  instanceName: string;
+  inputs: CommandInputEvaluationResult | null;
+  uuid: string;
+  runbookUuid: string;
+  namespace: string;
+}
+
+export interface Action {
+  name: string;
+  instanceName: string;
+  inputs: CommandInputEvaluationResult | null;
+  uuid: string;
+  runbookUuid: string;
+  namespace: string;
+}
+
+export interface Input {
+  value?: string | boolean | number;
+  default?: string | boolean | number;
+  description?: string;
+  commandUuid: string;
+}
+
+export interface Output {
+  value?: string | boolean | number;
+  name: string;
+  commandUuid: string;
+}
+
+export interface SerializedRunbookData {
+  uuid: string;
+  data: string;
+}
+
+export type CommandSectionIndex = {
+  type: CommandSectionType;
+  items: (Input | Prompt | Action)[];
+};
