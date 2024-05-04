@@ -75,8 +75,8 @@ export default function App() {
         {/* Header & main content */}
         <div className="from-gray-950 to-neutral-900">
           <Header {...{ title: protocolName }}></Header>
-          <main className="min-h-screen pt-0 mt-0 pl-80 xl:pl-96 ">
-            <div className="py-10 lg:py-6">
+          <main className="min-h-screen pt-0 mt-0 pl-16 ">
+            <div className="flex justify-center py-10 lg:py-6">
               {loading ? <div>Loading...</div> : <Runbook />}
             </div>
           </main>

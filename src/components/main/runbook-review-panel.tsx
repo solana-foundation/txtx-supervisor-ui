@@ -1,7 +1,14 @@
 import React, { forwardRef } from "react";
 import CheckMark, { CheckMarkColor } from "../icons/check-mark";
 import addonManager from "../../utils/addons-initializer";
-import { Panel, PanelColor, PanelContent } from "./panel";
+import {
+  ReadonlyTablePanel,
+  PanelColor,
+  PanelContent,
+  PanelTable,
+  PanelTableCellReadonly,
+  PanelTableRowProps,
+} from "./panel";
 
 const runbookReviewContent: RunbookReviewItemProps[] = [
   {
@@ -24,18 +31,40 @@ export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
   runbookReviewContent.forEach((item) => {
     children.push(<RunbookReviewItem {...item} />);
   });
-  console.log("all connected?", addonManager.areAllWalletsConnected());
+
+  const rows: PanelTableRowProps[] = [
+    {
+      index: 0,
+      title: "Check Stacks blockchain Mainnet liveness",
+      value: "140,349 Blocks",
+    },
+    {
+      index: 1,
+      title: "Check wallet address executing the Runbook",
+      value: "SP12293498239481941230912309543",
+    },
+    {
+      index: 2,
+      title: "Check estimated cost for executing the Runbook (STX)",
+      value: "150 STX",
+    },
+    {
+      index: 3,
+      title: "Check wallet provisioning (STX)",
+      value: "100 STX",
+    },
+  ];
   return (
-    <Panel
+    <ReadonlyTablePanel
       panelIndex={0}
-      key="runbook-requirement-preview"
-      color={PanelColor.Purple}
-      title="runbook requirement review"
+      key="runbook-checklist"
+      title="runbook checklist"
+      description="Review and check the items from the list below."
       primaryButton={{
         title: "start runbook",
         disabled: !addonManager.areAllWalletsConnected(),
       }}
-      content={<PanelContent children={children} />}
+      rows={rows}
       ref={ref}
       scrollHandler={scrollHandler}
     />

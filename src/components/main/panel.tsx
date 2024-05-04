@@ -1,11 +1,11 @@
-import React, { MouseEventHandler, forwardRef } from "react";
+import React, { MouseEventHandler, forwardRef, useState } from "react";
 import { classNames } from "../../utils/helpers";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { RunbookStepStatus, statusForStepNumber } from "./runbook-status-bar";
 import {
   selectActiveRunbookActiveStep,
   setActiveRunbookActiveStep,
 } from "../../reducers/runbooks-slice";
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import { RunbookStepStatus, statusForStepNumber } from "./runbook-status-bar";
 
 export enum PanelColor {
   Purple,
@@ -20,19 +20,18 @@ export interface PanelButton {
 }
 
 export interface PanelProps {
-  color: PanelColor;
   title: String;
+  description: String;
+  content: JSX.Element;
   primaryButton?: PanelButton;
   secondaryButton?: PanelButton;
-  content: React.JSX.Element;
   panelIndex: number;
   scrollHandler: any;
 }
-
 export const Panel = forwardRef(function Panel(
   {
-    color,
     title,
+    description,
     primaryButton,
     secondaryButton,
     content,
@@ -41,206 +40,23 @@ export const Panel = forwardRef(function Panel(
   }: PanelProps,
   ref: React.ForwardedRef<any>,
 ) {
-  const dispatch = useAppDispatch();
-  const activeStep = useAppSelector(selectActiveRunbookActiveStep);
-
-  let status = statusForStepNumber(panelIndex, activeStep);
-
-  const statusIsComplete = status === RunbookStepStatus.Complete;
-  const panelColor = statusIsComplete
-    ? "bg-white"
-    : color === PanelColor.Purple
-      ? "bg-zinc-800"
-      : "bg-stone-900";
-  const opacity = statusIsComplete
-    ? "opacity-5"
-    : status === RunbookStepStatus.Active
-      ? "opacity-100"
-      : "opacity-20";
-  // the completed div is white with opacity set.
-  // if we transition to/from white before the opacity, it's pretty jarring,
-  // so delay the transitions accordingly:
-  // in a complete -> incomplete transition, delay the color change
-  // in a incomplete -> complete transition, delay the opacity
-  const mainTiming = statusIsComplete ? "delay-0" : "delay-100";
-  const colorTiming = statusIsComplete ? "delay-100" : "delay-0";
-
-  const contentVisibility = statusIsComplete ? "invisible" : "";
-  const height = statusIsComplete ? "max-h-[88px]" : "max-h-[10000px]";
-  const cursor = statusIsComplete ? "cursor-pointer" : "";
-  // if a panel is closed/complete, allow clicking on it to re-expand
-  const panelOnClick = statusIsComplete
-    ? () => {
-        scrollHandler(panelIndex);
-        dispatch(setActiveRunbookActiveStep(panelIndex));
-      }
-    : () => {};
-
   return (
-    <div className="w-[1024px] h-[399px] p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex">
+    <div className="w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex">
       <div className="self-stretch justify-start items-start inline-flex">
         <div className="grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono']">
-          RUNBOOK CHECKLIST
+          {title}
         </div>
       </div>
-      <div className="w-[488px] h-[19px] text-gray-400 text-sm font-normal font-['Inter']">
-        Review and check the items from the list below
+      <div className="w-full h-[19px] text-gray-400 text-sm font-normal font-['Inter']">
+        {description}
       </div>
-      <div className="w-[976px] h-[167px] flex-col justify-start items-start inline-flex">
-        <div className="self-stretch h-[167px] bg-neutral-700 rounded border border-zinc-600 flex-col justify-start items-start flex">
-          <div className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex">
-            <div className="w-8 self-stretch bg-gray-950 border-l border-t border-gray-800 flex-col justify-between items-start inline-flex">
-              <div className="self-stretch py-2.5 justify-center items-center inline-flex">
-                <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
-                  #
-                </div>
-                <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
-                  1
-                </div>
-              </div>
-            </div>
-            <div className="grow shrink basis-0 self-stretch bg-gray-950 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
-              <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
-                <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
-                  Check Stacks blockchain Mainnet liveness
-                </div>
-              </div>
-            </div>
-            <div className="self-stretch bg-gray-950 border-t border-neutral-800 flex-col justify-center items-start inline-flex">
-              <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
-                <div className="px-2 py-0.5 bg-neutral-800 rounded-sm flex-col justify-end items-start gap-2.5 inline-flex">
-                  <div className="text-gray-400 text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px]">
-                    140,349 Blocks
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-8 self-stretch bg-gray-950 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
-              <div className="self-stretch py-2.5 justify-center items-start inline-flex">
-                <div className="text-white text-xs font-normal font-['Inter'] leading-none">
-                  ✓
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex">
-            <div className="w-8 self-stretch bg-neutral-900 border-l border-t border-neutral-800 flex-col justify-between items-start inline-flex">
-              <div className="self-stretch py-2.5 justify-center items-center inline-flex">
-                <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
-                  #
-                </div>
-                <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
-                  2
-                </div>
-              </div>
-            </div>
-            <div className="grow shrink basis-0 self-stretch bg-neutral-900 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
-              <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
-                <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
-                  Check wallet address executing the Runbook
-                </div>
-              </div>
-            </div>
-            <div className="self-stretch bg-neutral-900 border-t border-neutral-800 flex-col justify-center items-start inline-flex">
-              <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
-                <div className="px-2 py-0.5 bg-neutral-800 rounded-sm flex-col justify-end items-start gap-2.5 inline-flex">
-                  <div className="text-gray-400 text-sm font-normal font-['GT America Mono'] uppercase">
-                    SP12293498239481941230912309543
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-8 self-stretch bg-neutral-900 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
-              <div className="self-stretch py-2.5 justify-center items-start inline-flex">
-                <div className="text-white text-xs font-normal font-['Inter'] leading-none">
-                  ✓
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex">
-            <div className="w-8 self-stretch bg-gray-950 border-l border-t border-neutral-800 flex-col justify-between items-start inline-flex">
-              <div className="self-stretch py-2.5 justify-center items-center inline-flex">
-                <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
-                  #
-                </div>
-                <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
-                  3
-                </div>
-              </div>
-            </div>
-            <div className="grow shrink basis-0 self-stretch bg-gray-950 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
-              <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
-                <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
-                  Check estimated cost for executing the Runbook (STX)
-                </div>
-              </div>
-            </div>
-            <div className="self-stretch bg-gray-950 border-t border-neutral-800 flex-col justify-center items-start inline-flex">
-              <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
-                <div className="px-2 py-0.5 bg-neutral-800 rounded-sm flex-col justify-end items-start gap-2.5 inline-flex">
-                  <div className="text-gray-400 text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px]">
-                    150 STX
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-8 self-stretch bg-gray-950 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
-              <div className="self-stretch py-2.5 justify-center items-start inline-flex">
-                <div className="text-white text-xs font-normal font-['Inter'] leading-none">
-                  ✓
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex">
-            <div className="w-8 self-stretch bg-neutral-900 border-l border-t border-neutral-800 flex-col justify-between items-start inline-flex">
-              <div className="self-stretch py-2.5 justify-center items-center inline-flex">
-                <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
-                  #
-                </div>
-                <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
-                  4
-                </div>
-              </div>
-            </div>
-            <div className="grow shrink basis-0 self-stretch bg-neutral-900 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
-              <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
-                <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
-                  Check wallet provisioning (STX)
-                </div>
-              </div>
-            </div>
-            <div className="self-stretch bg-neutral-900 border-t border-neutral-800 flex-col justify-center items-start inline-flex">
-              <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
-                <div className="px-2 py-0.5 bg-neutral-800 rounded-sm flex-col justify-end items-start gap-2.5 inline-flex">
-                  <div className="text-gray-400 text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px]">
-                    100 STX
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-8 self-stretch bg-neutral-900 border-l border-t border-neutral-800 flex-col justify-center items-start inline-flex">
-              <div className="self-stretch py-2.5 justify-center items-start inline-flex">
-                <div className="text-white text-xs font-normal font-['Inter'] leading-none">
-                  ✓
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="self-stretch justify-end items-center gap-2.5 inline-flex">
+      {content}
+      <div className="pt-2 self-stretch justify-end items-center gap-2.5 inline-flex">
         <div className="flex-col justify-center items-end gap-8 inline-flex">
           <PrimaryPanelButton
             panelIndex={panelIndex}
-            button={{ title: "Check All" }}
-            scrollHandler={scrollHandler}
-          />
-          <PrimaryPanelButton
-            panelIndex={panelIndex}
-            disabled={true}
-            button={{ title: "Start Runbook" }}
+            disabled={primaryButton?.disabled}
+            button={primaryButton}
             scrollHandler={scrollHandler}
           />
         </div>
@@ -248,6 +64,392 @@ export const Panel = forwardRef(function Panel(
     </div>
   );
 });
+
+export interface ReadonlyPanelProps {
+  title: String;
+  description: String;
+  rows: PanelTableRowProps[];
+  primaryButton?: PanelButton;
+  secondaryButton?: PanelButton;
+  panelIndex: number;
+  scrollHandler: any;
+}
+
+export const ReadonlyTablePanel = forwardRef(function Panel(
+  {
+    title,
+    description,
+    primaryButton,
+    secondaryButton,
+    rows,
+    panelIndex,
+    scrollHandler,
+  }: ReadonlyPanelProps,
+  ref: React.ForwardedRef<any>,
+) {
+  const [rowCheckedArr, setRowCheckedArr] = useState(
+    new Array(rows.length).fill(false),
+  );
+
+  const onRowCheck = (idx, state) => {
+    const nextState = rowCheckedArr.map((current, i) => {
+      if (i === idx) {
+        return state;
+      } else return current;
+    });
+    setRowCheckedArr(nextState);
+  };
+  const isRowChecked = (idx) => {
+    return rowCheckedArr[idx];
+  };
+
+  return (
+    <div className="w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex">
+      <div className="self-stretch justify-start items-start inline-flex">
+        <div className="grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono']">
+          {title}
+        </div>
+      </div>
+      <div className="w-full h-[19px] text-gray-400 text-sm font-normal font-['Inter']">
+        {description}
+      </div>
+      <PanelTable
+        rows={rows}
+        onRowCheck={onRowCheck}
+        isRowChecked={isRowChecked}
+      />
+      <div className="pt-2 self-stretch justify-end items-center gap-2.5 inline-flex">
+        <div className="flex-col justify-center items-end gap-8 inline-flex">
+          <PrimaryPanelButton
+            panelIndex={panelIndex}
+            disabled={
+              primaryButton?.disabled ||
+              rowCheckedArr.some((isChecked) => !isChecked)
+            }
+            button={primaryButton}
+            scrollHandler={scrollHandler}
+          />
+        </div>
+      </div>
+    </div>
+  );
+});
+
+export function PanelTable({
+  rows,
+  onRowCheck,
+  isRowChecked,
+}: {
+  rows: PanelTableRowProps[];
+  onRowCheck: any;
+  isRowChecked: any;
+}) {
+  return (
+    <div className="w-full flex-col justify-start items-start inline-flex">
+      <div className="self-stretch bg-neutral-700 rounded border border-zinc-600 flex-col justify-start items-start flex">
+        {rows.map((props) => {
+          return (
+            <PanelTableRow
+              {...props}
+              onRowCheck={onRowCheck}
+              isRowChecked={isRowChecked}
+            />
+          );
+        })}
+      </div>
+      <div className="pt-2 self-stretch justify-end items-center gap-2.5 inline-flex">
+        <div className="flex-col justify-center items-end gap-8 inline-flex">
+          <PanelButton
+            title="Check All"
+            isDisabled={false}
+            onClick={() => {}}
+            size={ElementSize.S}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export interface PanelTableRowProps {
+  index: number;
+  title: string;
+  value: string;
+}
+export function PanelTableRow({
+  index,
+  title,
+  value,
+  onRowCheck,
+  isRowChecked,
+}: PanelTableRowProps & { onRowCheck: any; isRowChecked: any }) {
+  const isChecked = isRowChecked(index);
+  const checkClass = isChecked ? "text-emerald-500" : "text-white";
+
+  return (
+    <div className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex border-t border-neutral-800 first:rounded-t last:rounded-b">
+      <div className="w-8 self-stretch bg-neutral-900 border-l border-neutral-800  flex-col justify-between items-start inline-flex">
+        <div className="self-stretch py-2.5 justify-center items-center inline-flex">
+          <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
+            #
+          </div>
+          <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
+            {index + 1}
+          </div>
+        </div>
+      </div>
+      <div className="grow shrink basis-0 self-stretch bg-neutral-900 border-l  border-neutral-800 flex-col justify-center items-start inline-flex">
+        <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
+          <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
+            {title}
+          </div>
+        </div>
+      </div>
+      <PanelTableCellReadonly isChecked={isChecked} value={value} />
+      <div className="w-8 self-stretch bg-neutral-900 border-l border-neutral-800 flex-col justify-center items-start inline-flex">
+        <div className="self-stretch py-2.5 justify-center items-start inline-flex">
+          <div
+            className={classNames(
+              "text-xs font-normal font-['Inter'] leading-none",
+              checkClass,
+            )}
+            onClick={() => onRowCheck(index, !isChecked)}
+          >
+            ✓
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export interface PanelTableCellReadonlyProps {
+  isChecked: boolean;
+  value: String;
+}
+export function PanelTableCellReadonly({
+  isChecked,
+  value,
+}: PanelTableCellReadonlyProps) {
+  const valueClass = isChecked ? "text-emerald-500" : "text-gray-400";
+  return (
+    <div className="self-stretch bg-neutral-900 border-neutral-800 flex-col justify-center items-start inline-flex">
+      <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
+        <div className="px-2 py-0.5 bg-neutral-800 rounded-sm flex-col justify-end items-start gap-2.5 inline-flex">
+          <div
+            className={classNames(
+              "text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px]",
+              valueClass,
+            )}
+          >
+            {value}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export interface PanelWithInputsProps {
+  title: String;
+  description: String;
+  rows: PanelTableRowWithInputsProps[];
+  primaryButton?: PanelButton;
+  secondaryButton?: PanelButton;
+  panelIndex: number;
+  scrollHandler: any;
+}
+
+export const InputTablePanel = forwardRef(function Panel(
+  {
+    title,
+    description,
+    primaryButton,
+    secondaryButton,
+    rows,
+    panelIndex,
+    scrollHandler,
+  }: PanelWithInputsProps,
+  ref: React.ForwardedRef<any>,
+) {
+  const [rowCheckedArr, setRowCheckedArr] = useState(
+    new Array(rows.length).fill(false),
+  );
+
+  const onRowCheck = (idx, state) => {
+    const nextState = rowCheckedArr.map((current, i) => {
+      if (i === idx) {
+        return state;
+      } else return current;
+    });
+    setRowCheckedArr(nextState);
+  };
+  const isRowChecked = (idx) => {
+    return rowCheckedArr[idx];
+  };
+
+  console.log("check state", rowCheckedArr);
+  return (
+    <div className="w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex">
+      <div className="self-stretch justify-start items-start inline-flex">
+        <div className="grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono']">
+          {title}
+        </div>
+      </div>
+      <div className="w-full h-[19px] text-gray-400 text-sm font-normal font-['Inter']">
+        {description}
+      </div>
+      <PanelTableWithInputs
+        rows={rows}
+        onRowCheck={onRowCheck}
+        isRowChecked={isRowChecked}
+      />
+      <div className="pt-2 self-stretch justify-end items-center gap-2.5 inline-flex">
+        <div className="flex-col justify-center items-end gap-8 inline-flex">
+          <PrimaryPanelButton
+            panelIndex={panelIndex}
+            disabled={
+              primaryButton?.disabled ||
+              rowCheckedArr.some((isChecked) => !isChecked)
+            }
+            button={primaryButton}
+            scrollHandler={scrollHandler}
+          />
+        </div>
+      </div>
+    </div>
+  );
+});
+
+export function PanelTableWithInputs({
+  rows,
+  onRowCheck,
+  isRowChecked,
+}: {
+  rows: PanelTableRowWithInputsProps[];
+  onRowCheck: any;
+  isRowChecked: any;
+}) {
+  return (
+    <div className="w-full flex-col justify-start items-start inline-flex">
+      <div className="self-stretch bg-neutral-700 rounded border border-zinc-600 flex-col justify-start items-start flex">
+        {rows.map((props) => {
+          return (
+            <PanelTableRowWithInputs
+              {...props}
+              onRowCheck={onRowCheck}
+              isRowChecked={isRowChecked}
+            />
+          );
+        })}
+      </div>
+      <div className="pt-2 self-stretch justify-end items-center gap-2.5 inline-flex">
+        <div className="flex-col justify-center items-end gap-8 inline-flex">
+          <PanelButton
+            title="Check All"
+            isDisabled={false}
+            onClick={() => {}}
+            size={ElementSize.S}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export interface PanelTableRowWithInputsProps {
+  index: number;
+  title: string;
+  value?: string | boolean | number;
+  default?: string | boolean | number;
+  commandUuid: string;
+}
+export function PanelTableRowWithInputs({
+  index,
+  title,
+  value,
+  default: defaultValue,
+  commandUuid,
+  onRowCheck,
+  isRowChecked,
+}: PanelTableRowWithInputsProps & { onRowCheck: any; isRowChecked: any }) {
+  const isChecked = isRowChecked(index);
+  const checkClass = isChecked ? "text-emerald-500" : "text-white";
+
+  return (
+    <div className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex border-t border-neutral-800 first:rounded-t last:rounded-b">
+      <div className="w-8 self-stretch bg-neutral-900 border-l border-neutral-800  flex-col justify-between items-start inline-flex">
+        <div className="self-stretch py-2.5 justify-center items-center inline-flex">
+          <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
+            #
+          </div>
+          <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
+            {index + 1}
+          </div>
+        </div>
+      </div>
+      <div className="grow shrink basis-0 self-stretch bg-neutral-900 border-l  border-neutral-800 flex-col justify-center items-start inline-flex">
+        <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
+          <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
+            {title}
+          </div>
+        </div>
+      </div>
+      <PanelTableCellInput
+        isChecked={isChecked}
+        value={value}
+        default={defaultValue}
+        commandUuid={commandUuid}
+      />
+      <div className="w-8 self-stretch bg-neutral-900 border-l border-neutral-800 flex-col justify-center items-start inline-flex">
+        <div className="self-stretch py-2.5 justify-center items-start inline-flex">
+          <div
+            className={classNames(
+              "text-xs font-normal font-['Inter'] leading-none",
+              checkClass,
+            )}
+            onClick={() => onRowCheck(index, !isChecked)}
+          >
+            ✓
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export interface PanelTableCellInputProps {
+  isChecked: boolean;
+  value?: string | boolean | number;
+  default?: string | boolean | number;
+  commandUuid: string;
+}
+
+export function PanelTableCellInput({
+  isChecked,
+  value,
+  commandUuid,
+  default: defaultValue,
+}: PanelTableCellInputProps) {
+  const valueClass = isChecked ? "text-emerald-500" : "text-gray-400";
+  return (
+    <div className="self-stretch bg-neutral-900 border-neutral-800 flex-col justify-center items-start inline-flex">
+      <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
+        <div className="px-2 py-0.5 bg-neutral-800 rounded-sm flex-col justify-end items-start gap-2.5 inline-flex">
+          <input
+            id={commandUuid}
+            className={classNames(
+              "text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px]",
+              valueClass,
+            )}
+            value={defaultValue?.toString() || undefined}
+            onChange={console.log}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 interface PrimaryPanelButtonProps {
   button?: PanelButton;
   panelIndex: number;
@@ -281,16 +483,17 @@ function PrimaryPanelButton({
       title={button?.title || "Continue"}
       onClick={onClick}
       isDisabled={isDisabled}
+      size={ElementSize.L}
     />
   );
 }
 
 export enum ElementSize {
-  XS,
   S,
   M,
   L,
   XL,
+  XXL,
 }
 export interface PanelButtonProps {
   title: String;
@@ -309,20 +512,23 @@ function PanelButton({
     ? "opacity-30 bg-black text-zinc-400"
     : "bg-teal-950 text-emerald-500";
   let sizeClass =
-    size === ElementSize.XL
-      ? "w-20 h-16"
-      : size === ElementSize.L
-        ? "w-16 h-12"
-        : size === ElementSize.M
-          ? "w-16 h-12"
-          : "w-16 h-8";
+    size === ElementSize.XXL
+      ? "w-80 h-20"
+      : size === ElementSize.XL
+        ? "w-52 h-16"
+        : size === ElementSize.L
+          ? "w-40 h-12"
+          : size === ElementSize.M
+            ? "w-36 h-10"
+            : "w-28 h-8";
   return (
     <button
       disabled={isDisabled}
       onClick={onClick}
       className={classNames(
-        "max-w-[150px] h-8 px-4 py-2 rounded flex-col justify-center items-center gap-2.5 inline-flex text-center text-xs font-normal font-['GT America Mono'] uppercase leading-none tracking-tight",
+        "px-4 py-2 rounded flex-col justify-center items-center gap-2.5 inline-flex text-center text-xs font-normal font-['GT America Mono'] uppercase leading-none tracking-tight",
         colorClass,
+        sizeClass,
       )}
     >
       {title}

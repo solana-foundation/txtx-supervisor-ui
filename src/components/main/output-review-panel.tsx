@@ -1,5 +1,5 @@
 import React, { forwardRef } from "react";
-import { Panel, PanelColor, PanelContent } from "./panel";
+import { ReadonlyTablePanel, PanelColor, PanelContent, Panel } from "./panel";
 import { Output } from "./types";
 
 export interface OutputReviewPanelProps {
@@ -17,8 +17,8 @@ export const OutputReviewPanel = forwardRef(function OutputReviewPanel(
   return (
     <Panel
       panelIndex={panelIndex}
+      description="todo description"
       key="runbook-outputs"
-      color={PanelColor.Purple}
       title="Runbook Outputs"
       primaryButton={{ title: "publish runbook" }}
       content={
