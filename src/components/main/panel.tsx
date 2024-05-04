@@ -295,14 +295,14 @@ export function InputCell({
 }: InputCellProps & { isChecked: boolean }) {
   const valueClass = isChecked ? "text-emerald-500" : "text-gray-400";
   return (
-    <div className="grow shrink basis-0 self-stretch bg-neutral-900 border-neutral-800 flex-col justify-center items-start inline-flex">
+    <div className="grow shrink basis-0 self-stretch bg-neutral-900 flex-col justify-center items-start inline-flex">
       <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
-        <div className="grow shrink basis-0 self-stretch rounded-sm flex-col justify-end items-start gap-2.5 inline-flex">
+        <div className="grow shrink basis-0 self-stretch flex-col justify-end items-start gap-2.5 inline-flex">
           <input
             id={commandUuid}
             className={classNames(
-              "self-stretch px-2 py-0.5 text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px] text-right",
-              "bg-neutral-800 border-neutral-800 rounded-sm",
+              "self-stretch  text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px] text-right",
+              "bg-neutral-900 border-gray-800  rounded-sm",
               "focus:outline-none focus:ring-0 ring-0 focus:border-emerald-500",
               valueClass,
             )}

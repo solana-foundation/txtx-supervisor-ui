@@ -16,7 +16,6 @@ import {
   Prompt,
 } from "./types";
 import addonManager from "../../utils/addons-initializer";
-import { InputFieldSet } from "./input-field";
 import { RunbookReviewPanel } from "./runbook-review-panel";
 import { OutputReviewPanel } from "./output-review-panel";
 
@@ -60,46 +59,46 @@ export default function Runbook() {
     }, 5);
   };
   return (
-    <div className="w-2/3 min-h-full px-6 pt-6 justify-center flex flex-col gap-8 inline-flex">
-      <div className="self-stretch h-[69px] px-8 flex-col gap-2 flex">
-        <div className="self-stretch text-emerald-300 text-4xl font-bold font-['Inter']">
+    <div className="w-full justify-center flex flex-col items-center">
+      <div className="self-stretch px-8 flex-col gap-2 flex">
+        <div className="self-stretch text-emerald-500 text-center font-bold font-['Inter'] uppercase">
           {metadata.name}
         </div>
-        <div className="self-stretch text-white text-sm font-normal font-['Inter']">
+        <div className="self-stretch text-white text-sm font-normal font-['Inter'] text-center">
           {metadata.description}
         </div>
-      </div>
-      {
+
         <RunbookStatusBar
           steps={commandSections.length + 2}
           scrollHandler={scrollPanelIntoViewHandler}
         />
-      }
-      {
+      </div>
+      <div className="w-2/3 min-h-full px-6 pt-6 justify-center flex flex-col inline-flex">
         <RunbookReviewPanel
           ref={panelRefs.current[0]}
           scrollHandler={scrollPanelIntoViewHandler}
         />
-      }
-      {commandSections.reduce((sectionPanels, commandSection, i) => {
-        const content = commandSectionToContent(
-          commandSection,
-          scrollPanelIntoViewHandler,
-          panelRefs.current[i + 1],
-          i,
-        );
-        if (content) {
-          sectionPanels.push(content);
-        }
-        return sectionPanels;
-      }, [] as any[])}
 
-      <OutputReviewPanel
-        outputs={outputs}
-        panelIndex={commandSections.length + 1}
-        ref={panelRefs.current[commandSections.length + 1]}
-        scrollHandler={scrollPanelIntoViewHandler}
-      />
+        {commandSections.reduce((sectionPanels, commandSection, i) => {
+          const content = commandSectionToContent(
+            commandSection,
+            scrollPanelIntoViewHandler,
+            panelRefs.current[i + 1],
+            i,
+          );
+          if (content) {
+            sectionPanels.push(content);
+          }
+          return sectionPanels;
+        }, [] as any[])}
+
+        <OutputReviewPanel
+          outputs={outputs}
+          panelIndex={commandSections.length + 1}
+          ref={panelRefs.current[commandSections.length + 1]}
+          scrollHandler={scrollPanelIntoViewHandler}
+        />
+      </div>
     </div>
   );
 }
