@@ -1,14 +1,7 @@
 import React, { forwardRef } from "react";
 import CheckMark, { CheckMarkColor } from "../icons/check-mark";
 import addonManager from "../../utils/addons-initializer";
-import {
-  ReadonlyTablePanel,
-  PanelColor,
-  PanelContent,
-  PanelTable,
-  PanelTableCellReadonly,
-  PanelTableRowProps,
-} from "./panel";
+import { PanelWithTable, TableForPanelProps } from "./panel";
 
 const runbookReviewContent: RunbookReviewItemProps[] = [
   {
@@ -32,30 +25,30 @@ export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
     children.push(<RunbookReviewItem {...item} />);
   });
 
-  const rows: PanelTableRowProps[] = [
+  const rows: TableForPanelProps[] = [
     {
       index: 0,
       title: "Check Stacks blockchain Mainnet liveness",
-      value: "140,349 Blocks",
+      cell: { value: "140,349 Blocks" },
     },
     {
       index: 1,
       title: "Check wallet address executing the Runbook",
-      value: "SP12293498239481941230912309543",
+      cell: { value: "SP12293498239481941230912309543" },
     },
     {
       index: 2,
       title: "Check estimated cost for executing the Runbook (STX)",
-      value: "150 STX",
+      cell: { value: "150 STX" },
     },
     {
       index: 3,
       title: "Check wallet provisioning (STX)",
-      value: "100 STX",
+      cell: { value: "100 STX" },
     },
   ];
   return (
-    <ReadonlyTablePanel
+    <PanelWithTable
       panelIndex={0}
       key="runbook-checklist"
       title="runbook checklist"
@@ -64,6 +57,7 @@ export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
         title: "start runbook",
         disabled: !addonManager.areAllWalletsConnected(),
       }}
+      readonly={true}
       rows={rows}
       ref={ref}
       scrollHandler={scrollHandler}

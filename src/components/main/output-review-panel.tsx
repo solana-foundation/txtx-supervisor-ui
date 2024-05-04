@@ -1,5 +1,5 @@
 import React, { forwardRef } from "react";
-import { ReadonlyTablePanel, PanelColor, PanelContent, Panel } from "./panel";
+import { PanelContent, Panel } from "./panel";
 import { Output } from "./types";
 
 export interface OutputReviewPanelProps {

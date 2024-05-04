@@ -7,18 +7,7 @@ import {
   selectActiveRunbook,
 } from "../../reducers/runbooks-slice";
 import RunbookStatusBar from "./runbook-status-bar";
-import {
-  ReadonlyTablePanel,
-  PanelButton,
-  PanelColor,
-  PanelContent,
-  PanelTableCellInput,
-  PanelTableRow,
-  PanelTableRowProps,
-  PanelTableRowWithInputsProps,
-  InputTablePanel,
-  Panel,
-} from "./panel";
+import { PanelWithTable, Panel, TableForPanelProps } from "./panel";
 import {
   Action,
   CommandSectionIndex,
@@ -130,35 +119,37 @@ function commandSectionToContent(
           mutableChildren.push({
             title: input.description || "Input",
             index: idx,
-            value: input.value,
-            default: input.default,
-            commandUuid: input.commandUuid,
+            cell: {
+              value: input.value,
+              default: input.default,
+              commandUuid: input.commandUuid,
+            },
           });
         } else {
           immutableChildren.push({
             title: input.description || "Input",
             index: idx,
-            value: input.value,
-            default: input.default,
-            commandUuid: input.commandUuid,
+            cell: {
+              value: input.value,
+              default: input.default,
+              commandUuid: input.commandUuid,
+            },
           });
         }
         return [mutableChildren, immutableChildren];
       },
-      [
-        [] as PanelTableRowWithInputsProps[],
-        [] as PanelTableRowWithInputsProps[],
-      ],
+      [[] as TableForPanelProps[], [] as TableForPanelProps[]],
     );
     if (mutableChildren.length) {
       return (
-        <InputTablePanel
+        <PanelWithTable
           key={`command-section-${i}-${commandSection.type}`}
           panelIndex={i + 1}
           title="inputs"
           description=""
           primaryButton={{ title: "Confirm" }}
           secondaryButton={{ title: "todo" }}
+          readonly={false}
           rows={mutableChildren}
           scrollHandler={scrollHandler}
           ref={ref}

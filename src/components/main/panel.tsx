@@ -65,26 +65,28 @@ export const Panel = forwardRef(function Panel(
   );
 });
 
-export interface ReadonlyPanelProps {
+export interface PanelWithTableProps {
   title: String;
   description: String;
-  rows: PanelTableRowProps[];
+  readonly: boolean;
+  rows: TableForPanelProps[];
   primaryButton?: PanelButton;
   secondaryButton?: PanelButton;
   panelIndex: number;
   scrollHandler: any;
 }
 
-export const ReadonlyTablePanel = forwardRef(function Panel(
+export const PanelWithTable = forwardRef(function Panel(
   {
     title,
     description,
     primaryButton,
     secondaryButton,
+    readonly,
     rows,
     panelIndex,
     scrollHandler,
-  }: ReadonlyPanelProps,
+  }: PanelWithTableProps,
   ref: React.ForwardedRef<any>,
 ) {
   const [rowCheckedArr, setRowCheckedArr] = useState(
@@ -113,11 +115,13 @@ export const ReadonlyTablePanel = forwardRef(function Panel(
       <div className="w-full h-[19px] text-gray-400 text-sm font-normal font-['Inter']">
         {description}
       </div>
-      <PanelTable
+      <TableForPanel
+        readonly={readonly}
         rows={rows}
         onRowCheck={onRowCheck}
         isRowChecked={isRowChecked}
       />
+
       <div className="pt-2 self-stretch justify-end items-center gap-2.5 inline-flex">
         <div className="flex-col justify-center items-end gap-8 inline-flex">
           <PrimaryPanelButton
@@ -135,27 +139,34 @@ export const ReadonlyTablePanel = forwardRef(function Panel(
   );
 });
 
-export function PanelTable({
+export interface TableForPanelProps {
+  index: number;
+  title: string;
+  cell: ReadonlyCellProps | InputCellProps;
+}
+export function TableForPanel({
+  readonly,
   rows,
   onRowCheck,
   isRowChecked,
 }: {
-  rows: PanelTableRowProps[];
+  readonly: boolean;
+  rows: TableForPanelProps[];
   onRowCheck: any;
   isRowChecked: any;
 }) {
   return (
     <div className="w-full flex-col justify-start items-start inline-flex">
       <div className="self-stretch bg-neutral-700 rounded border border-zinc-600 flex-col justify-start items-start flex">
-        {rows.map((props) => {
-          return (
-            <PanelTableRow
-              {...props}
-              onRowCheck={onRowCheck}
-              isRowChecked={isRowChecked}
-            />
-          );
-        })}
+        {rows.map((props) => (
+          <Row
+            key={props.index}
+            {...props}
+            isRowChecked={isRowChecked}
+            onRowCheck={onRowCheck}
+            readonly={readonly}
+          />
+        ))}
       </div>
       <div className="pt-2 self-stretch justify-end items-center gap-2.5 inline-flex">
         <div className="flex-col justify-center items-end gap-8 inline-flex">
@@ -171,21 +182,35 @@ export function PanelTable({
   );
 }
 
-export interface PanelTableRowProps {
-  index: number;
-  title: string;
-  value: string;
-}
-export function PanelTableRow({
+function Row({
   index,
   title,
-  value,
+  readonly,
+  cell,
   onRowCheck,
   isRowChecked,
-}: PanelTableRowProps & { onRowCheck: any; isRowChecked: any }) {
+}: TableForPanelProps & {
+  onRowCheck: any;
+  isRowChecked: any;
+  readonly: boolean;
+}) {
   const isChecked = isRowChecked(index);
   const checkClass = isChecked ? "text-emerald-500" : "text-white";
-
+  let valueCell;
+  if (readonly) {
+    const data = cell as ReadonlyCellProps;
+    valueCell = <ReadonlyCell isChecked={isChecked} value={data.value} />;
+  } else {
+    const data = cell as InputCellProps;
+    valueCell = (
+      <InputCell
+        isChecked={isChecked}
+        value={data.value}
+        default={data.default}
+        commandUuid={data.commandUuid}
+      />
+    );
+  }
   return (
     <div className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex border-t border-neutral-800 first:rounded-t last:rounded-b">
       <div className="w-8 self-stretch bg-neutral-900 border-l border-neutral-800  flex-col justify-between items-start inline-flex">
@@ -205,15 +230,17 @@ export function PanelTableRow({
           </div>
         </div>
       </div>
-      <PanelTableCellReadonly isChecked={isChecked} value={value} />
-      <div className="w-8 self-stretch bg-neutral-900 border-l border-neutral-800 flex-col justify-center items-start inline-flex">
+      {valueCell}
+      <div
+        className="w-8 self-stretch bg-neutral-900 border-l border-neutral-800 flex-col justify-center items-start inline-flex cursor-pointer"
+        onClick={() => onRowCheck(index, !isChecked)}
+      >
         <div className="self-stretch py-2.5 justify-center items-start inline-flex">
           <div
             className={classNames(
               "text-xs font-normal font-['Inter'] leading-none",
               checkClass,
             )}
-            onClick={() => onRowCheck(index, !isChecked)}
           >
             ✓
           </div>
@@ -223,14 +250,13 @@ export function PanelTableRow({
   );
 }
 
-export interface PanelTableCellReadonlyProps {
-  isChecked: boolean;
+export interface ReadonlyCellProps {
   value: String;
 }
-export function PanelTableCellReadonly({
+export function ReadonlyCell({
   isChecked,
   value,
-}: PanelTableCellReadonlyProps) {
+}: ReadonlyCellProps & { isChecked: boolean }) {
   const valueClass = isChecked ? "text-emerald-500" : "text-gray-400";
   return (
     <div className="self-stretch bg-neutral-900 border-neutral-800 flex-col justify-center items-start inline-flex">
@@ -250,187 +276,18 @@ export function PanelTableCellReadonly({
   );
 }
 
-export interface PanelWithInputsProps {
-  title: String;
-  description: String;
-  rows: PanelTableRowWithInputsProps[];
-  primaryButton?: PanelButton;
-  secondaryButton?: PanelButton;
-  panelIndex: number;
-  scrollHandler: any;
-}
-
-export const InputTablePanel = forwardRef(function Panel(
-  {
-    title,
-    description,
-    primaryButton,
-    secondaryButton,
-    rows,
-    panelIndex,
-    scrollHandler,
-  }: PanelWithInputsProps,
-  ref: React.ForwardedRef<any>,
-) {
-  const [rowCheckedArr, setRowCheckedArr] = useState(
-    new Array(rows.length).fill(false),
-  );
-
-  const onRowCheck = (idx, state) => {
-    const nextState = rowCheckedArr.map((current, i) => {
-      if (i === idx) {
-        return state;
-      } else return current;
-    });
-    setRowCheckedArr(nextState);
-  };
-  const isRowChecked = (idx) => {
-    return rowCheckedArr[idx];
-  };
-
-  console.log("check state", rowCheckedArr);
-  return (
-    <div className="w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex">
-      <div className="self-stretch justify-start items-start inline-flex">
-        <div className="grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono']">
-          {title}
-        </div>
-      </div>
-      <div className="w-full h-[19px] text-gray-400 text-sm font-normal font-['Inter']">
-        {description}
-      </div>
-      <PanelTableWithInputs
-        rows={rows}
-        onRowCheck={onRowCheck}
-        isRowChecked={isRowChecked}
-      />
-      <div className="pt-2 self-stretch justify-end items-center gap-2.5 inline-flex">
-        <div className="flex-col justify-center items-end gap-8 inline-flex">
-          <PrimaryPanelButton
-            panelIndex={panelIndex}
-            disabled={
-              primaryButton?.disabled ||
-              rowCheckedArr.some((isChecked) => !isChecked)
-            }
-            button={primaryButton}
-            scrollHandler={scrollHandler}
-          />
-        </div>
-      </div>
-    </div>
-  );
-});
-
-export function PanelTableWithInputs({
-  rows,
-  onRowCheck,
-  isRowChecked,
-}: {
-  rows: PanelTableRowWithInputsProps[];
-  onRowCheck: any;
-  isRowChecked: any;
-}) {
-  return (
-    <div className="w-full flex-col justify-start items-start inline-flex">
-      <div className="self-stretch bg-neutral-700 rounded border border-zinc-600 flex-col justify-start items-start flex">
-        {rows.map((props) => {
-          return (
-            <PanelTableRowWithInputs
-              {...props}
-              onRowCheck={onRowCheck}
-              isRowChecked={isRowChecked}
-            />
-          );
-        })}
-      </div>
-      <div className="pt-2 self-stretch justify-end items-center gap-2.5 inline-flex">
-        <div className="flex-col justify-center items-end gap-8 inline-flex">
-          <PanelButton
-            title="Check All"
-            isDisabled={false}
-            onClick={() => {}}
-            size={ElementSize.S}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export interface PanelTableRowWithInputsProps {
-  index: number;
-  title: string;
-  value?: string | boolean | number;
-  default?: string | boolean | number;
-  commandUuid: string;
-}
-export function PanelTableRowWithInputs({
-  index,
-  title,
-  value,
-  default: defaultValue,
-  commandUuid,
-  onRowCheck,
-  isRowChecked,
-}: PanelTableRowWithInputsProps & { onRowCheck: any; isRowChecked: any }) {
-  const isChecked = isRowChecked(index);
-  const checkClass = isChecked ? "text-emerald-500" : "text-white";
-
-  return (
-    <div className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex border-t border-neutral-800 first:rounded-t last:rounded-b">
-      <div className="w-8 self-stretch bg-neutral-900 border-l border-neutral-800  flex-col justify-between items-start inline-flex">
-        <div className="self-stretch py-2.5 justify-center items-center inline-flex">
-          <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
-            #
-          </div>
-          <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
-            {index + 1}
-          </div>
-        </div>
-      </div>
-      <div className="grow shrink basis-0 self-stretch bg-neutral-900 border-l  border-neutral-800 flex-col justify-center items-start inline-flex">
-        <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
-          <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
-            {title}
-          </div>
-        </div>
-      </div>
-      <PanelTableCellInput
-        isChecked={isChecked}
-        value={value}
-        default={defaultValue}
-        commandUuid={commandUuid}
-      />
-      <div className="w-8 self-stretch bg-neutral-900 border-l border-neutral-800 flex-col justify-center items-start inline-flex">
-        <div className="self-stretch py-2.5 justify-center items-start inline-flex">
-          <div
-            className={classNames(
-              "text-xs font-normal font-['Inter'] leading-none",
-              checkClass,
-            )}
-            onClick={() => onRowCheck(index, !isChecked)}
-          >
-            ✓
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export interface PanelTableCellInputProps {
-  isChecked: boolean;
+export interface InputCellProps {
   value?: string | boolean | number;
   default?: string | boolean | number;
   commandUuid: string;
 }
 
-export function PanelTableCellInput({
+export function InputCell({
   isChecked,
   value,
   commandUuid,
   default: defaultValue,
-}: PanelTableCellInputProps) {
+}: InputCellProps & { isChecked: boolean }) {
   const valueClass = isChecked ? "text-emerald-500" : "text-gray-400";
   return (
     <div className="self-stretch bg-neutral-900 border-neutral-800 flex-col justify-center items-start inline-flex">
