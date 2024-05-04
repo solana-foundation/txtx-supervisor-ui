@@ -145,8 +145,8 @@ function commandSectionToContent(
         <PanelWithTable
           key={`command-section-${i}-${commandSection.type}`}
           panelIndex={i + 1}
-          title="inputs"
-          description=""
+          title="runbook inputs"
+          description="Review and check items from the list below"
           primaryButton={{ title: "Confirm" }}
           secondaryButton={{ title: "todo" }}
           readonly={false}
@@ -168,7 +168,7 @@ function commandSectionToContent(
         <Panel
           content={element}
           title={action.name}
-          description={"todo description"}
+          description={""}
           panelIndex={i + 1}
           scrollHandler={scrollHandler}
           primaryButton={addon.getActionPrimaryButton(action)}
@@ -186,7 +186,7 @@ function commandSectionToContent(
         <Panel
           content={element}
           title={prompt.name}
-          description={"todo description"}
+          description={""}
           panelIndex={i + 1}
           scrollHandler={scrollHandler}
           primaryButton={addon.getPromptPrimaryButton(prompt)}

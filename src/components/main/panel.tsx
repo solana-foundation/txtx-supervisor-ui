@@ -43,7 +43,7 @@ export const Panel = forwardRef(function Panel(
   return (
     <div className="w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex">
       <div className="self-stretch justify-start items-start inline-flex">
-        <div className="grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono']">
+        <div className="grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono'] uppercase">
           {title}
         </div>
       </div>
@@ -108,7 +108,7 @@ export const PanelWithTable = forwardRef(function Panel(
   return (
     <div className="w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex">
       <div className="self-stretch justify-start items-start inline-flex">
-        <div className="grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono']">
+        <div className="grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono'] uppercase">
           {title}
         </div>
       </div>

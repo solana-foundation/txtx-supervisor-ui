@@ -17,7 +17,7 @@ export const OutputReviewPanel = forwardRef(function OutputReviewPanel(
   return (
     <Panel
       panelIndex={panelIndex}
-      description="todo description"
+      description=""
       key="runbook-outputs"
       title="Runbook Outputs"
       primaryButton={{ title: "publish runbook" }}
