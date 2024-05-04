@@ -39,8 +39,8 @@ function OutputReviewField({ outputs }: OutputReviewPanelProps) {
     <div key={output.commandUuid}>{`> ${output.name}: ${output.value}`}</div>
   ));
   return (
-    <div className="w-full min-h-20 px-2 py-4 bg-zinc-950 rounded border border-zinc-600 flex-col justify-start items-start gap-2.5 inline-flex">
-      <div className="w-full block self-stretch bg-zinc-950 break-all text-wrap text-zinc-300 rounded-sm text-sm font-medium font-['Inter']">
+    <div className="w-full min-h-20 px-2 py-4 bg-neutral-900 rounded border border-neutral-800 flex-col justify-start items-start gap-2.5 inline-flex">
+      <div className="w-full block self-stretch bg-neutral-900 break-all text-wrap text-gray-400 rounded-sm text-sm font-medium font-['Inter']">
         {values}
       </div>
     </div>

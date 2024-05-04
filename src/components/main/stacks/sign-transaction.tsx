@@ -35,9 +35,9 @@ export function SignTransactionPanel({ prompt }: AddonPanelProps) {
     "\t",
   );
   return (
-    <div className="w-full max-h-[500px] px-2 py-4 bg-zinc-950 rounded border border-zinc-600 flex-col justify-start items-start gap-2.5 inline-flex">
-      <div className="w-full max-h-[500px] overflow-y-auto bg-zinc-950 text-zinc-300 rounded-sm text-sm font-medium font-['Inter'] scrollbar-thin scrollbar scrollbar-thumb-slate-zinc-950/50 scrollbar-track-zinc-950 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
-        <pre className="scrollbar-w-1 scrollbar-h-1 scrollbar scrollbar-thumb-slate-zinc-950/50 scrollbar-track-zinc-950 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
+    <div className="w-full max-h-[500px] px-2 py-4 bg-neutral-900 border-neutral-800 rounded border  flex-col justify-start items-start gap-2.5 inline-flex">
+      <div className="w-full max-h-[500px] overflow-y-auto bg-neutral-900 text-gray-400 rounded-sm text-sm font-medium font-['Inter'] scrollbar-thin scrollbar scrollbar-track-neutral-800 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
+        <pre className="scrollbar-w-1 scrollbar-h-1 scrollbar  scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
           {jsonPayload}
         </pre>
       </div>
