@@ -95,10 +95,13 @@ export const PanelWithTable = forwardRef(function Panel(
 
   const onRowCheck = (idx, state) => {
     const nextState = rowCheckedArr.map((current, i) => {
-      if (i === idx) {
+      if (idx === -1) {
+        return state;
+      } else if (i === idx) {
         return state;
       } else return current;
     });
+    console.log(nextState);
     setRowCheckedArr(nextState);
   };
   const isRowChecked = (idx) => {
@@ -173,7 +176,9 @@ export function TableForPanel({
           <PanelButton
             title="Check All"
             isDisabled={false}
-            onClick={() => {}}
+            onClick={() => {
+              onRowCheck(-1, true);
+            }}
             size={ElementSize.S}
           />
         </div>
