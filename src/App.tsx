@@ -10,8 +10,6 @@ import { RunbookMetadata, Protocol } from "./components/main/types";
 import { sortNavItemsRecursive } from "./utils/helpers";
 import { useAppDispatch } from "./hooks";
 import { addRunbook } from "./reducers/runbooks-slice";
-import RunbookIcon from "./components/icons/runbook";
-import DeploymentIcon from "./components/icons/deployment";
 
 enum PageNav {
   Runbook,
@@ -78,7 +76,7 @@ export default function App() {
         <div className="from-gray-950 to-neutral-900">
           <Header {...{ title: protocolName }}></Header>
           <main className="min-h-screen pt-0 mt-0 pl-16 ">
-            <div className="flex justify-center py-20">
+            <div className="flex justify-center py-9">
               {loading ? <div>Loading...</div> : <Runbook />}
             </div>
           </main>

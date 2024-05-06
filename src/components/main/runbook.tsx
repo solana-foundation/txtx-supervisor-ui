@@ -60,19 +60,6 @@ export default function Runbook() {
   };
   return (
     <div className="w-full justify-center flex flex-col items-center">
-      <div className="self-stretch px-8 flex-col gap-2 flex">
-        <div className="self-stretch text-emerald-500 text-center font-bold font-['Inter'] uppercase">
-          {metadata.name}
-        </div>
-        <div className="self-stretch text-white text-sm font-normal font-['Inter'] text-center">
-          {metadata.description}
-        </div>
-
-        <RunbookStatusBar
-          steps={commandSections.length + 2}
-          scrollHandler={scrollPanelIntoViewHandler}
-        />
-      </div>
       <div className="min-w-[1024px] max-w-[1280px] min-h-full px-6 pt-6 justify-center flex flex-col inline-flex gap-8">
         <RunbookReviewPanel
           ref={panelRefs.current[0]}
