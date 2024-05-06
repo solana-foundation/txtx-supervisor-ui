@@ -54,7 +54,7 @@ export default function App() {
         {/* Small sidebar */}
         <div className=" fixed inset-y-0 left-0 z-50 block w-20 overflow-y-auto border-r dark:border-slate-500/20 xl:pb-4 transition-all">
           <div className="flex h-20 shrink-0 items-center justify-center px-4 py-1">
-            <Logo />
+            {/* <Logo /> */}
           </div>
           {/* <PageNavButton
             activePageNav={pageNav}
