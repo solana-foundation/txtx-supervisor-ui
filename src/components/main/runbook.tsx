@@ -73,7 +73,7 @@ export default function Runbook() {
           scrollHandler={scrollPanelIntoViewHandler}
         />
       </div>
-      <div className="w-2/3 min-h-full px-6 pt-6 justify-center flex flex-col inline-flex">
+      <div className="w-2/3 min-h-full px-6 pt-6 justify-center flex flex-col inline-flex gap-8">
         <RunbookReviewPanel
           ref={panelRefs.current[0]}
           scrollHandler={scrollPanelIntoViewHandler}
