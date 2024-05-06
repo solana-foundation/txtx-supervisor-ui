@@ -217,7 +217,10 @@ function Row({
     );
   }
   return (
-    <div className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex border-t border-neutral-800 first:rounded-t last:rounded-b">
+    <div
+      className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex border-t border-neutral-800 first:rounded-t last:rounded-b cursor-pointer"
+      onClick={() => onRowCheck(index, !isChecked)}
+    >
       <div className="w-8 self-stretch bg-neutral-900 border-l border-neutral-800  flex-col justify-between items-start inline-flex">
         <div className="self-stretch py-2.5 justify-center items-center inline-flex">
           <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
@@ -236,10 +239,7 @@ function Row({
         </div>
       </div>
       {valueCell}
-      <div
-        className="w-8 self-stretch bg-neutral-900 border-l border-neutral-800 flex-col justify-center items-start inline-flex cursor-pointer"
-        onClick={() => onRowCheck(index, !isChecked)}
-      >
+      <div className="w-8 self-stretch bg-neutral-900 border-l border-neutral-800 flex-col justify-center items-start inline-flex">
         <div className="self-stretch py-2.5 justify-center items-start inline-flex">
           <div
             className={classNames(
