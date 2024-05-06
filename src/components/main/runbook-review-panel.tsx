@@ -28,8 +28,8 @@ export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
   const rows: TableForPanelProps[] = [
     {
       index: 0,
-      title: "Check Stacks blockchain Mainnet liveness",
-      cell: { value: "140,349 Blocks" },
+      title: "Check Stacks blockchain network",
+      cell: { value: "Mainnet | 140,349 Blocks" },
     },
     {
       index: 1,
