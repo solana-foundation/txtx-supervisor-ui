@@ -160,6 +160,7 @@ function commandSectionToContent(
           scrollHandler={scrollHandler}
           primaryButton={addon.getActionPrimaryButton(action)}
           secondaryButton={addon.getActionSecondaryButton(action)}
+          ref={ref}
         />
       );
     } else return;
@@ -178,6 +179,7 @@ function commandSectionToContent(
           scrollHandler={scrollHandler}
           primaryButton={addon.getPromptPrimaryButton(prompt)}
           secondaryButton={addon.getPromptSecondaryButton(prompt)}
+          ref={ref}
         />
       );
     } else return;
