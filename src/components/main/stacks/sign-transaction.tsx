@@ -8,6 +8,7 @@ import { StacksNetworkName } from "@stacks/network";
 import { store } from "../../../store";
 import { apolloClient } from "../../..";
 import { Prompt } from "../types";
+import Wallet from "sats-connect";
 
 export enum StacksWalletInteractionType {
   Sign,
@@ -60,16 +61,30 @@ export function SignTransactionPrimaryButton({ prompt }: AddonPanelProps) {
   const onClick = async (_) => {
     if (!deserializedPayload) return;
     const txHex = await payloadToUnsignedTxHex(deserializedPayload, networkId);
-
+    if (!txHex) return;
+    try {
+      const response = await Wallet.request("stx_signTransaction", {
+        transaction: txHex,
+      });
+      if (response.status === "success") {
+        console.log("response!!!", response.result.transaction);
+      } else {
+        console.error(response.error);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    const value = "";
+    return;
     // @ts-ignore
-    const { result } = await window.LeatherProvider.request(
-      "stx_signTransaction",
-      { txHex },
-    );
-    const value = {
-      signed_transaction_bytes: result.txHex,
-      nonce: 0, // todo
-    };
+    // const { result } = await window.LeatherProvider.request(
+    //   "stx_signTransaction",
+    //   { txHex },
+    // );
+    // const value = {
+    //   signed_transaction_bytes: result.txHex,
+    //   nonce: 0, // todo
+    // };
     await apolloClient.mutate({
       mutation: UPDATE_COMMAND_INPUT,
       update(cache, { data: { updateCommandInput } }) {
