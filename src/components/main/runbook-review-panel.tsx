@@ -3,28 +3,10 @@ import CheckMark, { CheckMarkColor } from "../icons/check-mark";
 import addonManager from "../../utils/addons-initializer";
 import { PanelWithTable, TableForPanelProps } from "./panel";
 
-const runbookReviewContent: RunbookReviewItemProps[] = [
-  {
-    title: "http endpoints",
-    subtitle: "https://api.mainnet.hiro.so",
-    data: { status: "online" },
-  },
-  {
-    title: "wallet provisioning",
-    subtitle: "STX",
-    data: { available: "150 STX", required: "100 STX" },
-  },
-];
-
 export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
   { scrollHandler }: { scrollHandler: any },
   ref,
 ) {
-  let children = [...walletConnections()];
-  runbookReviewContent.forEach((item) => {
-    children.push(<RunbookReviewItem {...item} />);
-  });
-
   const rows: TableForPanelProps[] = [
     {
       index: 0,
@@ -44,7 +26,10 @@ export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
     {
       index: 3,
       title: "Check wallet provisioning (STX)",
-      cell: { value: "100 STX" },
+      cell: {
+        value: "100 STX",
+        error: "Wallet does not have enough funds to execute the Runbook",
+      },
     },
   ];
   return (

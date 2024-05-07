@@ -200,11 +200,22 @@ function Row({
   readonly: boolean;
 }) {
   const isChecked = isRowChecked(index);
-  const checkClass = isChecked ? "text-emerald-500" : "text-white";
+  const isError = cell.error !== undefined;
+  const checkClass = isChecked
+    ? "text-emerald-500"
+    : isError
+      ? "text-rose-400"
+      : "text-white";
   let valueCell;
   if (readonly) {
     const data = cell as ReadonlyCellProps;
-    valueCell = <ReadonlyCell isChecked={isChecked} value={data.value} />;
+    valueCell = (
+      <ReadonlyCell
+        isChecked={isChecked}
+        value={data.value}
+        error={data.error}
+      />
+    );
   } else {
     const data = cell as InputCellProps;
     valueCell = (
@@ -213,6 +224,7 @@ function Row({
         value={data.value}
         default={data.default}
         commandUuid={data.commandUuid}
+        error={data.error}
       />
     );
   }
@@ -257,16 +269,35 @@ function Row({
 
 export interface ReadonlyCellProps {
   value: String;
+  error?: String;
 }
 export function ReadonlyCell({
   isChecked,
   value,
+  error,
 }: ReadonlyCellProps & { isChecked: boolean }) {
-  const valueClass = isChecked ? "text-emerald-500" : "text-gray-400";
+  const isError = error !== undefined;
+
+  const containerClass = isChecked
+    ? "bg-neutral-800"
+    : isError
+      ? "bg-stone-900"
+      : "bg-neutral-800";
+
+  const valueClass = isChecked
+    ? "text-emerald-500"
+    : isError
+      ? "text-rose-400"
+      : "text-gray-400";
   return (
     <div className="self-stretch bg-neutral-900 border-neutral-800 flex-col justify-center items-start inline-flex">
       <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
-        <div className="px-2 py-0.5 bg-neutral-800 rounded-sm flex-col justify-end items-start gap-2.5 inline-flex">
+        <div
+          className={classNames(
+            "px-2 py-0.5 rounded-sm flex-col justify-end items-start gap-2.5 inline-flex",
+            containerClass,
+          )}
+        >
           <div
             className={classNames(
               "text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px]",
@@ -285,15 +316,29 @@ export interface InputCellProps {
   value?: string | boolean | number;
   default?: string | boolean | number;
   commandUuid: string;
+  error?: String;
 }
 
 export function InputCell({
   isChecked,
   value,
   commandUuid,
+  error,
   default: defaultValue,
 }: InputCellProps & { isChecked: boolean }) {
-  const valueClass = isChecked ? "text-emerald-500" : "text-gray-400";
+  const isError = error !== undefined;
+
+  const containerClass = isChecked
+    ? "bg-neutral-900"
+    : isError
+      ? "bg-stone-900"
+      : "bg-neutral-900";
+
+  const valueClass = isChecked
+    ? "text-emerald-500"
+    : isError
+      ? "text-rose-400"
+      : "text-gray-400";
   return (
     <div className="grow shrink basis-0 self-stretch bg-neutral-900 flex-col justify-center items-start inline-flex">
       <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
@@ -301,10 +346,11 @@ export function InputCell({
           <input
             id={commandUuid}
             className={classNames(
-              "self-stretch  text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px] text-right",
-              "bg-neutral-900 border-gray-800  rounded-sm",
+              "self-stretch text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px] text-right",
+              "border-gray-800  rounded-sm",
               "focus:outline-none focus:ring-0 ring-0 focus:border-emerald-500",
               valueClass,
+              containerClass,
             )}
             value={defaultValue?.toString() || undefined}
             onChange={console.log}

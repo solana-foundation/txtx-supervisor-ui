@@ -38,7 +38,7 @@ module.exports = {
       pink: { 500: "pink" },
       purple: { 400: "#9f74d7", 500: "#9747FF" },
       red: { 600: "red" },
-      rose: { 500: "rose" },
+      rose: { 400: "#FB6D88" },
       sky: { 500: "sky" },
       slate: {
         500: "#6c7375",
@@ -48,7 +48,7 @@ module.exports = {
       },
       stone: {
         500: "#666565",
-        900: "#2D1F0E",
+        900: "#231517",
       },
       teal: { 600: "teal", 950: "#10372C" },
       violet: { 500: "violet" },
