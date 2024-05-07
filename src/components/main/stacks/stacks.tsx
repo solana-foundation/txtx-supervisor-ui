@@ -32,7 +32,7 @@ export class StacksAddon implements Addon {
       let userData = userSession.loadUserData();
       // todo, we're only returning mainnet address
       let addresses = userData.profile.stxAddress;
-      console.log(userSession);
+
       return {
         address: addresses.mainnet,
         // @ts-ignore

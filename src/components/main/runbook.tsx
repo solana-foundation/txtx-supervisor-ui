@@ -44,9 +44,8 @@ export default function Runbook() {
       return panelRefs.current[i] ?? createRef();
     },
   );
-  console.log(panelRefs);
+
   const scrollPanelIntoViewHandler = (index) => {
-    console.log("scrolling");
     // when we select a new panel, the panels resize some, which makes the
     // location of the ref change. set a timeout to give the css resizing a
     // head start, so this scroll into view has the correct position to scroll to

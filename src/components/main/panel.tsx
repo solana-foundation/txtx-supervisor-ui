@@ -106,7 +106,7 @@ export const PanelWithTable = forwardRef(function Panel(
         return state;
       } else return current;
     });
-    console.log(nextState);
+
     setRowCheckedArr(nextState);
   };
   const isRowChecked = (idx) => {
