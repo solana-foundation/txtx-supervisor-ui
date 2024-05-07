@@ -5,7 +5,12 @@ import { RunbookStepStatus, statusForStepNumber } from "./runbook-status-bar";
 import {
   selectActiveRunbookActiveStep,
   setActiveRunbookActiveStep,
+  setRunbookData,
+  updateFieldDirtinessMap,
 } from "../../reducers/runbooks-slice";
+import { GET_MANUAL, UPDATE_COMMAND_INPUT } from "../../utils/queries";
+import { useMutation } from "@apollo/client";
+import debounce from "debounce";
 
 export enum PanelColor {
   Purple,
@@ -209,29 +214,20 @@ function Row({
   let valueCell;
   if (readonly) {
     const data = cell as ReadonlyCellProps;
-    valueCell = (
-      <ReadonlyCell
-        isChecked={isChecked}
-        value={data.value}
-        error={data.error}
-      />
-    );
+    valueCell = <ReadonlyCell isChecked={isChecked} {...data} />;
   } else {
     const data = cell as InputCellProps;
-    valueCell = (
-      <InputCell
-        isChecked={isChecked}
-        value={data.value}
-        default={data.default}
-        commandUuid={data.commandUuid}
-        error={data.error}
-      />
-    );
+    valueCell = <InputCell isChecked={isChecked} {...data} />;
   }
+
+  const onClick = (event) => {
+    if (event.target.tagName === "INPUT") return;
+    onRowCheck(index, !isChecked);
+  };
   return (
     <div
       className="self-stretch bg-white/opacity-0 justify-start items-start inline-flex border-t border-neutral-800 first:rounded-t last:rounded-b cursor-pointer"
-      onClick={() => onRowCheck(index, !isChecked)}
+      onClick={onClick}
     >
       <div className="w-8 self-stretch bg-neutral-900 border-l border-neutral-800  flex-col justify-between items-start inline-flex">
         <div className="self-stretch py-2.5 justify-center items-center inline-flex">
@@ -316,6 +312,7 @@ export interface InputCellProps {
   value?: string | boolean | number;
   default?: string | boolean | number;
   commandUuid: string;
+  runbookUuid: string;
   error?: String;
 }
 
@@ -323,11 +320,40 @@ export function InputCell({
   isChecked,
   value,
   commandUuid,
+  runbookUuid,
   error,
   default: defaultValue,
 }: InputCellProps & { isChecked: boolean }) {
-  const isError = error !== undefined;
+  const dispatch = useAppDispatch();
+  const [updateCommandInput, { data, loading, error: mutationErr }] =
+    useMutation(UPDATE_COMMAND_INPUT, {
+      update(cache, { data: { updateCommandInput } }) {
+        const runbookData = {
+          uuid: runbookUuid,
+          data: updateCommandInput,
+        };
+        cache.writeQuery({
+          query: GET_MANUAL,
+          data: {
+            runbook: runbookData,
+          },
+        });
+        dispatch(setRunbookData(runbookData));
+      },
+    });
+  const onChange = (event) => {
+    updateCommandInput({
+      variables: {
+        runbookName: runbookUuid,
+        commandUuid: commandUuid.replace("local:", ""),
+        inputName: "",
+        value: event.target.value,
+      },
+    });
+  };
+  const debouncedOnChange = debounce(onChange, 500);
 
+  const isError = error !== undefined;
   const containerClass = isChecked
     ? "bg-neutral-900"
     : isError
@@ -352,8 +378,8 @@ export function InputCell({
               valueClass,
               containerClass,
             )}
-            value={defaultValue?.toString() || undefined}
-            onChange={console.log}
+            defaultValue={defaultValue?.toString() || undefined}
+            onChange={debouncedOnChange}
           />
         </div>
       </div>

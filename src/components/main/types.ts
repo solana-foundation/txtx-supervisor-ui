@@ -99,6 +99,7 @@ export interface Input {
   default?: string | boolean | number;
   description?: string;
   commandUuid: string;
+  runbookUuid: string;
 }
 
 export interface Output {

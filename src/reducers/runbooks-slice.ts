@@ -170,6 +170,7 @@ export const runbooksSlice = createSlice({
           } else if (type === "Input") {
             let input: Input = {
               commandUuid: constructUuid,
+              runbookUuid: uuid,
               value: commandInputsEvaluationResult.value,
               default: commandInputsEvaluationResult.default,
               description: commandInputsEvaluationResult.description,

@@ -109,6 +109,7 @@ function commandSectionToContent(
               value: input.value,
               default: input.default,
               commandUuid: input.commandUuid,
+              runbookUuid: input.runbookUuid,
             },
           });
         } else {
@@ -119,6 +120,7 @@ function commandSectionToContent(
               value: input.value,
               default: input.default,
               commandUuid: input.commandUuid,
+              runbookUuid: input.runbookUuid,
             },
           });
         }
