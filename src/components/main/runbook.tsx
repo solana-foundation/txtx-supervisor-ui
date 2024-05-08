@@ -6,7 +6,6 @@ import {
   setRunbookData,
   selectActiveRunbook,
 } from "../../reducers/runbooks-slice";
-import RunbookStatusBar from "./runbook-status-bar";
 import { PanelWithTable, Panel, TableForPanelProps } from "./panel";
 import {
   Action,
@@ -153,6 +152,7 @@ function commandSectionToContent(
     if (element) {
       return (
         <Panel
+          key={`command-section-${i}-${commandSection.type}`}
           content={element}
           title={action.name}
           description={""}
@@ -172,6 +172,7 @@ function commandSectionToContent(
     if (element) {
       return (
         <Panel
+          key={`command-section-${i}-${commandSection.type}`}
           content={element}
           title={prompt.name}
           description={""}
