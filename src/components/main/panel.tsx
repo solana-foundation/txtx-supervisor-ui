@@ -45,8 +45,20 @@ export const Panel = forwardRef(function Panel(
   }: PanelProps,
   ref: React.ForwardedRef<any>,
 ) {
+  const activeStep = useAppSelector(selectActiveRunbookActiveStep);
+
+  let status = statusForStepNumber(panelIndex, activeStep);
+
+  const contentVisibility =
+    status === RunbookStepStatus.Queued ? "invisible" : "";
+  const buttonsDisabled = status === RunbookStepStatus.Complete;
   return (
-    <div className="w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex">
+    <div
+      className={classNames(
+        "w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex",
+        contentVisibility,
+      )}
+    >
       <div className="self-stretch justify-start items-start inline-flex">
         <div
           className="scroll-mt-44 grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono'] uppercase"
@@ -63,7 +75,7 @@ export const Panel = forwardRef(function Panel(
         <div className="flex-col justify-center items-end gap-8 inline-flex">
           <PrimaryPanelButton
             panelIndex={panelIndex}
-            disabled={primaryButton?.disabled}
+            disabled={primaryButton?.disabled || buttonsDisabled}
             button={primaryButton}
             scrollHandler={scrollHandler}
           />
@@ -97,6 +109,8 @@ export const PanelWithTable = forwardRef(function Panel(
   }: PanelWithTableProps,
   ref: React.ForwardedRef<any>,
 ) {
+  const activeStep = useAppSelector(selectActiveRunbookActiveStep);
+
   const [rowCheckedArr, setRowCheckedArr] = useState(
     new Array(rows.length).fill(false),
   );
@@ -116,8 +130,18 @@ export const PanelWithTable = forwardRef(function Panel(
     return rowCheckedArr[idx];
   };
 
+  let status = statusForStepNumber(panelIndex, activeStep);
+
+  const contentVisibility =
+    status === RunbookStepStatus.Queued ? "invisible" : "";
+  const buttonsDisabled = status === RunbookStepStatus.Complete;
   return (
-    <div className="w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex">
+    <div
+      className={classNames(
+        "w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex",
+        contentVisibility,
+      )}
+    >
       <div className="self-stretch justify-start items-start inline-flex">
         <div
           className="scroll-mt-44 grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono'] uppercase"
@@ -142,7 +166,8 @@ export const PanelWithTable = forwardRef(function Panel(
             panelIndex={panelIndex}
             disabled={
               primaryButton?.disabled ||
-              rowCheckedArr.some((isChecked) => !isChecked)
+              rowCheckedArr.some((isChecked) => !isChecked) ||
+              buttonsDisabled
             }
             button={primaryButton}
             scrollHandler={scrollHandler}
@@ -445,6 +470,7 @@ export function PrimaryPanelButton({
       dispatch(setActiveRunbookActiveStep(panelIndex + 1));
     };
   }
+  console.log(button?.title, disabled, button?.disabled);
   const isDisabled = disabled || button?.disabled || false;
   return (
     <PanelButton

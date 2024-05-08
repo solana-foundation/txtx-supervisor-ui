@@ -1,9 +1,8 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef } from "react";
 import CheckMark, { CheckMarkColor } from "../icons/check-mark";
 import addonManager from "../../utils/addons-initializer";
 import { ButtonColor, PanelWithTable } from "./panel";
 import { ConnectWalletFunction, ConnectedWalletInfo } from "../../utils/addons";
-import { error } from "console";
 
 export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
   { scrollHandler }: { scrollHandler: any },

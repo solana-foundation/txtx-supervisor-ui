@@ -54,7 +54,7 @@ export default function Runbook() {
         block: "start",
         inline: "start",
       });
-    }, 5);
+    }, 200);
   };
   return (
     <div className="w-full justify-center flex flex-col items-center">
