@@ -9,6 +9,7 @@ import { store } from "../../../store";
 import { apolloClient } from "../../..";
 import { Prompt } from "../types";
 import Wallet from "sats-connect";
+import posthog from "posthog-js";
 
 export enum StacksWalletInteractionType {
   Sign,
@@ -68,6 +69,7 @@ export function SignTransactionPrimaryButton({ prompt }: AddonPanelProps) {
       });
       if (response.status === "success") {
         console.log("response!!!", response.result.transaction);
+        posthog.capture("onchain_success");
         const value = {
           signed_transaction_bytes: response.result.transaction,
           nonce: 0, // todo
@@ -96,8 +98,20 @@ export function SignTransactionPrimaryButton({ prompt }: AddonPanelProps) {
         });
       } else {
         console.error(response.error);
+        posthog.capture("onchain_error", {
+          addon: "stacks",
+          action: "sign_transaction",
+          message: response.error.message,
+          code: response.error.code,
+          data: response.error.data,
+        });
       }
     } catch (error) {
+      posthog.capture("onchain_failure", {
+        addon: "stacks",
+        action: "sign_transaction",
+        message: error,
+      });
       console.error(error);
     }
   };
