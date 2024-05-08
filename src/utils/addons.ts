@@ -42,8 +42,12 @@ export class AddonManager {
 }
 
 export interface ConnectedWalletInfo {
+  chain: string;
   address: string;
   walletName: string;
+  balance: number;
+  requiredBalance: number;
+  ticker: string;
 }
 export type ConnectWalletFunction = () => void;
 

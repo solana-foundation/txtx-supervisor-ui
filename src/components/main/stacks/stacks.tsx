@@ -32,9 +32,12 @@ export class StacksAddon implements Addon {
       let userData = userSession.loadUserData();
       // todo, we're only returning mainnet address
       let addresses = userData.profile.stxAddress;
-
       return {
         address: addresses.mainnet,
+        chain: "Stacks",
+        ticker: "STX",
+        balance: 100,
+        requiredBalance: 150,
         // @ts-ignore
         walletName: window.LeatherProvider
           ? "Leather"

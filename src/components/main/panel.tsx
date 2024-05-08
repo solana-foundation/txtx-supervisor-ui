@@ -156,7 +156,7 @@ export const PanelWithTable = forwardRef(function Panel(
 export interface TableForPanelProps {
   index: number;
   title: string;
-  cell: ReadonlyCellProps | InputCellProps;
+  cell: ReadonlyCellProps | InputCellProps | ButtonCellProps;
 }
 export function TableForPanel({
   readonly,
@@ -198,7 +198,7 @@ export function TableForPanel({
   );
 }
 
-function Row({
+export function Row({
   index,
   title,
   readonly,
@@ -218,7 +218,10 @@ function Row({
       ? "text-rose-400"
       : "text-white";
   let valueCell;
-  if (readonly) {
+  if (cell.hasOwnProperty("onClick")) {
+    const data = cell as ButtonCellProps;
+    valueCell = <ButtonCell {...data} />;
+  } else if (readonly) {
     const data = cell as ReadonlyCellProps;
     valueCell = <ReadonlyCell isChecked={isChecked} {...data} />;
   } else {
@@ -392,13 +395,36 @@ export function InputCell({
     </div>
   );
 }
+
+export interface ButtonCellProps {
+  title: string;
+  onClick: any;
+  color?: ButtonColor;
+  error: undefined;
+}
+
+export function ButtonCell({ title, onClick, color }: ButtonCellProps) {
+  return (
+    <div className="self-stretch bg-neutral-900 border-neutral-800 flex-col justify-center items-start inline-flex">
+      <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
+        <PanelButton
+          size={ElementSize.S}
+          title={title}
+          onClick={onClick}
+          isDisabled={false}
+          color={color}
+        />
+      </div>
+    </div>
+  );
+}
 interface PrimaryPanelButtonProps {
   button?: PanelButton;
   panelIndex: number;
   disabled?: boolean;
   scrollHandler: any;
 }
-function PrimaryPanelButton({
+export function PrimaryPanelButton({
   button,
   panelIndex,
   disabled = false,
@@ -430,6 +456,10 @@ function PrimaryPanelButton({
   );
 }
 
+export enum ButtonColor {
+  Emerald,
+  Amber,
+}
 export enum ElementSize {
   S,
   M,
@@ -442,17 +472,22 @@ export interface PanelButtonProps {
   isDisabled: boolean;
   onClick: MouseEventHandler<HTMLButtonElement>;
   size?: ElementSize;
+  color?: ButtonColor;
 }
 
-function PanelButton({
+export function PanelButton({
   title,
   isDisabled,
   onClick,
   size = ElementSize.M,
+  color = ButtonColor.Emerald,
 }: PanelButtonProps) {
   let colorClass = isDisabled
     ? "opacity-30 bg-black text-zinc-400"
-    : "bg-teal-950 text-emerald-500";
+    : color === ButtonColor.Emerald
+      ? "bg-teal-950 text-emerald-500"
+      : "bg-stone-850 text-amber-400 border-stone-700 border";
+
   let sizeClass =
     size === ElementSize.XXL
       ? "w-80 h-20"

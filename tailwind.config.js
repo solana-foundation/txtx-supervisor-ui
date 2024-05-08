@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     colors: {
       amber: {
-        400: "amber",
+        400: "#FFB615",
       },
       black: "#000000",
       blue: {
@@ -48,6 +48,8 @@ module.exports = {
       },
       stone: {
         500: "#666565",
+        700: "#4A381F",
+        850: "#2B2011",
         900: "#231517",
       },
       teal: { 600: "teal", 950: "#10372C" },

@@ -76,6 +76,7 @@ export const payloadToUnsignedTxHex = async (
     case PayloadType.ContractCall:
       const contractCallPayload = payload as ContractCallPayload;
       const contractAddress = contractCallPayload.contractAddress;
+      console.log(userSession);
       let userData = userSession.loadUserData();
       console.log(userData);
       // todo, we're only returning mainnet address
