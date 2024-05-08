@@ -68,45 +68,38 @@ export function SignTransactionPrimaryButton({ prompt }: AddonPanelProps) {
       });
       if (response.status === "success") {
         console.log("response!!!", response.result.transaction);
+        const value = {
+          signed_transaction_bytes: response.result.transaction,
+          nonce: 0, // todo
+        };
+        await apolloClient.mutate({
+          mutation: UPDATE_COMMAND_INPUT,
+          update(cache, { data: { updateCommandInput } }) {
+            const runbookData = {
+              uuid: runbookUuid,
+              data: updateCommandInput,
+            };
+            cache.writeQuery({
+              query: GET_MANUAL,
+              data: {
+                runbook: runbookData,
+              },
+            });
+            store.dispatch(setRunbookData(runbookData));
+          },
+          variables: {
+            runbookName: runbookUuid,
+            commandUuid: uuid.replace("local:", ""),
+            inputName: "",
+            value: JSON.stringify(value),
+          },
+        });
       } else {
         console.error(response.error);
       }
     } catch (error) {
       console.error(error);
     }
-    const value = "";
-    return;
-    // @ts-ignore
-    // const { result } = await window.LeatherProvider.request(
-    //   "stx_signTransaction",
-    //   { txHex },
-    // );
-    // const value = {
-    //   signed_transaction_bytes: result.txHex,
-    //   nonce: 0, // todo
-    // };
-    await apolloClient.mutate({
-      mutation: UPDATE_COMMAND_INPUT,
-      update(cache, { data: { updateCommandInput } }) {
-        const runbookData = {
-          uuid: runbookUuid,
-          data: updateCommandInput,
-        };
-        cache.writeQuery({
-          query: GET_MANUAL,
-          data: {
-            runbook: runbookData,
-          },
-        });
-        store.dispatch(setRunbookData(runbookData));
-      },
-      variables: {
-        runbookName: runbookUuid,
-        commandUuid: uuid.replace("local:", ""),
-        inputName: "",
-        value: JSON.stringify(value),
-      },
-    });
   };
   return onClick;
 }
