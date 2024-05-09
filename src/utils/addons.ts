@@ -1,38 +1,49 @@
-import { PanelButton } from "../components/main/panel";
 import { Action, Prompt } from "../components/main/types";
 
 export class AddonManager {
-  public addons: { [namespace: string]: Addon } = {};
+  public addons: { [namespace: string]: { addon: Addon; networks: string[] } } =
+    {};
 
   public registerAddon(namespace: string, addon: Addon) {
     if (this.addons[namespace]) {
       throw new Error(`namespace ${namespace} already exists`);
     }
 
-    this.addons[namespace] = addon;
+    this.addons[namespace] = { addon, networks: [] };
+  }
+
+  public addNetworkInstance(namespace: string, networkId: string) {
+    if (!this.addons[namespace].networks.includes(networkId)) {
+      this.addons[namespace].networks.push(networkId);
+    }
   }
 
   public getAddonFromNamespace(namespace: string): Addon {
     if (!this.addons[namespace]) {
       throw new Error(`could not find addon for namespace ${namespace}`);
     }
-    return this.addons[namespace];
+    return this.addons[namespace].addon;
   }
 
-  public getWalletConnectionPrompts() {
+  public async getWalletConnectionPrompts(): Promise<
+    (ConnectedWalletInfo | ConnectWalletFunction)[]
+  > {
     const addons = this.addons;
-    return Object.keys(addons).map((namespace) => {
-      return {
-        namespace,
-        walletConnection: addons[namespace].walletConnection(),
-      };
-    });
+    const namespaces = Object.keys(addons);
+    const prompts: any[] = [];
+    for (const namespace of namespaces) {
+      const { addon, networks } = addons[namespace];
+      for (const network of networks) {
+        prompts.push(await addon.walletConnection(network));
+      }
+    }
+    return prompts;
   }
 
   public areAllWalletsConnected() {
     const addons = this.addons;
     for (let namespace of Object.keys(addons)) {
-      let addon = addons[namespace];
+      let addon = addons[namespace].addon;
       if (!addon.isWalletConnected()) {
         return false;
       }
@@ -52,9 +63,9 @@ export interface ConnectedWalletInfo {
 export type ConnectWalletFunction = () => void;
 
 export abstract class Addon {
-  public abstract walletConnection():
-    | ConnectedWalletInfo
-    | ConnectWalletFunction;
+  public abstract walletConnection(
+    networkId: string,
+  ): Promise<ConnectedWalletInfo | ConnectWalletFunction>;
   public abstract isWalletConnected(): boolean;
 
   // prompts
@@ -62,22 +73,24 @@ export abstract class Addon {
 
   public abstract getPromptPrimaryButton(
     prompt: Prompt,
-  ): PanelButton | undefined;
+    panelIndex: number,
+    scrollHandler: any,
+  ): JSX.Element | undefined;
 
   public abstract getPromptSecondaryButton(
     prompt: Prompt,
-  ): PanelButton | undefined;
+  ): JSX.Element | undefined;
 
   // actions
-  public abstract getActionElement(
-    prompt: Action,
-  ): React.JSX.Element | undefined;
+  public abstract getActionElement(prompt: Action): JSX.Element | undefined;
 
   public abstract getActionPrimaryButton(
     prompt: Action,
-  ): PanelButton | undefined;
+    panelIndex: number,
+    scrollHandler: any,
+  ): JSX.Element | undefined;
 
   public abstract getActionSecondaryButton(
     prompt: Action,
-  ): PanelButton | undefined;
+  ): JSX.Element | undefined;
 }

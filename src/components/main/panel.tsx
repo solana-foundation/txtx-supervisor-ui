@@ -28,8 +28,8 @@ export interface PanelProps {
   title: String;
   description: String;
   content: JSX.Element;
-  primaryButton?: PanelButton;
-  secondaryButton?: PanelButton;
+  primaryButton?: PanelButton | JSX.Element;
+  secondaryButton?: PanelButton | JSX.Element;
   panelIndex: number;
   scrollHandler: any;
 }
@@ -52,6 +52,21 @@ export const Panel = forwardRef(function Panel(
   const contentVisibility =
     status === RunbookStepStatus.Queued ? "invisible" : "";
   const buttonsDisabled = status === RunbookStepStatus.Complete;
+
+  let primaryButtonEl;
+  if (primaryButton === undefined || primaryButton.hasOwnProperty("title")) {
+    const button = primaryButton as PanelButton | undefined;
+    primaryButtonEl = (
+      <PrimaryPanelButton
+        panelIndex={panelIndex}
+        disabled={button?.disabled || buttonsDisabled}
+        button={button}
+        scrollHandler={scrollHandler}
+      />
+    );
+  } else {
+    primaryButtonEl = primaryButton as JSX.Element;
+  }
   return (
     <div
       className={classNames(
@@ -73,12 +88,7 @@ export const Panel = forwardRef(function Panel(
       {content}
       <div className="pt-2 self-stretch justify-end items-center gap-2.5 inline-flex">
         <div className="flex-col justify-center items-end gap-8 inline-flex">
-          <PrimaryPanelButton
-            panelIndex={panelIndex}
-            disabled={primaryButton?.disabled || buttonsDisabled}
-            button={primaryButton}
-            scrollHandler={scrollHandler}
-          />
+          {primaryButtonEl}
         </div>
       </div>
     </div>
@@ -470,7 +480,7 @@ export function PrimaryPanelButton({
       dispatch(setActiveRunbookActiveStep(panelIndex + 1));
     };
   }
-  console.log(button?.title, disabled, button?.disabled);
+
   const isDisabled = disabled || button?.disabled || false;
   return (
     <PanelButton

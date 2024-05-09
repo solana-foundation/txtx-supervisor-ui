@@ -1,13 +1,21 @@
-import React, { forwardRef } from "react";
-import CheckMark, { CheckMarkColor } from "../icons/check-mark";
+import React, { forwardRef, useEffect, useState } from "react";
 import addonManager from "../../utils/addons-initializer";
 import { ButtonColor, PanelWithTable } from "./panel";
-import { ConnectWalletFunction, ConnectedWalletInfo } from "../../utils/addons";
 
 export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
   { scrollHandler }: { scrollHandler: any },
   ref: React.ForwardedRef<any>,
 ) {
+  const [walletData, setWalletData] = useState<any>([]);
+  useEffect(() => {
+    const getSetWalletData = async () => {
+      let walletConnectionPrompts =
+        await addonManager.getWalletConnectionPrompts();
+      setWalletData(walletConnectionPrompts);
+    };
+    getSetWalletData();
+  }, []);
+
   let rows = [
     {
       index: 0,
@@ -16,7 +24,7 @@ export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
     },
   ];
 
-  const allRows = walletConnections().reduce((rows, data, i, _) => {
+  const allRows = walletData.reduce((rows, data, i, _) => {
     const index = i * 3 + 1;
     if (typeof data === "function") {
       return rows.concat([
@@ -86,67 +94,3 @@ export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
     />
   );
 });
-
-type WalletConnectionResult = ConnectedWalletInfo | ConnectWalletFunction;
-
-export function walletConnections(): WalletConnectionResult[] {
-  let connection = addonManager.getWalletConnectionPrompts();
-  return connection.map(({ namespace, walletConnection }) => {
-    if (walletConnection !== undefined) {
-      return walletConnection;
-    } else {
-      throw new Error(`invalid wallet connection for namespace ${namespace}`);
-    }
-  });
-}
-
-export interface RunbookReviewItemProps {
-  title: string;
-  subtitle: string;
-  data: { [key: string]: string };
-}
-
-export function RunbookReviewItem({
-  title,
-  subtitle,
-  data,
-}: RunbookReviewItemProps) {
-  const content = Object.keys(data).map((key) => {
-    const value = data[key];
-    return (
-      <div
-        key={key}
-        className="text-nowrap self-stretch justify-start items-start gap-1 inline-flex"
-      >
-        <div className="text-xs uppercase text-white text-[10px] font-bold font-['Inter']">
-          {key}
-        </div>
-        <div className="text-xs uppercase text-right text-emerald-300 text-[10px] font-bold font-['Inter']">
-          {value}
-        </div>
-      </div>
-    );
-  });
-  return (
-    <div>
-      <div className="text-white text-xs font-bold font-['Inter'] uppercase">
-        {title}
-      </div>
-      <div className="pl-2 pr-4 py-2 bg-white bg-opacity-20 rounded justify-start items-center gap-1 inline-flex">
-        <div className="flex-col justify-start items-center gap-2.5 inline-flex">
-          <div className="w-8 h-8 pl-[3.50px] pr-[4.50px] py-1 justify-center items-center inline-flex">
-            <div className="w-6 h-6 relative flex-col justify-start items-start flex text-emerald-400">
-              <CheckMark color={CheckMarkColor.Emerald} />
-            </div>
-          </div>
-        </div>
-        <div className="flex-col justify-start items-start gap-1 inline-flex">
-          <div className="text-white text-sm font-bold font-['Inter']">
-            {subtitle}
-          </div>
-          {content}
-        </div>
-      </div>
-    </div>
-  );
-}

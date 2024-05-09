@@ -5,11 +5,12 @@ import { payloadToUnsignedTxHex } from "./stacks-helpers";
 import { GET_MANUAL, UPDATE_COMMAND_INPUT } from "../../../utils/queries";
 import { setRunbookData } from "../../../reducers/runbooks-slice";
 import { StacksNetworkName } from "@stacks/network";
-import { store } from "../../../store";
-import { apolloClient } from "../../..";
 import { Prompt } from "../types";
 import Wallet from "sats-connect";
 import posthog from "posthog-js";
+import { PrimaryPanelButton } from "../panel";
+import { useAppDispatch } from "../../../hooks";
+import { useMutation } from "@apollo/client";
 
 export enum StacksWalletInteractionType {
   Sign,
@@ -47,7 +48,37 @@ export function SignTransactionPanel({ prompt }: AddonPanelProps) {
   );
 }
 
-export function SignTransactionPrimaryButton({ prompt }: AddonPanelProps) {
+export interface AddonButtonProps {
+  prompt: Prompt;
+  panelIndex: number;
+  scrollHandler: any;
+}
+
+export function SignTransactionPrimaryButton({
+  prompt,
+  panelIndex,
+  scrollHandler,
+}: AddonButtonProps) {
+  const dispatch = useAppDispatch();
+  const [updateCommandInput, { data, loading, error }] = useMutation(
+    UPDATE_COMMAND_INPUT,
+    {
+      update(cache, { data: { updateCommandInput } }) {
+        const runbookData = {
+          uuid: runbookUuid,
+          data: updateCommandInput,
+        };
+        cache.writeQuery({
+          query: GET_MANUAL,
+          data: {
+            runbook: runbookData,
+          },
+        });
+        dispatch(setRunbookData(runbookData));
+      },
+    },
+  );
+
   const { inputs, uuid, runbookUuid } = prompt;
   let deserializedPayload;
   if (inputs !== null) {
@@ -74,21 +105,7 @@ export function SignTransactionPrimaryButton({ prompt }: AddonPanelProps) {
           signed_transaction_bytes: response.result.transaction,
           nonce: 0, // todo
         };
-        await apolloClient.mutate({
-          mutation: UPDATE_COMMAND_INPUT,
-          update(cache, { data: { updateCommandInput } }) {
-            const runbookData = {
-              uuid: runbookUuid,
-              data: updateCommandInput,
-            };
-            cache.writeQuery({
-              query: GET_MANUAL,
-              data: {
-                runbook: runbookData,
-              },
-            });
-            store.dispatch(setRunbookData(runbookData));
-          },
+        updateCommandInput({
           variables: {
             runbookName: runbookUuid,
             commandUuid: uuid.replace("local:", ""),
@@ -115,5 +132,14 @@ export function SignTransactionPrimaryButton({ prompt }: AddonPanelProps) {
       console.error(error);
     }
   };
-  return onClick;
+  return (
+    <PrimaryPanelButton
+      button={{
+        title: "Sign Transaction",
+        onClick: onClick,
+      }}
+      panelIndex={panelIndex}
+      scrollHandler={scrollHandler}
+    />
+  );
 }

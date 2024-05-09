@@ -56,6 +56,7 @@ export default function Runbook() {
       });
     }, 200);
   };
+
   return (
     <div className="w-full justify-center flex flex-col items-center">
       <div className="min-w-[1024px] max-w-[1280px] min-h-full px-6 pt-6 justify-center flex flex-col inline-flex gap-8">
@@ -158,7 +159,11 @@ function commandSectionToContent(
           description={""}
           panelIndex={i + 1}
           scrollHandler={scrollHandler}
-          primaryButton={addon.getActionPrimaryButton(action)}
+          primaryButton={addon.getActionPrimaryButton(
+            action,
+            i + 1,
+            scrollHandler,
+          )}
           secondaryButton={addon.getActionSecondaryButton(action)}
           ref={ref}
         />
@@ -178,7 +183,11 @@ function commandSectionToContent(
           description={""}
           panelIndex={i + 1}
           scrollHandler={scrollHandler}
-          primaryButton={addon.getPromptPrimaryButton(prompt)}
+          primaryButton={addon.getPromptPrimaryButton(
+            prompt,
+            i + 1,
+            scrollHandler,
+          )}
           secondaryButton={addon.getPromptSecondaryButton(prompt)}
           ref={ref}
         />
