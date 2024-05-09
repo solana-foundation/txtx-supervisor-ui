@@ -45,12 +45,13 @@
     "graphql": "^16.8.1",
     "headlessui": "^0.0.0",
     "monaco-editor": "=0.45.0",
+    "posthog-js": "^1.130.2",
     "preact": "^10.19.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.1.0",
     "redux-thunk": "^3.1.0",
-    "sats-connect": "^1.4.1",
+    "sats-connect": "^2.3.0",
     "tailwindcss": "^3.4.1"
   },
   "alias": {

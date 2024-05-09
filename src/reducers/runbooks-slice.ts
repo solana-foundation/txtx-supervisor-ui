@@ -12,12 +12,13 @@ import {
   SerializedRunbookData,
 } from "../components/main/types";
 import { sortCommands } from "../utils/helpers";
-// import addonManager from "../utils/addons-initializer";
+import addonManager from "../utils/addons-initializer";
 
 export interface IndexedRunbook {
   metadata: RunbookMetadata;
   data?: CommandData[]; // todo: see if we can remove
   commandSections: CommandSectionIndex[];
+  namespacedNetworks: { [key: string]: string[] };
   outputs: Output[];
   isDirty: boolean;
   fieldDirtinessMap: { [key: string]: boolean };
@@ -61,6 +62,7 @@ export const runbooksSlice = createSlice({
           metadata,
           isDirty: false,
           commandSections: [],
+          namespacedNetworks: {},
           outputs: [],
           fieldDirtinessMap: {},
           isActive,
@@ -78,6 +80,7 @@ export const runbooksSlice = createSlice({
         }
         let runbookData: CommandData[] = JSON.parse(data);
         runbookData.sort(sortCommands);
+        let namespacedNetworks = {};
         const fieldDirtinessMap: { [key: string]: boolean } = {};
         let commandSections: CommandSectionIndex[] = [];
         let currentSection: CommandSectionType | null = null;
@@ -99,7 +102,8 @@ export const runbooksSlice = createSlice({
 
           const type = commandInstance.typing;
           if (type === "Prompt") {
-            if (commandInstance.namespace === null) {
+            const namespace = commandInstance.namespace;
+            if (namespace === null) {
               console.error("prompt must have namespace");
               continue;
             }
@@ -109,8 +113,13 @@ export const runbooksSlice = createSlice({
               inputs: commandInputsEvaluationResult,
               uuid: constructUuid,
               runbookUuid: uuid,
-              namespace: commandInstance.namespace,
+              namespace: namespace,
             };
+
+            const networkId = commandInputsEvaluationResult["network_id"];
+            if (networkId !== undefined) {
+              addonManager.addNetworkInstance(namespace, networkId);
+            }
 
             if (currentSection === CommandSectionType.Prompt) {
               commandSections[cursor].items.push(prompt);
@@ -170,6 +179,7 @@ export const runbooksSlice = createSlice({
           } else if (type === "Input") {
             let input: Input = {
               commandUuid: constructUuid,
+              runbookUuid: uuid,
               value: commandInputsEvaluationResult.value,
               default: commandInputsEvaluationResult.default,
               description: commandInputsEvaluationResult.description,
@@ -204,6 +214,7 @@ export const runbooksSlice = createSlice({
           ...state[runbookIdx],
           data: runbookData,
           commandSections,
+          namespacedNetworks,
           fieldDirtinessMap,
           outputs,
         };

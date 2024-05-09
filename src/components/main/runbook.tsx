@@ -6,8 +6,7 @@ import {
   setRunbookData,
   selectActiveRunbook,
 } from "../../reducers/runbooks-slice";
-import RunbookStatusBar from "./runbook-status-bar";
-import { Panel, PanelButton, PanelColor, PanelContent } from "./panel";
+import { PanelWithTable, Panel, TableForPanelProps } from "./panel";
 import {
   Action,
   CommandSectionIndex,
@@ -16,7 +15,6 @@ import {
   Prompt,
 } from "./types";
 import addonManager from "../../utils/addons-initializer";
-import { InputFieldSet } from "./input-field";
 import { RunbookReviewPanel } from "./runbook-review-panel";
 import { OutputReviewPanel } from "./output-review-panel";
 
@@ -45,9 +43,8 @@ export default function Runbook() {
       return panelRefs.current[i] ?? createRef();
     },
   );
-  console.log(panelRefs);
+
   const scrollPanelIntoViewHandler = (index) => {
-    console.log("scrolling");
     // when we select a new panel, the panels resize some, which makes the
     // location of the ref change. set a timeout to give the css resizing a
     // head start, so this scroll into view has the correct position to scroll to
@@ -57,153 +54,144 @@ export default function Runbook() {
         block: "start",
         inline: "start",
       });
-    }, 5);
+    }, 200);
   };
+
   return (
-    <div className="w-full min-h-full px-6 pt-6 flex-col justify-start items-start gap-8 inline-flex">
-      <div className="self-stretch h-[69px] px-8 flex-col justify-start items-start gap-2 flex">
-        <div className="self-stretch text-emerald-300 text-4xl font-bold font-['Inter']">
-          {metadata.name}
-        </div>
-        <div className="self-stretch text-white text-sm font-normal font-['Inter']">
-          {metadata.description}
-        </div>
-      </div>
-      {
-        <RunbookStatusBar
-          steps={commandSections.length + 2}
-          scrollHandler={scrollPanelIntoViewHandler}
-        />
-      }
-      {
+    <div className="w-full justify-center flex flex-col items-center">
+      <div className="min-w-[1024px] max-w-[1280px] min-h-full px-6 pt-6 justify-center flex flex-col inline-flex gap-8">
         <RunbookReviewPanel
           ref={panelRefs.current[0]}
           scrollHandler={scrollPanelIntoViewHandler}
         />
-      }
-      {commandSections.reduce((sectionPanels, commandSection, i) => {
-        const content = commandSectionToContent(commandSection);
-        if (content) {
-          sectionPanels.push(
-            <Panel
-              key={`command-section-${i}-${commandSection.type}`}
-              panelIndex={i + 1}
-              color={PanelColor.Yellow}
-              title={commandSectionToTitle(commandSection)}
-              primaryButton={commandSectionToPrimaryButton(commandSection)}
-              secondaryButton={commandSectionToSecondaryButton(commandSection)}
-              content={content}
-              scrollHandler={scrollPanelIntoViewHandler}
-              ref={panelRefs.current[i + 1]}
-            />,
+
+        {commandSections.reduce((sectionPanels, commandSection, i) => {
+          const content = commandSectionToContent(
+            commandSection,
+            scrollPanelIntoViewHandler,
+            panelRefs.current[i + 1],
+            i,
           );
-        }
-        return sectionPanels;
-      }, [] as any[])}
-      <OutputReviewPanel
-        outputs={outputs}
-        panelIndex={commandSections.length + 1}
-        ref={panelRefs.current[commandSections.length + 1]}
-        scrollHandler={scrollPanelIntoViewHandler}
-      />
+          if (content) {
+            sectionPanels.push(content);
+          }
+          return sectionPanels;
+        }, [] as any[])}
+
+        <OutputReviewPanel
+          outputs={outputs}
+          panelIndex={commandSections.length + 1}
+          ref={panelRefs.current[commandSections.length + 1]}
+          scrollHandler={scrollPanelIntoViewHandler}
+        />
+      </div>
     </div>
   );
 }
 
-function commandSectionToTitle(commandSection: CommandSectionIndex): string {
-  if (commandSection.type === CommandSectionType.Input) return "inputs review";
-  else if (commandSection.type === CommandSectionType.Output) {
-    throw new Error("todo");
-  } else if (commandSection.type === CommandSectionType.Action) {
-    let action = commandSection.items[0] as Action;
-    return action.name;
-  } else {
-    let prompt = commandSection.items[0] as Prompt;
-    return prompt.name;
-  }
-}
-
 function commandSectionToContent(
   commandSection: CommandSectionIndex,
+  scrollHandler: any,
+  ref: any,
+  i: number,
 ): JSX.Element | undefined {
   if (commandSection.type === CommandSectionType.Input) {
     let [mutableChildren, immutableChildren] = commandSection.items.reduce(
-      (children, item) => {
+      (children, item, idx) => {
         let [mutableChildren, immutableChildren] = children;
         let input = item as Input;
         if (input.value === undefined) {
-          mutableChildren.push(<InputFieldSet {...input} />);
+          mutableChildren.push({
+            title: input.description || "Input",
+            index: idx,
+            cell: {
+              value: input.value,
+              default: input.default,
+              commandUuid: input.commandUuid,
+              runbookUuid: input.runbookUuid,
+            },
+          });
         } else {
-          immutableChildren.push(<InputFieldSet {...input} />);
+          immutableChildren.push({
+            title: input.description || "Input",
+            index: idx,
+            cell: {
+              value: input.value,
+              default: input.default,
+              commandUuid: input.commandUuid,
+              runbookUuid: input.runbookUuid,
+            },
+          });
         }
         return [mutableChildren, immutableChildren];
       },
-      [[] as JSX.Element[], [] as JSX.Element[]],
+      [[] as TableForPanelProps[], [] as TableForPanelProps[]],
     );
     if (mutableChildren.length) {
-      return <PanelContent children={mutableChildren} />;
+      return (
+        <PanelWithTable
+          key={`command-section-${i}-${commandSection.type}`}
+          panelIndex={i + 1}
+          title="runbook inputs"
+          description="Review and check items from the list below"
+          primaryButton={{ title: "Confirm" }}
+          secondaryButton={{ title: "todo" }}
+          readonly={false}
+          rows={mutableChildren}
+          scrollHandler={scrollHandler}
+          ref={ref}
+        />
+      );
     } else return;
   } else if (commandSection.type === CommandSectionType.Output) {
     throw new Error("todo");
   } else if (commandSection.type === CommandSectionType.Action) {
-    let action = commandSection.items[0] as Action;
-    let namespace = action.namespace;
-    let addon = addonManager.getAddonFromNamespace(namespace);
-
-    return addon.getActionElement(action);
+    const action = commandSection.items[0] as Action;
+    const namespace = action.namespace;
+    const addon = addonManager.getAddonFromNamespace(namespace);
+    const element = addon.getActionElement(action);
+    if (element) {
+      return (
+        <Panel
+          key={`command-section-${i}-${commandSection.type}`}
+          content={element}
+          title={action.name}
+          description={""}
+          panelIndex={i + 1}
+          scrollHandler={scrollHandler}
+          primaryButton={addon.getActionPrimaryButton(
+            action,
+            i + 1,
+            scrollHandler,
+          )}
+          secondaryButton={addon.getActionSecondaryButton(action)}
+          ref={ref}
+        />
+      );
+    } else return;
   } else {
-    let prompt = commandSection.items[0] as Prompt;
-    let namespace = prompt.namespace;
-    let addon = addonManager.getAddonFromNamespace(namespace);
-
-    return addon.getPromptElement(prompt);
-  }
-}
-
-function commandSectionToPrimaryButton(
-  commandSection: CommandSectionIndex,
-): PanelButton | undefined {
-  if (commandSection.type === CommandSectionType.Input) {
-    return {
-      title: "Confirm",
-    };
-  } else if (commandSection.type === CommandSectionType.Output) {
-    throw new Error("todo");
-  } else if (commandSection.type === CommandSectionType.Action) {
-    let action = commandSection.items[0] as Action;
-    let namespace = action.namespace;
-    let addon = addonManager.getAddonFromNamespace(namespace);
-
-    return addon.getActionPrimaryButton(action);
-  } else {
-    let prompt = commandSection.items[0] as Prompt;
-    let namespace = prompt.namespace;
-    let addon = addonManager.getAddonFromNamespace(namespace);
-
-    return addon.getPromptPrimaryButton(prompt);
-  }
-}
-
-function commandSectionToSecondaryButton(
-  commandSection: CommandSectionIndex,
-): PanelButton | undefined {
-  if (commandSection.type === CommandSectionType.Input) {
-    return {
-      title: "Confirm",
-    };
-  } else if (commandSection.type === CommandSectionType.Output) {
-    throw new Error("todo");
-  } else if (commandSection.type === CommandSectionType.Action) {
-    let action = commandSection.items[0] as Action;
-    let namespace = action.namespace;
-    let addon = addonManager.getAddonFromNamespace(namespace);
-
-    return addon.getActionSecondaryButton(action);
-  } else {
-    let prompt = commandSection.items[0] as Prompt;
-    let namespace = prompt.namespace;
-    let addon = addonManager.getAddonFromNamespace(namespace);
-
-    return addon.getPromptSecondaryButton(prompt);
+    const prompt = commandSection.items[0] as Prompt;
+    const namespace = prompt.namespace;
+    const addon = addonManager.getAddonFromNamespace(namespace);
+    const element = addon.getPromptElement(prompt);
+    if (element) {
+      return (
+        <Panel
+          key={`command-section-${i}-${commandSection.type}`}
+          content={element}
+          title={prompt.name}
+          description={""}
+          panelIndex={i + 1}
+          scrollHandler={scrollHandler}
+          primaryButton={addon.getPromptPrimaryButton(
+            prompt,
+            i + 1,
+            scrollHandler,
+          )}
+          secondaryButton={addon.getPromptSecondaryButton(prompt)}
+          ref={ref}
+        />
+      );
+    } else return;
   }
 }

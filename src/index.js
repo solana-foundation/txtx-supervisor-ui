@@ -6,6 +6,11 @@ import { store } from "./store";
 import { Connect } from "@stacks/connect-react";
 import { authOptions } from "./components/main/stacks/stacks";
 import "./utils/addons-initializer";
+import posthog from "posthog-js";
+
+posthog.init("phc_mTZO0r156hfsV6JBDN3YGg727kYHXc675NABuHGh6fg", {
+  api_host: "https://us.i.posthog.com",
+});
 
 export const apolloClient = new ApolloClient({
   uri: "http://localhost:8488/graphql",

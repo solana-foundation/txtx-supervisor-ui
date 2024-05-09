@@ -10,7 +10,7 @@ interface NavGroupProp {
 }
 export function Nav({ navGroups }: NavGroupProp) {
   return (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto dark:bg-slate-950 pr-6">
+    <div className="flex grow flex-col gap-y-5 overflow-y-auto pr-6">
       <nav className="flex flex-1 flex-col">
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           {navGroups.map((navGroup) => (

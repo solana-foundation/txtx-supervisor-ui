@@ -38,7 +38,7 @@ export default function RunbookStatusBar({
 }: RunbookStatusBarProps) {
   const activeStep = useAppSelector(selectActiveRunbookActiveStep);
   return (
-    <div className="w-full h-8 px-8 flex-col justify-start items-start gap-2.5 inline-flex">
+    <div className="w-full h-8 px-8 flex-col justify-center items-center gap-2.5 inline-flex">
       <div className="justify-start items-start inline-flex">
         {
           // create an array with 0 to steps elements

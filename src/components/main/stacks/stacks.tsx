@@ -27,14 +27,23 @@ export const authOptions = {
 };
 
 export class StacksAddon implements Addon {
-  public walletConnection(): ConnectedWalletInfo | ConnectWalletFunction {
+  public async walletConnection(
+    networkId: string,
+  ): Promise<ConnectedWalletInfo | ConnectWalletFunction> {
     if (userSession.isUserSignedIn()) {
-      let userData = userSession.loadUserData();
-      // todo, we're only returning mainnet address
-      let addresses = userData.profile.stxAddress;
-      console.log(userSession);
+      const userData = userSession.loadUserData();
+      // todo, handle no address
+      const address = userData.profile.stxAddress[networkId];
+      const balanceResponse = await fetch(
+        `https://api.${networkId}.hiro.so/extended/v1/address/${address}/balances`,
+      );
+      const balance = await balanceResponse.json();
       return {
-        address: addresses.mainnet,
+        address,
+        chain: "Stacks",
+        ticker: "STX",
+        balance: parseInt(balance.stx.balance),
+        requiredBalance: 150,
         // @ts-ignore
         walletName: window.LeatherProvider
           ? "Leather"
@@ -63,32 +72,43 @@ export class StacksAddon implements Addon {
     }
   }
 
-  public getPromptPrimaryButton(prompt: Prompt): PanelButton | undefined {
+  public getPromptPrimaryButton(
+    prompt: Prompt,
+    panelIndex: number,
+    scrollHandler: any,
+  ): JSX.Element | undefined {
     switch (prompt.name) {
       case "Sign Stacks Transaction":
-        return {
-          title: "Sign Transaction",
-          onClick: async (e) => SignTransactionPrimaryButton({ prompt })(e),
-        };
+        return (
+          <SignTransactionPrimaryButton
+            prompt={prompt}
+            panelIndex={panelIndex}
+            scrollHandler={scrollHandler}
+          />
+        );
       default:
         return;
     }
   }
-  public getPromptSecondaryButton(prompt: Prompt): PanelButton | undefined {
+  public getPromptSecondaryButton(prompt: Prompt): JSX.Element | undefined {
     return;
   }
 
   // actions
-  public getActionElement(action: Action): React.JSX.Element | undefined {
+  public getActionElement(action: Action): JSX.Element | undefined {
     switch (action.name) {
       default:
         return;
     }
   }
-  public getActionPrimaryButton(prompt: Action): PanelButton | undefined {
+  public getActionPrimaryButton(
+    prompt: Action,
+    panelIndex: number,
+    scrollHandler: any,
+  ): JSX.Element | undefined {
     return;
   }
-  public getActionSecondaryButton(prompt: Action): PanelButton | undefined {
+  public getActionSecondaryButton(prompt: Action): JSX.Element | undefined {
     return;
   }
 }

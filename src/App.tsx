@@ -10,8 +10,6 @@ import { RunbookMetadata, Protocol } from "./components/main/types";
 import { sortNavItemsRecursive } from "./utils/helpers";
 import { useAppDispatch } from "./hooks";
 import { addRunbook } from "./reducers/runbooks-slice";
-import RunbookIcon from "./components/icons/runbook";
-import DeploymentIcon from "./components/icons/deployment";
 
 enum PageNav {
   Runbook,
@@ -50,13 +48,14 @@ export default function App() {
 
   return (
     <>
-      <div>
+      <div className="bg-gradient-to-b from-gray-950 to-neutral-900">
         {/* Small sidebar */}
-        <div className="hidden xl:fixed xl:inset-y-0 xl:left-0 xl:z-50 xl:block xl:w-20 xl:overflow-y-auto dark:bg-slate-950 border-r dark:border-slate-500/20 xl:pb-4 transition-all">
+        {/*         
+        <div className=" fixed inset-y-0 left-0 z-50 block w-20 overflow-y-auto border-r dark:border-slate-500/20 xl:pb-4 transition-all">
           <div className="flex h-20 shrink-0 items-center justify-center px-4 py-1">
-            <Logo />
+             <Logo />
           </div>
-          {/* <PageNavButton
+          <PageNavButton
             activePageNav={pageNav}
             thisPageNav={PageNav.Runbook}
             name="Runbooks"
@@ -69,20 +68,21 @@ export default function App() {
             name="Deploy"
             icon={<DeploymentIcon />}
             setPageNav={setPageNav}
-          /> */}
+          />
         </div>
+     */}
 
         {/* Header & main content */}
-        <div className="xl:pl-20 dark:bg-slate-900">
+        <div className="from-gray-950 to-neutral-900">
           <Header {...{ title: protocolName }}></Header>
-          <main className="min-h-screen pt-0 mt-0 pl-80 xl:pl-96 dark:bg-slate-900">
-            <div className="px-4 py-10 lg:px-8 lg:py-6 dark:bg-slate-900">
+          <main className="min-h-screen pt-0 mt-0 pl-16 ">
+            <div className="flex justify-center py-9">
               {loading ? <div>Loading...</div> : <Runbook />}
             </div>
           </main>
         </div>
 
-        <aside className="block lg:px-8 xl:left-20 fixed bottom-0 top-16 xl:w-96 overflow-y-auto border-r border-gray-200 px-4 py-6 dark:bg-slate-950 border-r dark:border-slate-500/20 transition-all">
+        {/* <aside className="block lg:px-8 xl:left-20 fixed bottom-0 top-16 xl:w-96 overflow-y-auto border-r border-gray-200 px-4 py-6 border-r dark:border-slate-500/20 transition-all">
           <Search></Search>
 
           {loading || !navGroups ? (
@@ -90,7 +90,7 @@ export default function App() {
           ) : (
             <Nav navGroups={navGroups} />
           )}
-        </aside>
+        </aside> */}
       </div>
     </>
   );

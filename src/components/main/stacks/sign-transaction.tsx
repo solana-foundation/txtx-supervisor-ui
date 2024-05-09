@@ -5,9 +5,12 @@ import { payloadToUnsignedTxHex } from "./stacks-helpers";
 import { GET_MANUAL, UPDATE_COMMAND_INPUT } from "../../../utils/queries";
 import { setRunbookData } from "../../../reducers/runbooks-slice";
 import { StacksNetworkName } from "@stacks/network";
-import { store } from "../../../store";
-import { apolloClient } from "../../..";
 import { Prompt } from "../types";
+import Wallet from "sats-connect";
+import posthog from "posthog-js";
+import { PrimaryPanelButton } from "../panel";
+import { useAppDispatch } from "../../../hooks";
+import { useMutation } from "@apollo/client";
 
 export enum StacksWalletInteractionType {
   Sign,
@@ -35,9 +38,9 @@ export function SignTransactionPanel({ prompt }: AddonPanelProps) {
     "\t",
   );
   return (
-    <div className="w-full max-h-[500px] px-2 py-4 bg-zinc-950 rounded border border-zinc-600 flex-col justify-start items-start gap-2.5 inline-flex">
-      <div className="w-full max-h-[500px] overflow-y-auto bg-zinc-950 text-zinc-300 rounded-sm text-sm font-medium font-['Inter'] scrollbar-thin scrollbar scrollbar-thumb-slate-zinc-950/50 scrollbar-track-zinc-950 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
-        <pre className="scrollbar-w-1 scrollbar-h-1 scrollbar scrollbar-thumb-slate-zinc-950/50 scrollbar-track-zinc-950 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
+    <div className="w-full max-h-[500px] px-2 py-4 bg-neutral-900 border-neutral-800 rounded border  flex-col justify-start items-start gap-2.5 inline-flex">
+      <div className="w-full max-h-[500px] overflow-y-auto bg-neutral-900 text-gray-400 rounded-sm text-sm font-medium font-['Inter'] scrollbar-thin scrollbar scrollbar-track-neutral-800 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
+        <pre className="scrollbar-w-1 scrollbar-h-1 scrollbar  scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
           {jsonPayload}
         </pre>
       </div>
@@ -45,7 +48,37 @@ export function SignTransactionPanel({ prompt }: AddonPanelProps) {
   );
 }
 
-export function SignTransactionPrimaryButton({ prompt }: AddonPanelProps) {
+export interface AddonButtonProps {
+  prompt: Prompt;
+  panelIndex: number;
+  scrollHandler: any;
+}
+
+export function SignTransactionPrimaryButton({
+  prompt,
+  panelIndex,
+  scrollHandler,
+}: AddonButtonProps) {
+  const dispatch = useAppDispatch();
+  const [updateCommandInput, { data, loading, error }] = useMutation(
+    UPDATE_COMMAND_INPUT,
+    {
+      update(cache, { data: { updateCommandInput } }) {
+        const runbookData = {
+          uuid: runbookUuid,
+          data: updateCommandInput,
+        };
+        cache.writeQuery({
+          query: GET_MANUAL,
+          data: {
+            runbook: runbookData,
+          },
+        });
+        dispatch(setRunbookData(runbookData));
+      },
+    },
+  );
+
   const { inputs, uuid, runbookUuid } = prompt;
   let deserializedPayload;
   if (inputs !== null) {
@@ -60,38 +93,53 @@ export function SignTransactionPrimaryButton({ prompt }: AddonPanelProps) {
   const onClick = async (_) => {
     if (!deserializedPayload) return;
     const txHex = await payloadToUnsignedTxHex(deserializedPayload, networkId);
-
-    // @ts-ignore
-    const { result } = await window.LeatherProvider.request(
-      "stx_signTransaction",
-      { txHex },
-    );
-    const value = {
-      signed_transaction_bytes: result.txHex,
-      nonce: 0, // todo
-    };
-    await apolloClient.mutate({
-      mutation: UPDATE_COMMAND_INPUT,
-      update(cache, { data: { updateCommandInput } }) {
-        const runbookData = {
-          uuid: runbookUuid,
-          data: updateCommandInput,
+    if (!txHex) return;
+    try {
+      const response = await Wallet.request("stx_signTransaction", {
+        transaction: txHex,
+      });
+      if (response.status === "success") {
+        console.log("response!!!", response.result.transaction);
+        posthog.capture("onchain_success");
+        const value = {
+          signed_transaction_bytes: response.result.transaction,
+          nonce: 0, // todo
         };
-        cache.writeQuery({
-          query: GET_MANUAL,
-          data: {
-            runbook: runbookData,
+        updateCommandInput({
+          variables: {
+            runbookName: runbookUuid,
+            commandUuid: uuid.replace("local:", ""),
+            inputName: "",
+            value: JSON.stringify(value),
           },
         });
-        store.dispatch(setRunbookData(runbookData));
-      },
-      variables: {
-        runbookName: runbookUuid,
-        commandUuid: uuid.replace("local:", ""),
-        inputName: "",
-        value: JSON.stringify(value),
-      },
-    });
+      } else {
+        console.error(response.error);
+        posthog.capture("onchain_error", {
+          addon: "stacks",
+          action: "sign_transaction",
+          message: response.error.message,
+          code: response.error.code,
+          data: response.error.data,
+        });
+      }
+    } catch (error) {
+      posthog.capture("onchain_failure", {
+        addon: "stacks",
+        action: "sign_transaction",
+        message: error,
+      });
+      console.error(error);
+    }
   };
-  return onClick;
+  return (
+    <PrimaryPanelButton
+      button={{
+        title: "Sign Transaction",
+        onClick: onClick,
+      }}
+      panelIndex={panelIndex}
+      scrollHandler={scrollHandler}
+    />
+  );
 }
