@@ -16,20 +16,17 @@ export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
     getSetWalletData();
   }, []);
 
-  let rows = [
-    {
-      index: 0,
-      title: "Check Stacks blockchain network",
-      cell: { value: "Mainnet | 140,349 Blocks" },
-    },
-  ];
-
   const allRows = walletData.reduce((rows, data, i, _) => {
-    const index = i * 3 + 1;
+    const index = i * 4;
     if (typeof data === "function") {
       return rows.concat([
         {
-          index,
+          index: index,
+          title: "Check Stacks blockchain network",
+          cell: { value: "N/A" },
+        },
+        {
+          index: index + 1,
           title: `Check wallet address executing the runbook`,
           cell: {
             title: "Connect Wallet",
@@ -39,12 +36,12 @@ export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
           },
         },
         {
-          index: index + 1,
+          index: index + 2,
           title: `Check estimated cost for executing the Runbook`,
           cell: { value: "N/A" },
         },
         {
-          index: index + 2,
+          index: index + 3,
           title: `Check wallet provisioning`,
           cell: { value: "N/A" },
         },
@@ -56,18 +53,23 @@ export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
           : undefined;
       return rows.concat([
         {
-          index,
-          title: `Check wallet address executing the runbook (${data.ticker})`,
-          cell: { value: data.address },
+          index: index,
+          title: "Check Stacks blockchain network",
+          cell: { value: "N/A" },
         },
         {
           index: index + 1,
-          title: `Check estimated cost for executing the Runbook (${data.ticker})`,
-          cell: { value: `${data.requiredBalance} ${data.ticker}` },
+          title: `Check wallet address executing the runbook (${data.ticker} ${data.network})`,
+          cell: { value: data.address },
         },
         {
           index: index + 2,
-          title: `Check wallet provisioning (${data.ticker})`,
+          title: `Check estimated cost for executing the Runbook (${data.ticker} ${data.network})`,
+          cell: { value: `N/A` },
+        },
+        {
+          index: index + 3,
+          title: `Check wallet provisioning (${data.ticker} ${data.network})`,
           cell: {
             value: `${data.balance} ${data.ticker}`,
             error: provisioningError,
@@ -75,7 +77,7 @@ export const RunbookReviewPanel = forwardRef(function RunbookReviewPanel(
         },
       ]);
     }
-  }, rows as any[]);
+  }, [] as any[]);
 
   return (
     <PanelWithTable
