@@ -1,4 +1,9 @@
-import React, { MouseEventHandler, forwardRef, useState } from "react";
+import React, {
+  MouseEventHandler,
+  forwardRef,
+  useEffect,
+  useState,
+} from "react";
 import { classNames } from "../../utils/helpers";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { RunbookStepStatus, statusForStepNumber } from "./runbook-status-bar";
@@ -124,6 +129,9 @@ export const PanelWithTable = forwardRef(function Panel(
   const [rowCheckedArr, setRowCheckedArr] = useState(
     new Array(rows.length).fill(false),
   );
+  useEffect(() => {
+    setRowCheckedArr(new Array(rows.length).fill(false));
+  }, [rows]);
 
   const onRowCheck = (idx, state) => {
     const nextState = rowCheckedArr.map((current, i) => {

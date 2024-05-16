@@ -38,12 +38,16 @@ export class StacksAddon implements Addon {
         `https://api.${networkId}.hiro.so/extended/v1/address/${address}/balances`,
       );
       const balance = await balanceResponse.json();
+
       return {
         address,
         chain: "Stacks",
+        network: networkId,
         ticker: "STX",
-        balance: parseInt(balance.stx.balance),
-        requiredBalance: 150,
+        balance:
+          Math.round((parseInt(balance.stx.balance) / 1000000) * 100) / 100,
+        requiredBalance: 0,
+        chainTip: 0,
         // @ts-ignore
         walletName: window.LeatherProvider
           ? "Leather"
