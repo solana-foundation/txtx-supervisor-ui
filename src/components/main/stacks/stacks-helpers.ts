@@ -2,7 +2,6 @@ import {
   ContractCallPayload,
   Payload,
 } from "@stacks/transactions/dist/payload";
-import { StacksWalletInteractionType } from "./sign-transaction";
 import {
   AddressVersion,
   AnchorMode,
@@ -12,12 +11,19 @@ import {
   makeUnsignedContractCall,
 } from "@stacks/transactions";
 import { bytesToHex } from "@stacks/common";
-import { getAddress } from "sats-connect";
-import { StacksNetworkName } from "@stacks/network";
-import { userSession } from "./stacks";
+import {
+  StacksMainnet,
+  StacksNetworkName,
+  StacksTestnet,
+} from "@stacks/network";
+import { appDetails, userSession } from "./stacks";
+import { openSignatureRequestPopup } from "@stacks/connect";
 export const TXTX_LOCAL_STORAGE_KEY = "txtx_addresses";
 
-export const getPublicKey = async (address): Promise<string | undefined> => {
+export const getPublicKey = async (
+  address,
+  networkId: string,
+): Promise<string | undefined> => {
   const addresses = localStorage.getItem(TXTX_LOCAL_STORAGE_KEY);
   let currentStorage = {};
   if (addresses) {
@@ -32,39 +38,26 @@ export const getPublicKey = async (address): Promise<string | undefined> => {
     }
   }
 
-  const network = address.substr(0, 2) === "SP" ? "Mainnet" : "Testnet";
   let pubKey;
-  const getAddressOptions = {
-    payload: {
-      purposes: ["stacks"],
-      message: "Address for signing the transaction.",
-      network: {
-        type: network,
-      },
-    },
-    onFinish: (response) => {
-      const accounts = response.addresses;
-      for (let i = 0; i < accounts.length; i++) {
-        const account = accounts[i];
-        if (address === account.address) {
-          currentStorage[address] = account.publicKey;
-          localStorage.setItem(
-            TXTX_LOCAL_STORAGE_KEY,
-            JSON.stringify(currentStorage),
-          );
-          pubKey = account.publicKey;
-        }
-      }
+  await openSignatureRequestPopup({
+    message: "Test message.",
+    network: networkId == "mainnet" ? new StacksMainnet() : new StacksTestnet(),
+    appDetails: appDetails,
+    onFinish(response) {
+      currentStorage[address] = response.publicKey;
+      localStorage.setItem(
+        TXTX_LOCAL_STORAGE_KEY,
+        JSON.stringify(currentStorage),
+      );
+      pubKey = response.publicKey;
       if (pubKey === undefined) {
         console.error(
           `Address mismatch between user session and selected wallet address.`,
         );
       }
     },
-  };
+  });
 
-  // @ts-ignore
-  await getAddress(getAddressOptions);
   return pubKey;
 };
 
@@ -76,10 +69,8 @@ export const payloadToUnsignedTxHex = async (
     case PayloadType.ContractCall:
       const contractCallPayload = payload as ContractCallPayload;
       const contractAddress = contractCallPayload.contractAddress;
-      console.log(userSession);
+
       let userData = userSession.loadUserData();
-      console.log(userData);
-      // todo, we're only returning mainnet address
       let addresses = userData.profile.stxAddress;
       let address;
       if (
@@ -90,7 +81,7 @@ export const payloadToUnsignedTxHex = async (
       } else {
         address = addresses.testnet;
       }
-      let publicKey = await getPublicKey(address);
+      let publicKey = await getPublicKey(address, networkId);
       if (!publicKey) {
         console.error(
           "Unable to sign transaction - could not acquire public key",
