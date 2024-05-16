@@ -99,7 +99,6 @@ export function SignTransactionPrimaryButton({
         txHex,
       });
       if (response.result?.txHex) {
-        console.log("response!!!", response.result.txHex);
         posthog.capture("onchain_success");
         const value = {
           signed_transaction_bytes: response.result.txHex,
