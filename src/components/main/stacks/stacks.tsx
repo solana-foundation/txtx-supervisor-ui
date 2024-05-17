@@ -8,17 +8,18 @@ import {
   SignTransactionPanel,
   SignTransactionPrimaryButton,
 } from "./sign-transaction";
-import { PanelButton, PanelContent } from "../panel";
 import { AppConfig, UserSession, showConnect } from "@stacks/connect";
 import { Action, Prompt } from "../types";
+import { getPublicKey } from "./stacks-helpers";
 
 const appConfig = new AppConfig(["store_write", "publish_data"]);
 export const userSession = new UserSession({ appConfig });
+export const appDetails = {
+  name: "txtx",
+  icon: window.location.origin, // todo
+};
 export const authOptions = {
-  appDetails: {
-    name: "txtx",
-    icon: window.location.origin, // todo
-  },
+  appDetails,
   redirectTo: "/",
   onFinish: () => {
     window.location.reload();
@@ -31,9 +32,11 @@ export class StacksAddon implements Addon {
     networkId: string,
   ): Promise<ConnectedWalletInfo | ConnectWalletFunction> {
     if (userSession.isUserSignedIn()) {
+      console.log("stacks user session", userSession);
       const userData = userSession.loadUserData();
       // todo, handle no address
       const address = userData.profile.stxAddress[networkId];
+      await getPublicKey(address, networkId);
       const balanceResponse = await fetch(
         `https://api.${networkId}.hiro.so/extended/v1/address/${address}/balances`,
       );
@@ -51,7 +54,8 @@ export class StacksAddon implements Addon {
         // @ts-ignore
         walletName: window.LeatherProvider
           ? "Leather"
-          : window.XverseProviders
+          : // @ts-ignore
+            window.XverseProviders
             ? "Xverse"
             : "Unknown",
       };

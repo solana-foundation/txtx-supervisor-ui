@@ -6,7 +6,6 @@ import { GET_MANUAL, UPDATE_COMMAND_INPUT } from "../../../utils/queries";
 import { setRunbookData } from "../../../reducers/runbooks-slice";
 import { StacksNetworkName } from "@stacks/network";
 import { Prompt } from "../types";
-import Wallet from "sats-connect";
 import posthog from "posthog-js";
 import { PrimaryPanelButton } from "../panel";
 import { useAppDispatch } from "../../../hooks";
@@ -95,14 +94,14 @@ export function SignTransactionPrimaryButton({
     const txHex = await payloadToUnsignedTxHex(deserializedPayload, networkId);
     if (!txHex) return;
     try {
-      const response = await Wallet.request("stx_signTransaction", {
-        transaction: txHex,
+      // @ts-ignore
+      const response = await LeatherProvider.request("stx_signTransaction", {
+        txHex,
       });
-      if (response.status === "success") {
-        console.log("response!!!", response.result.transaction);
+      if (response.result?.txHex) {
         posthog.capture("onchain_success");
         const value = {
-          signed_transaction_bytes: response.result.transaction,
+          signed_transaction_bytes: response.result.txHex,
           nonce: 0, // todo
         };
         updateCommandInput({
