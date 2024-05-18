@@ -7,6 +7,7 @@ import {
   AnchorMode,
   PayloadType,
   UnsignedContractCallOptions,
+  UnsignedMultiSigContractCallOptions,
   addressToString,
   makeUnsignedContractCall,
 } from "@stacks/transactions";
@@ -64,6 +65,7 @@ export const getPublicKey = async (
 export const payloadToUnsignedTxHex = async (
   payload: Payload,
   networkId: StacksNetworkName,
+  public_keys?: string[],
 ): Promise<string | undefined> => {
   switch (payload.payloadType) {
     case PayloadType.ContractCall:
@@ -88,15 +90,31 @@ export const payloadToUnsignedTxHex = async (
         );
         return;
       }
-      const txOpts: UnsignedContractCallOptions = {
-        publicKey: publicKey,
-        contractAddress: addressToString(contractAddress),
-        contractName: contractCallPayload.contractName.content,
-        functionName: contractCallPayload.functionName.content,
-        functionArgs: contractCallPayload.functionArgs,
-        network: networkId,
-        anchorMode: AnchorMode.Any,
-      };
+      let txOpts:
+        | UnsignedContractCallOptions
+        | UnsignedMultiSigContractCallOptions;
+      if (public_keys) {
+        txOpts = {
+          numSignatures: public_keys.length || 0,
+          publicKeys: public_keys,
+          contractAddress: addressToString(contractAddress),
+          contractName: contractCallPayload.contractName.content,
+          functionName: contractCallPayload.functionName.content,
+          functionArgs: contractCallPayload.functionArgs,
+          network: networkId,
+          anchorMode: AnchorMode.Any,
+        };
+      } else {
+        txOpts = {
+          publicKey: publicKey,
+          contractAddress: addressToString(contractAddress),
+          contractName: contractCallPayload.contractName.content,
+          functionName: contractCallPayload.functionName.content,
+          functionArgs: contractCallPayload.functionArgs,
+          network: networkId,
+          anchorMode: AnchorMode.Any,
+        };
+      }
       const tx = await makeUnsignedContractCall(txOpts);
       return bytesToHex(tx.serialize());
     default:

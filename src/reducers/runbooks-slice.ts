@@ -116,21 +116,19 @@ export const runbooksSlice = createSlice({
               namespace: namespace,
             };
 
-            const networkId = commandInputsEvaluationResult["network_id"];
+            const networkId = commandInputsEvaluationResult
+              ? commandInputsEvaluationResult["network_id"]
+              : undefined; // todo
             if (networkId !== undefined) {
               addonManager.addNetworkInstance(namespace, networkId);
             }
 
-            if (currentSection === CommandSectionType.Prompt) {
-              commandSections[cursor].items.push(prompt);
-            } else {
-              currentSection = CommandSectionType.Prompt;
-              commandSections.push({
-                type: currentSection,
-                items: [prompt],
-              });
-              cursor++;
-            }
+            currentSection = CommandSectionType.Prompt;
+            commandSections.push({
+              type: currentSection,
+              items: [prompt],
+            });
+            cursor++;
           } else if (type === "Action") {
             if (commandInstance.namespace === null) {
               console.error("action must have namespace");
