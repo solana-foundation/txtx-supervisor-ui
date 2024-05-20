@@ -5,8 +5,9 @@ import RunbookStatusBar from "../main/runbook-status-bar";
 
 export interface HeaderProps {
   title: string;
+  panelScrollHandler: any;
 }
-export function Header({ title }: HeaderProps) {
+export function Header({ title, panelScrollHandler }: HeaderProps) {
   const { metadata, commandSections } = useAppSelector(selectActiveRunbook);
   if (!metadata) {
     return <div>Loading...</div>;
@@ -24,7 +25,7 @@ export function Header({ title }: HeaderProps) {
 
           <RunbookStatusBar
             steps={commandSections.length + 2}
-            scrollHandler={() => {}}
+            scrollHandler={panelScrollHandler}
           />
         </div>
       </div>

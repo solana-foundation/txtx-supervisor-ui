@@ -19,7 +19,6 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { runbookStepSlice } from "./reducers/runbook-step-slice";
-import { runbookPanelRefsSlice } from "./reducers/runbook-panel-refs-slice";
 
 const persistConfig = {
   key: "runbooks",
@@ -30,7 +29,6 @@ const persistConfig = {
 const reducers = combineReducers({
   runbooks: runbooksSlice.reducer,
   activeStep: runbookStepSlice.reducer,
-  panelRefs: runbookPanelRefsSlice.reducer,
 });
 const persistedReducer = persistReducer(persistConfig, reducers);
 

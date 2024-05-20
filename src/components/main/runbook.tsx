@@ -1,4 +1,10 @@
-import React, { createRef, useEffect, useRef } from "react";
+import React, {
+  MutableRefObject,
+  createRef,
+  forwardRef,
+  useEffect,
+  useRef,
+} from "react";
 import { GET_MANUAL } from "../../utils/queries";
 import { useQuery } from "@apollo/client";
 import { useAppDispatch, useAppSelector } from "../../hooks";
@@ -19,9 +25,15 @@ import { RunbookReviewPanel } from "./runbook-review-panel";
 import { OutputReviewPanel } from "./output-review-panel";
 import { selectRunbookActiveStep } from "../../reducers/runbook-step-slice";
 
-export default function Runbook() {
+export interface RunbookProps {
+  panelScrollHandler: any;
+  panelRefs: MutableRefObject<any[]>;
+}
+export default function Runbook({
+  panelScrollHandler,
+  panelRefs,
+}: RunbookProps) {
   const dispatch = useAppDispatch();
-  const panelRefs = useRef<any[]>([]);
   const { metadata, data, isDirty, commandSections, outputs } =
     useAppSelector(selectActiveRunbook);
 
@@ -35,55 +47,22 @@ export default function Runbook() {
     },
   });
 
-  // todo: this is probably a hacky way to do this, but it works for now
-  // if an href is provided, scroll to it after a timeout, to give components
-  // time to load
-  useEffect(() => {
-    setTimeout(() => {
-      const hash = window.location.hash.replace("#", "");
-      const el = document.getElementById(hash);
-      if (el) {
-        el.scrollIntoView();
-      }
-    }, 200);
-  }, []);
-
   if (loading || !data) {
     return <div>Loading...</div>;
   }
-
-  panelRefs.current = Array.from(Array(commandSections.length + 2).keys()).map(
-    (_, i) => {
-      return panelRefs.current[i] ?? createRef();
-    },
-  );
-
-  const scrollPanelIntoViewHandler = (index) => {
-    window.location.hash = panelRefs.current[index].current.id;
-    // when we select a new panel, the panels resize some, which makes the
-    // location of the ref change. set a timeout to give the css resizing a
-    // head start, so this scroll into view has the correct position to scroll to
-    setTimeout(() => {
-      panelRefs.current[index].current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-        inline: "start",
-      });
-    }, 200);
-  };
 
   return (
     <div className="w-full justify-center flex flex-col items-center">
       <div className="min-w-[1024px] max-w-[1280px] min-h-full px-6 pt-6 justify-center flex flex-col inline-flex gap-8">
         <RunbookReviewPanel
-          ref={panelRefs.current[0]}
-          scrollHandler={scrollPanelIntoViewHandler}
+          ref={panelRefs?.current[0]}
+          scrollHandler={panelScrollHandler}
         />
 
         {commandSections.reduce((sectionPanels, commandSection, i) => {
           const content = commandSectionToContent(
             commandSection,
-            scrollPanelIntoViewHandler,
+            panelScrollHandler,
             panelRefs.current[i + 1],
             i,
           );
@@ -97,7 +76,7 @@ export default function Runbook() {
           outputs={outputs}
           panelIndex={commandSections.length + 1}
           ref={panelRefs.current[commandSections.length + 1]}
-          scrollHandler={scrollPanelIntoViewHandler}
+          scrollHandler={panelScrollHandler}
         />
       </div>
     </div>
