@@ -19,6 +19,12 @@ import {
   selectRunbookActiveStep,
   setRunbookActiveStep,
 } from "../../reducers/runbook-step-slice";
+import {
+  addPanel,
+  selectPanelRowChecked,
+  selectPanelRows,
+  setPanelRows,
+} from "../../reducers/panel-rows-slice";
 
 export enum PanelColor {
   Purple,
@@ -131,36 +137,35 @@ export const PanelWithTable = forwardRef(function Panel(
   ref: React.ForwardedRef<any>,
 ) {
   const activeStep = useAppSelector(selectRunbookActiveStep);
+  const dispatch = useAppDispatch();
 
-  const [rowCheckedArr, setRowCheckedArr] = useState(
-    new Array(rows.length).fill(false),
-  );
+  const panelId =
+    title.toLocaleLowerCase().split(" ").join("-") + "-" + panelIndex;
   useEffect(() => {
-    setRowCheckedArr(new Array(rows.length).fill(false));
+    if (rows.length) {
+      dispatch(addPanel({ panelId, rowCount: rows.length }));
+    }
   }, [rows]);
 
-  const onRowCheck = (idx, state) => {
-    const nextState = rowCheckedArr.map((current, i) => {
-      if (idx === -1) {
-        return state;
-      } else if (i === idx) {
-        return state;
-      } else return current;
-    });
+  const onRowCheck = (idx, newIsChecked) => {
+    dispatch(setPanelRows({ panelId, rowIdx: idx, isChecked: newIsChecked }));
+  };
 
-    setRowCheckedArr(nextState);
-  };
   const isRowChecked = (idx) => {
-    return rowCheckedArr[idx];
+    return useAppSelector((state) =>
+      selectPanelRowChecked(state, panelId, idx),
+    );
   };
+
+  const panelRowsChecked = useAppSelector((state) =>
+    selectPanelRows(state, panelId),
+  );
 
   let status = statusForStepNumber(panelIndex, activeStep);
 
   const contentVisibility =
     status === RunbookStepStatus.Queued ? "invisible" : "";
   const buttonsDisabled = status === RunbookStepStatus.Complete;
-  const panelId =
-    title.toLocaleLowerCase().split(" ").join("-") + "-" + panelIndex;
   return (
     <div
       className={classNames(
@@ -193,7 +198,7 @@ export const PanelWithTable = forwardRef(function Panel(
             panelIndex={panelIndex}
             disabled={
               primaryButton?.disabled ||
-              rowCheckedArr.some((isChecked) => !isChecked) ||
+              panelRowsChecked?.some((isChecked) => !isChecked) ||
               buttonsDisabled
             }
             button={primaryButton}

@@ -1,10 +1,5 @@
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
-import {
-  configureStore,
-  combineSlices,
-  createSlice,
-  combineReducers,
-} from "@reduxjs/toolkit";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import loggerMiddleware from "./middleware/logger";
 import { runbooksSlice } from "./reducers/runbooks-slice";
@@ -19,17 +14,20 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { runbookStepSlice } from "./reducers/runbook-step-slice";
+import { panelRowsSlice } from "./reducers/panel-rows-slice";
 
 const persistConfig = {
   key: "runbooks",
   storage,
-  whitelist: ["activeStep"],
+  whitelist: ["activeStep", "panelRows"],
 };
 
 const reducers = combineReducers({
   runbooks: runbooksSlice.reducer,
   activeStep: runbookStepSlice.reducer,
+  panelRows: panelRowsSlice.reducer,
 });
+
 const persistedReducer = persistReducer(persistConfig, reducers);
 
 export type RootState = ReturnType<typeof persistedReducer>;
