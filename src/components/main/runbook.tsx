@@ -1,4 +1,4 @@
-import React, { createRef, useRef } from "react";
+import React, { createRef, useEffect, useRef } from "react";
 import { GET_MANUAL } from "../../utils/queries";
 import { useQuery } from "@apollo/client";
 import { useAppDispatch, useAppSelector } from "../../hooks";
@@ -17,6 +17,7 @@ import {
 import addonManager from "../../utils/addons-initializer";
 import { RunbookReviewPanel } from "./runbook-review-panel";
 import { OutputReviewPanel } from "./output-review-panel";
+import { selectRunbookActiveStep } from "../../reducers/runbook-step-slice";
 
 export default function Runbook() {
   const dispatch = useAppDispatch();
@@ -34,6 +35,19 @@ export default function Runbook() {
     },
   });
 
+  // todo: this is probably a hacky way to do this, but it works for now
+  // if an href is provided, scroll to it after a timeout, to give components
+  // time to load
+  useEffect(() => {
+    setTimeout(() => {
+      const hash = window.location.hash.replace("#", "");
+      const el = document.getElementById(hash);
+      if (el) {
+        el.scrollIntoView();
+      }
+    }, 200);
+  }, []);
+
   if (loading || !data) {
     return <div>Loading...</div>;
   }
@@ -45,6 +59,7 @@ export default function Runbook() {
   );
 
   const scrollPanelIntoViewHandler = (index) => {
+    window.location.hash = panelRefs.current[index].current.id;
     // when we select a new panel, the panels resize some, which makes the
     // location of the ref change. set a timeout to give the css resizing a
     // head start, so this scroll into view has the correct position to scroll to

@@ -8,14 +8,17 @@ import { classNames } from "../../utils/helpers";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { RunbookStepStatus, statusForStepNumber } from "./runbook-status-bar";
 import {
-  selectActiveRunbookActiveStep,
-  setActiveRunbookActiveStep,
+  selectActiveRunbook,
   setRunbookData,
   updateFieldDirtinessMap,
 } from "../../reducers/runbooks-slice";
 import { GET_MANUAL, UPDATE_COMMAND_INPUT } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import debounce from "debounce";
+import {
+  selectRunbookActiveStep,
+  setRunbookActiveStep,
+} from "../../reducers/runbook-step-slice";
 
 export enum PanelColor {
   Purple,
@@ -50,7 +53,7 @@ export const Panel = forwardRef(function Panel(
   }: PanelProps,
   ref: React.ForwardedRef<any>,
 ) {
-  const activeStep = useAppSelector(selectActiveRunbookActiveStep);
+  const activeStep = useAppSelector(selectRunbookActiveStep);
 
   let status = statusForStepNumber(panelIndex, activeStep);
 
@@ -72,6 +75,8 @@ export const Panel = forwardRef(function Panel(
   } else {
     primaryButtonEl = primaryButton as JSX.Element;
   }
+  const panelId =
+    title.toLocaleLowerCase().split(" ").join("-") + "-" + panelIndex;
   return (
     <div
       className={classNames(
@@ -83,6 +88,7 @@ export const Panel = forwardRef(function Panel(
         <div
           className="scroll-mt-44 grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono'] uppercase"
           ref={ref}
+          id={panelId}
         >
           {title}
         </div>
@@ -124,7 +130,7 @@ export const PanelWithTable = forwardRef(function Panel(
   }: PanelWithTableProps,
   ref: React.ForwardedRef<any>,
 ) {
-  const activeStep = useAppSelector(selectActiveRunbookActiveStep);
+  const activeStep = useAppSelector(selectRunbookActiveStep);
 
   const [rowCheckedArr, setRowCheckedArr] = useState(
     new Array(rows.length).fill(false),
@@ -153,6 +159,8 @@ export const PanelWithTable = forwardRef(function Panel(
   const contentVisibility =
     status === RunbookStepStatus.Queued ? "invisible" : "";
   const buttonsDisabled = status === RunbookStepStatus.Complete;
+  const panelId =
+    title.toLocaleLowerCase().split(" ").join("-") + "-" + panelIndex;
   return (
     <div
       className={classNames(
@@ -164,6 +172,7 @@ export const PanelWithTable = forwardRef(function Panel(
         <div
           className="scroll-mt-44 grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono'] uppercase"
           ref={ref}
+          id={panelId}
         >
           {title}
         </div>
@@ -480,12 +489,12 @@ export function PrimaryPanelButton({
       // @ts-ignore (I don't know why typescript says this could be undefined)
       await button.onClick(mouseEvent);
       scrollHandler(panelIndex + 1);
-      dispatch(setActiveRunbookActiveStep(panelIndex + 1));
+      dispatch(setRunbookActiveStep(panelIndex + 1));
     };
   } else {
     onClick = () => {
       scrollHandler(panelIndex + 1);
-      dispatch(setActiveRunbookActiveStep(panelIndex + 1));
+      dispatch(setRunbookActiveStep(panelIndex + 1));
     };
   }
 
