@@ -23,7 +23,6 @@ export interface IndexedRunbook {
   isDirty: boolean;
   fieldDirtinessMap: { [key: string]: boolean };
   isActive: boolean;
-  activeStep: number;
 }
 export type RunbookState = IndexedRunbook[];
 const EMPTY_MANUAL = {} as IndexedRunbook;
@@ -66,7 +65,6 @@ export const runbooksSlice = createSlice({
           outputs: [],
           fieldDirtinessMap: {},
           isActive,
-          activeStep: 0,
         });
       },
     ),
@@ -116,21 +114,19 @@ export const runbooksSlice = createSlice({
               namespace: namespace,
             };
 
-            const networkId = commandInputsEvaluationResult["network_id"];
+            const networkId = commandInputsEvaluationResult
+              ? commandInputsEvaluationResult["network_id"]
+              : undefined; // todo
             if (networkId !== undefined) {
               addonManager.addNetworkInstance(namespace, networkId);
             }
 
-            if (currentSection === CommandSectionType.Prompt) {
-              commandSections[cursor].items.push(prompt);
-            } else {
-              currentSection = CommandSectionType.Prompt;
-              commandSections.push({
-                type: currentSection,
-                items: [prompt],
-              });
-              cursor++;
-            }
+            currentSection = CommandSectionType.Prompt;
+            commandSections.push({
+              type: currentSection,
+              items: [prompt],
+            });
+            cursor++;
           } else if (type === "Action") {
             if (commandInstance.namespace === null) {
               console.error("action must have namespace");
@@ -261,21 +257,12 @@ export const runbooksSlice = createSlice({
       state[currentActiveIdx] = { ...state[currentActiveIdx], isActive: false };
       state[newActiveIdx] = { ...state[newActiveIdx], isActive: true };
     }),
-    setActiveRunbookActiveStep: create.reducer(
-      (state, action: PayloadAction<number>) => {
-        const activeRunbook = findActiveRunbook(state);
-        const idx = findRunbookIdx(state, activeRunbook.metadata.uuid);
-        state[idx] = { ...state[idx], activeStep: action.payload };
-      },
-    ),
   }),
   selectors: {
     selectActiveRunbook: findActiveRunbook,
     selectRunbook: findRunbook,
     selectIsDirty:
       createSelector([findRunbook], (runbook) => runbook.isDirty) || false,
-    selectActiveRunbookActiveStep:
-      createSelector([findActiveRunbook], (runbook) => runbook.activeStep) || 0,
   },
 });
 
@@ -284,12 +271,7 @@ export const {
   setRunbookData,
   updateFieldDirtinessMap,
   setActiveRunbook,
-  setActiveRunbookActiveStep,
 } = runbooksSlice.actions;
 
-export const {
-  selectRunbook,
-  selectActiveRunbook,
-  selectIsDirty,
-  selectActiveRunbookActiveStep,
-} = runbooksSlice.selectors;
+export const { selectRunbook, selectActiveRunbook, selectIsDirty } =
+  runbooksSlice.selectors;

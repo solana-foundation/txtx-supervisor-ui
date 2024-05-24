@@ -1,15 +1,15 @@
 import { Header } from "./components/header/header";
 import { Search } from "./components/sidebar/search";
 import { Nav, NavGroup } from "./components/sidebar/nav";
-import React, { useState } from "react";
+import React, { createRef, useEffect, useRef, useState } from "react";
 import Runbook from "./components/main/runbook";
 import { Logo } from "./components/header/logo";
 import { useQuery } from "@apollo/client";
 import { GET_PROTOCOL } from "./utils/queries";
 import { RunbookMetadata, Protocol } from "./components/main/types";
 import { sortNavItemsRecursive } from "./utils/helpers";
-import { useAppDispatch } from "./hooks";
-import { addRunbook } from "./reducers/runbooks-slice";
+import { useAppDispatch, useAppSelector } from "./hooks";
+import { addRunbook, selectActiveRunbook } from "./reducers/runbooks-slice";
 
 enum PageNav {
   Runbook,
@@ -20,7 +20,22 @@ export default function App() {
   const [pageNav, setPageNav] = useState<PageNav>(PageNav.Runbook);
   const [navGroups, setNavGroups] = useState<NavGroup[]>();
   const [protocolName, setProtocolName] = useState<string>("");
+  const panelRefs = useRef<any[]>([]);
   const dispatch = useAppDispatch();
+  const { commandSections } = useAppSelector(selectActiveRunbook);
+
+  // todo: this is probably a hacky way to do this, but it works for now
+  // if an href is provided, scroll to it after a timeout, to give components
+  // time to load
+  useEffect(() => {
+    setTimeout(() => {
+      const hash = window.location.hash.replace("#", "");
+      const el = document.getElementById(hash);
+      if (el) {
+        el.scrollIntoView();
+      }
+    }, 200);
+  }, []);
 
   const { loading } = useQuery(GET_PROTOCOL, {
     onCompleted: (result) => {
@@ -45,6 +60,28 @@ export default function App() {
       setProtocolName(protocolName);
     },
   });
+
+  if (commandSections) {
+    panelRefs.current = Array.from(
+      Array(commandSections.length + 2).keys(),
+    ).map((_, i) => {
+      return panelRefs.current[i] ?? createRef();
+    });
+  }
+
+  const panelScrollHandler = (index) => {
+    window.location.hash = panelRefs.current[index].current.id;
+    // when we select a new panel, the panels resize some, which makes the
+    // location of the ref change. set a timeout to give the css resizing a
+    // head start, so this scroll into view has the correct position to scroll to
+    setTimeout(() => {
+      panelRefs.current[index].current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "start",
+      });
+    }, 200);
+  };
 
   return (
     <>
@@ -74,10 +111,20 @@ export default function App() {
 
         {/* Header & main content */}
         <div className="from-gray-950 to-neutral-900">
-          <Header {...{ title: protocolName }}></Header>
+          <Header
+            {...{ title: protocolName }}
+            panelScrollHandler={panelScrollHandler}
+          ></Header>
           <main className="min-h-screen pt-0 mt-0 pl-16 ">
             <div className="flex justify-center py-9">
-              {loading ? <div>Loading...</div> : <Runbook />}
+              {loading ? (
+                <div>Loading...</div>
+              ) : (
+                <Runbook
+                  panelScrollHandler={panelScrollHandler}
+                  panelRefs={panelRefs}
+                />
+              )}
             </div>
           </main>
         </div>

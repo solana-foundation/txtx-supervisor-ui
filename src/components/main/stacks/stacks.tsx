@@ -11,6 +11,7 @@ import {
 import { AppConfig, UserSession, showConnect } from "@stacks/connect";
 import { Action, Prompt } from "../types";
 import { getPublicKey } from "./stacks-helpers";
+import { MultisigPanel, MultisigTransactionPrimaryButton } from "./multisig";
 
 const appConfig = new AppConfig(["store_write", "publish_data"]);
 export const userSession = new UserSession({ appConfig });
@@ -75,6 +76,8 @@ export class StacksAddon implements Addon {
     switch (prompt.name) {
       case "Sign Stacks Transaction":
         return <SignTransactionPanel prompt={prompt} />;
+      case "Multisig Stacks Transaction":
+        return <MultisigPanel prompt={prompt} />;
       default:
         throw new Error(`unimplemented prompt ${prompt.name} for stacks addon`);
     }
@@ -89,6 +92,14 @@ export class StacksAddon implements Addon {
       case "Sign Stacks Transaction":
         return (
           <SignTransactionPrimaryButton
+            prompt={prompt}
+            panelIndex={panelIndex}
+            scrollHandler={scrollHandler}
+          />
+        );
+      case "Multisig Stacks Transaction":
+        return (
+          <MultisigTransactionPrimaryButton
             prompt={prompt}
             panelIndex={panelIndex}
             scrollHandler={scrollHandler}
