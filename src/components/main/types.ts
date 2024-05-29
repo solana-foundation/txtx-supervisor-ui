@@ -1,20 +1,3 @@
-export interface ConstructExecutionResult {
-  [key: string]: string;
-}
-
-export interface CommandInputEvaluationResult {
-  [key: string]: string;
-}
-
-export enum CommandInstanceState {
-  New = "New",
-  Evaluated = "Evaluated",
-  AwaitingUserInput = "AwaitingUserInput",
-  AwaitingAsyncRequest = "AwaitingAsyncRequest",
-  Aborted = "Aborted",
-  Failed = "Failed",
-}
-
 export interface Protocol {
   name: string;
   runbooks: Array<RunbookMetadata>;
@@ -50,6 +33,7 @@ export function deserializeBlock(block: Block<false>): Block<true> {
           );
           return {
             uuid: actionItem.uuid,
+            constructUuid: actionItem.constructUuid,
             index: actionItem.index,
             title: actionItem.title,
             description: actionItem.description,
@@ -74,6 +58,7 @@ export interface ActionSubGroup<Deserialized = true> {
 
 export interface ActionItemRequest<Deserialized = true> {
   uuid: string;
+  constructUuid: string | null;
   index: number;
   title: string;
   description: string;
@@ -88,7 +73,20 @@ export type ActionItemStatus =
   | { status: "Error"; data: Diagnostic }
   | { status: "Warning"; data: Diagnostic };
 
-type Diagnostic = any; // Define Diagnostic type according to your needs
+export interface Diagnostic {
+  span: DiagnosticSpan | null;
+  message: string;
+  level: DiagnosticLevel;
+}
+
+export interface DiagnosticSpan {
+  line_start: number;
+  line_end: number;
+  column_start: number;
+  column_end: number;
+}
+
+export type DiagnosticLevel = "Error" | "Warning" | "Note";
 
 export type ActionItemRequestType =
   | ReviewInputActionItemRequest
@@ -96,6 +94,7 @@ export type ActionItemRequestType =
   | PickInputOptionActionItemRequest
   | ProvidePublicKeyActionItemRequest
   | ProvideSignedTransactionActionItemRequest
+  | DisplayOutputActionItemRequest
   | ValidatePanelActionItemRequest;
 
 export type ReviewInputActionItemRequest = { type: "ReviewInput" };
@@ -115,6 +114,10 @@ export type ProvideSignedTransactionActionItemRequest = {
   type: "ProvideSignedTransaction";
   data: ProvideSignedTransactionRequest;
 };
+export type DisplayOutputActionItemRequest = {
+  type: "ProvideSignedTransaction";
+  data: DisplayOutputRequest;
+};
 export type ValidatePanelActionItemRequest = { type: "ValidatePanel" };
 
 export interface ProvideInputRequest {
@@ -129,10 +132,20 @@ export interface InputOption {
 
 export interface ProvidePublicKeyRequest {
   checkExpectationActionUuid: string | null;
+  message: string;
+  namespace: string;
+  networkId: string;
 }
 
 export interface ProvideSignedTransactionRequest {
   checkExpectationActionUuid: string | null;
+  payload: Value;
+}
+
+export interface DisplayOutputRequest {
+  name: string;
+  description: string | null;
+  value: Value;
 }
 
 export type ActionItemResponse = {
@@ -140,17 +153,70 @@ export type ActionItemResponse = {
 } & ActionItemResponseType;
 
 type ActionItemResponseType =
-  | { type: "ReviewInput"; data: boolean }
-  | { type: "ValidatePanel" }
+  | { type: "ReviewInput"; data: ReviewInputResponse }
   | { type: "ProvideInput"; data: ProvidedInputResponse }
   | { type: "PickInputOption"; data: string }
-  | { type: "ProvidePublicKey"; data: ProvidedInputResponse }
-  | { type: "ProvideSignedTransaction"; data: ProvidedInputResponse };
+  | { type: "ProvidePublicKey"; data: ProvidePublicKeyResponse }
+  | { type: "ProvideSignedTransaction"; data: ProvideSignedTransactionResponse }
+  | { type: "ValidatePanel" };
+
+export interface ReviewInputResponse {
+  inputName: string;
+  valueChecked: boolean;
+}
 
 export interface ProvidedInputResponse {
   inputName: string;
-  value: string;
-  typing: PrimitiveType;
+  updatedValue: Value;
 }
 
-type PrimitiveType = "string" | "uint" | "int" | "boolean" | "null" | "buffer";
+export interface ProvidePublicKeyResponse {
+  publicKey: string;
+}
+
+export interface ProvideSignedTransactionResponse {}
+
+export enum Type {
+  "Primitive",
+  "Array",
+  "Object",
+  "Addon",
+}
+export type PrimitiveType =
+  | "String"
+  | "UInt"
+  | "Int"
+  | "Boolean"
+  | "Null"
+  | "Buffer";
+
+export type Value =
+  | {
+      type: Type.Primitive;
+      value: { type: PrimitiveType; value: string | number | boolean | null };
+    }
+  | {
+      type: Type.Array;
+      value: Value[];
+    }
+  | {
+      type: Type.Object;
+      value: { [key: string]: { Err: Diagnostic } | { Ok: Value } };
+    };
+
+export function toValue(input: any, typing: PrimitiveType): Value {
+  if (
+    typeof input === "object" ||
+    typeof input === "function" ||
+    Array.isArray(input)
+  ) {
+    throw new Error(`toValue not yet supported for ${typeof input}: ${input}`);
+  }
+  return {
+    type: Type.Primitive,
+    value: {
+      type: typing,
+      value: input,
+    },
+  };
+}

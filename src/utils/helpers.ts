@@ -1,4 +1,3 @@
-import { CommandData } from "../components/main/types";
 import { NavItem } from "../components/sidebar/nav-item";
 
 export function sortNavItemsRecursive(a: NavItem, b: NavItem) {
@@ -17,16 +16,40 @@ export function sortNavItemsRecursive(a: NavItem, b: NavItem) {
   }
 }
 
-export function sortCommands(a: CommandData, b: CommandData) {
-  if (a.index < b.index) {
-    return -1;
-  }
-  if (a.index > b.index) {
-    return 1;
-  }
-  return 0;
-}
-
 export function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
+}
+
+export function getStorageKey(namespace: string): string {
+  return `txtx_${namespace}_data`;
+}
+export function getPublicKeyFromLocalStorage(
+  storageKey: string,
+  address: string,
+): string | undefined {
+  const addressToKeyMapStr = localStorage.getItem(storageKey);
+  if (addressToKeyMapStr === null) return;
+  const addressToKeyMap = JSON.parse(addressToKeyMapStr);
+  if (typeof addressToKeyMap !== "object") return;
+  return addressToKeyMap[address];
+}
+
+export function storePublicKeyInLocalStorage(
+  storageKey: string,
+  address: string,
+  publicKey: string,
+) {
+  const addressToKeyMapStr = localStorage.getItem(storageKey);
+  if (addressToKeyMapStr === null) {
+    localStorage.setItem(storageKey, JSON.stringify({ address: publicKey }));
+  } else {
+    const addressToKeyMap = JSON.parse(addressToKeyMapStr);
+    if (typeof addressToKeyMap !== "object") {
+      // we have invalid storage at this key, overwrite it
+      localStorage.setItem(storageKey, JSON.stringify({ address: publicKey }));
+    } else {
+      addressToKeyMap[address] = publicKey;
+      localStorage.setItem(storageKey, JSON.stringify(addressToKeyMap));
+    }
+  }
 }

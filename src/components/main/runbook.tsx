@@ -17,7 +17,7 @@ export default function Runbook({
 
   return (
     <div className="w-full justify-center flex flex-col items-center">
-      <div className="min-w-[1024px] max-w-[1280px] min-h-full px-6 pt-6 justify-center flex flex-col inline-flex gap-8">
+      <div className="w-[1024px] min-h-full px-6 pt-6 justify-center flex flex-col inline-flex gap-8">
         {blocks.map((block, i) => {
           return (
             <Panel

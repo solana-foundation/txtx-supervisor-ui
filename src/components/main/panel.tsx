@@ -1,5 +1,14 @@
-import React, { MouseEventHandler, forwardRef } from "react";
-import { classNames } from "../../utils/helpers";
+import React, {
+  MouseEventHandler,
+  forwardRef,
+  useEffect,
+  useState,
+} from "react";
+import {
+  classNames,
+  getPublicKeyFromLocalStorage,
+  getStorageKey,
+} from "../../utils/helpers";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { RunbookStepStatus, statusForStepNumber } from "./runbook-status-bar";
 import {
@@ -24,13 +33,18 @@ import {
   ActionGroup,
   ActionItemRequest,
   ActionItemResponse,
+  ActionItemStatus,
   ActionSubGroup,
   Block,
   InputOption,
   PickInputOptionActionItemRequest,
   ProvideInputRequest,
+  ProvidePublicKeyRequest,
+  toValue,
 } from "./types";
 import { setBlocks } from "../../reducers/runbooks-slice";
+import addonManager from "../../utils/addons-initializer";
+import { ConnectWalletFunction, ConnectedWalletInfo } from "../../utils/addons";
 
 export enum PanelColor {
   Purple,
@@ -135,7 +149,7 @@ function SubGroup({ subGroup }: SubGroup) {
     actionItems[0].actionType.type === "ValidatePanel";
 
   const uiActionItems = actionItems.map((actionItem, i) => {
-    const { actionType, uuid, actionStatus } = actionItem;
+    const { actionType, uuid, actionStatus, description } = actionItem;
     const { type } = actionType;
     const { status } = actionStatus;
     const isFirst = i === 0;
@@ -146,7 +160,10 @@ function SubGroup({ subGroup }: SubGroup) {
         const event: ActionItemResponse = {
           actionItemUuid: uuid,
           type: "ReviewInput",
-          data: status === "Todo",
+          data: {
+            inputName: actionItem.title,
+            valueChecked: status === "Todo",
+          },
         };
         updateActionItem({ variables: { event: JSON.stringify(event) } });
       };
@@ -159,7 +176,10 @@ function SubGroup({ subGroup }: SubGroup) {
           onClick={onClick}
           key={uuid}
         >
-          <ReviewInputCell actionItem={actionItem} />
+          <ReviewInputCell
+            description={description}
+            actionStatus={actionStatus}
+          />
         </Row>
       );
     } else if (type === "ProvideInput") {
@@ -167,7 +187,10 @@ function SubGroup({ subGroup }: SubGroup) {
         const event: ActionItemResponse = {
           actionItemUuid: uuid,
           type: "ReviewInput",
-          data: status === "Todo",
+          data: {
+            inputName: actionItem.title,
+            valueChecked: status === "Todo",
+          },
         };
         updateActionItem({ variables: { event: JSON.stringify(event) } });
       };
@@ -178,8 +201,7 @@ function SubGroup({ subGroup }: SubGroup) {
           type: "ProvideInput",
           data: {
             inputName,
-            typing,
-            value: e.target.value,
+            updatedValue: toValue(e.target.value, typing),
           },
         };
         updateActionItem({ variables: { event: JSON.stringify(event) } });
@@ -235,6 +257,17 @@ function SubGroup({ subGroup }: SubGroup) {
           key={uuid}
         />
       );
+    } else if (type === "ProvidePublicKey") {
+      const { data } = actionType;
+      return (
+        <ProvidePublicKeyRow
+          actionItem={actionItem}
+          actionTypeData={data}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={uuid}
+        />
+      );
     }
   });
 
@@ -266,6 +299,93 @@ function Row({
   const { uuid, index, title, description, actionStatus } = actionItem;
   const { status } = actionStatus;
   // todo: handle other statuses
+  let checkClass, subRow;
+  if (status === "Todo") {
+    checkClass = "text-white";
+  } else if (status === "Success") {
+    checkClass = "text-emerald-500";
+  } else if (status === "Error") {
+    const diag = actionStatus.data;
+    checkClass = "text-rose-400";
+    subRow = <SubRow text={diag.message} />;
+  }
+
+  return (
+    <div className="w-full">
+      <div
+        onClick={onClick}
+        className={classNames(
+          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer border-gray-800",
+          isFirst ? "rounded-t border-b" : isLast ? "rounded-b" : "border-b",
+        )}
+      >
+        <div
+          className={classNames(
+            "w-8 self-stretch bg-gray-950 border-r border-gray-800 flex-col justify-between items-start inline-flex",
+            isFirst ? "rounded-tl" : isLast ? "rounded-bl" : "",
+          )}
+        >
+          <div className="self-stretch py-2.5 justify-center items-center inline-flex">
+            <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
+              #
+            </div>
+            <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
+              {index + 1}
+            </div>
+          </div>
+        </div>
+
+        <div className="grow shrink basis-0 self-stretch bg-gray-950 border-gray-800 flex-col justify-center items-start inline-flex">
+          <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
+            <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
+              {title}
+            </div>
+          </div>
+        </div>
+
+        {children}
+
+        <div
+          className={classNames(
+            "w-8 self-stretch bg-gray-950 border-l border-gray-800 flex-col justify-center items-start inline-flex",
+            isFirst ? "rounded-tr" : isLast ? "rounded-br" : "",
+          )}
+        >
+          <div className="self-stretch py-2.5 justify-center items-start inline-flex">
+            <div
+              className={classNames(
+                "text-xs font-normal font-['Inter'] leading-none",
+                checkClass,
+              )}
+            >
+              ✓
+            </div>
+          </div>
+        </div>
+      </div>
+      {subRow}
+    </div>
+  );
+}
+
+interface RowWithSubRow {
+  actionItem: ActionItemRequest;
+  isFirst: boolean;
+  isLast: boolean;
+  onClick: any;
+  subRow: SubRow;
+}
+function RowWithSubRow({
+  actionItem,
+  isFirst,
+  isLast,
+  children,
+  onClick,
+  subRow,
+}: RowWithSubRow & { children }) {
+  const { uuid, index, title, description, actionStatus } = actionItem;
+  const { status } = actionStatus;
+  // todo: handle other statuses
   let checkClass;
   if (status === "Todo") {
     checkClass = "text-white";
@@ -276,65 +396,271 @@ function Row({
   }
 
   return (
+    <div className="w-full">
+      <div
+        onClick={onClick}
+        className={classNames(
+          "w-full flex-row self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer border-gray-800",
+          isFirst ? "rounded-t border-b" : isLast ? "rounded-b" : "border-b",
+        )}
+      >
+        <div
+          className={classNames(
+            "w-8 self-stretch bg-gray-950 border-r border-gray-800 flex-col justify-between items-start inline-flex",
+            isFirst ? "rounded-tl" : isLast ? "rounded-bl" : "",
+          )}
+        >
+          <div className="self-stretch py-2.5 justify-center items-center inline-flex">
+            <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
+              #
+            </div>
+            <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
+              {index + 1}
+            </div>
+          </div>
+        </div>
+
+        <div className="grow shrink basis-0 self-stretch bg-gray-950 border-gray-800 flex-col justify-center items-start inline-flex">
+          <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
+            <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
+              {title}
+            </div>
+          </div>
+        </div>
+
+        {children}
+
+        <div
+          className={classNames(
+            "w-8 self-stretch bg-gray-950 border-l border-gray-800 flex-col justify-center items-start inline-flex",
+            isFirst ? "rounded-tr" : isLast ? "rounded-br" : "",
+          )}
+        >
+          <div className="self-stretch py-2.5 justify-center items-start inline-flex">
+            <div
+              className={classNames(
+                "text-xs font-normal font-['Inter'] leading-none",
+                checkClass,
+              )}
+            >
+              ✓
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <SubRow text={subRow.text}>{subRow.children}</SubRow>
+    </div>
+  );
+}
+
+interface SubRow {
+  text: string;
+  children?: JSX.Element;
+}
+function SubRow({ text, children }: SubRow) {
+  let el = children ? (
+    <div className="self-stretch justify-end items-end gap-2.5 inline-flex">
+      {children}
+    </div>
+  ) : null;
+  return (
     <div
-      onClick={onClick}
       className={classNames(
-        "self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer border-gray-800",
-        isFirst ? "rounded-t border-b" : isLast ? "rounded-b" : "border-b",
+        "w-full px-3 py-2.5 justify-start items-start inline-flex bg-black",
+        children ? "h-20" : "",
       )}
     >
       <div
         className={classNames(
-          "w-8 self-stretch bg-gray-950 border-r border-gray-800 flex-col justify-between items-start inline-flex",
-          isFirst ? "rounded-tl" : isLast ? "rounded-bl" : "",
+          "grow shrink basis-0 flex-col justify-start items-start inline-flex",
+          children ? "gap-2.5" : "",
         )}
       >
-        <div className="self-stretch py-2.5 justify-center items-center inline-flex">
-          <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
-            #
-          </div>
-          <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
-            {index + 1}
-          </div>
+        <div className="self-stretch text-stone-500 text-sm font-medium font-['Inter'] leading-[18.20px]">
+          {text}
         </div>
-      </div>
-
-      <div className="grow shrink basis-0 self-stretch bg-gray-950 border-gray-800 flex-col justify-center items-start inline-flex">
-        <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
-          <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
-            {title}
-          </div>
-        </div>
-      </div>
-
-      {children}
-
-      <div
-        className={classNames(
-          "w-8 self-stretch bg-gray-950 border-l border-gray-800 flex-col justify-center items-start inline-flex",
-          isFirst ? "rounded-tr" : isLast ? "rounded-br" : "",
-        )}
-      >
-        <div className="self-stretch py-2.5 justify-center items-start inline-flex">
-          <div
-            className={classNames(
-              "text-xs font-normal font-['Inter'] leading-none",
-              checkClass,
-            )}
-          >
-            ✓
-          </div>
-        </div>
+        {el}
       </div>
     </div>
   );
 }
 
-interface ReviewInputCell {
+interface ProvidePublicKeyRow {
   actionItem: ActionItemRequest;
+  actionTypeData: ProvidePublicKeyRequest;
+  isFirst: boolean;
+  isLast: boolean;
 }
-function ReviewInputCell({ actionItem }: ReviewInputCell) {
-  const { uuid, index, title, description, actionStatus } = actionItem;
+function ProvidePublicKeyRow({
+  actionItem,
+  actionTypeData,
+  isFirst,
+  isLast,
+}: ProvidePublicKeyRow) {
+  const { uuid, actionStatus } = actionItem;
+  const { namespace, networkId, message } = actionTypeData;
+  const { status } = actionStatus;
+  addonManager.addNetworkInstance(namespace, networkId);
+
+  const dispatch = useAppDispatch();
+  const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM, {
+    refetchQueries: [GET_BLOCKS],
+    awaitRefetchQueries: true,
+    onQueryUpdated: (query) => {
+      query.refetch().then(({ data }) => {
+        const blocks: Block<false>[] = data.blocks;
+        dispatch(setBlocks(blocks));
+      });
+    },
+  });
+
+  const isWalletConnected = addonManager.isWalletConnected(
+    namespace,
+    networkId,
+  );
+  if (!isWalletConnected) {
+    const onClick = async () => {
+      await addonManager.connectWallet(namespace, networkId);
+    };
+    return (
+      <RowWithSubRow
+        actionItem={actionItem}
+        isFirst={isFirst}
+        isLast={isLast}
+        onClick={() => {}}
+        subRow={{
+          text: message,
+          children: (
+            <PanelButton
+              title="Connect Wallet"
+              onClick={onClick}
+              isDisabled={false}
+              size={ElementSize.S}
+            />
+          ),
+        }}
+      >
+        <div></div>
+      </RowWithSubRow>
+    );
+  } else {
+    const address = addonManager.getAddress(namespace, networkId);
+
+    if (status === "Todo") {
+      const publicKeyFromStorage = getPublicKeyFromLocalStorage(
+        getStorageKey(namespace),
+        address,
+      );
+
+      console.log("key from storage", publicKeyFromStorage);
+
+      if (publicKeyFromStorage === undefined) {
+        const onClick = async () => {
+          let publicKey = await addonManager.getPublicKey(
+            namespace,
+            networkId,
+            address,
+            message,
+          );
+          if (publicKey === undefined) {
+            throw new Error("failed to fetch public key");
+          }
+          const event: ActionItemResponse = {
+            actionItemUuid: uuid,
+            type: "ProvidePublicKey",
+            data: {
+              publicKey,
+            },
+          };
+          updateActionItem({ variables: { event: JSON.stringify(event) } });
+        };
+
+        return (
+          <RowWithSubRow
+            actionItem={actionItem}
+            isFirst={isFirst}
+            isLast={isLast}
+            onClick={() => {}}
+            subRow={{
+              text: message,
+              children: (
+                <PanelButton
+                  title="Provide Public Key"
+                  onClick={onClick}
+                  isDisabled={false}
+                  size={ElementSize.S}
+                />
+              ),
+            }}
+          >
+            <div></div>
+          </RowWithSubRow>
+        );
+      } else {
+        const onClick = () => {
+          const event: ActionItemResponse = {
+            actionItemUuid: uuid,
+            type: "ProvidePublicKey",
+            data: {
+              publicKey: publicKeyFromStorage,
+            },
+          };
+          updateActionItem({ variables: { event: JSON.stringify(event) } });
+        };
+        return (
+          <Row
+            actionItem={actionItem}
+            isFirst={isFirst}
+            isLast={isLast}
+            onClick={onClick}
+          >
+            <ReviewInputCell
+              description={address}
+              actionStatus={actionItem.actionStatus}
+            />
+          </Row>
+        );
+      }
+    } else if (status === "Success") {
+      const onClick = () => {};
+      return (
+        <Row
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          onClick={onClick}
+        >
+          <ReviewInputCell
+            description={address}
+            actionStatus={actionItem.actionStatus}
+          />
+        </Row>
+      );
+    } else if (status === "Error") {
+      const statusData = actionStatus.data;
+
+      <RowWithSubRow
+        actionItem={actionItem}
+        isFirst={isFirst}
+        isLast={isLast}
+        onClick={() => {}}
+        subRow={{
+          text: statusData.message,
+          children: <div></div>,
+        }}
+      >
+        <div></div>
+      </RowWithSubRow>;
+    }
+  }
+}
+
+interface ReviewInputCell {
+  description: string;
+  actionStatus: ActionItemStatus;
+}
+function ReviewInputCell({ description, actionStatus }: ReviewInputCell) {
   const { status } = actionStatus;
   // todo: handle other statuses
   let descriptionContainerClass, descriptionClass;
@@ -423,16 +749,21 @@ export default function PickInputOptionCell({
 }: PickInputOptionCell) {
   const actionType = actionItem.actionType as PickInputOptionActionItemRequest;
   const options = actionType.data;
-  const selected = options.find(
+  const selectedOption = options.find(
     (option) => option.value === actionItem.description,
   );
+  const [selected, setSelectedState] = useState(selectedOption);
+  const onChange = (option: any) => {
+    setSelectedState(option);
+    setSelected(option);
+  };
   if (selected === undefined) {
     throw new Error(
       `selected option for PickInputOptionCell class is not a valid option. Selected: ${actionItem.description}, Options: ${options}`,
     );
   }
   return (
-    <Listbox value={selected.value} onChange={setSelected}>
+    <Listbox value={selected.value} onChange={onChange}>
       {({ open }) => (
         <>
           <div className="self-stretch bg-gray-950 flex-col justify-center items-start inline-flex">

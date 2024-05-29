@@ -33,12 +33,28 @@ export default function App() {
     }, 200);
   }, []);
 
-  const { loading } = useQuery(GET_BLOCKS, {
-    onCompleted: (result) => {
-      const blocks: Block<false>[] = result.blocks;
+  const [completed, setCompleted] = useState(true);
+
+  const { data, loading, stopPolling, startPolling } = useQuery(GET_BLOCKS, {});
+
+  useEffect(() => {
+    if (data) {
+      console.log("again", data);
+      const blocks: Block<false>[] = data.blocks;
       dispatch(setBlocks(blocks));
-    },
-  });
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (!completed) {
+      startPolling(1000);
+    } else {
+      stopPolling();
+    }
+    return () => {
+      stopPolling();
+    };
+  }, [stopPolling, startPolling, completed]);
 
   const panelScrollHandler = (index) => {
     window.location.hash = panelRefs.current[index].current.id;

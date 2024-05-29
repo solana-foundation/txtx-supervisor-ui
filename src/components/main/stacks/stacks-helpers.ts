@@ -19,47 +19,32 @@ import {
 } from "@stacks/network";
 import { appDetails, userSession } from "./stacks";
 import { openSignatureRequestPopup } from "@stacks/connect";
+import {
+  getStorageKey,
+  storePublicKeyInLocalStorage,
+} from "../../../utils/helpers";
 export const TXTX_LOCAL_STORAGE_KEY = "txtx_addresses";
 
 export const getPublicKey = async (
   address,
   networkId: string,
 ): Promise<string | undefined> => {
-  const addresses = localStorage.getItem(TXTX_LOCAL_STORAGE_KEY);
-  let currentStorage = {};
-  if (addresses) {
-    const parsed = JSON.parse(addresses);
-    if (parsed) {
-      const pubKey = parsed[address];
-      if (pubKey) {
-        return pubKey;
-      } else {
-        currentStorage = parsed;
-      }
-    }
-  }
-
-  let pubKey;
+  let publicKey;
   await openSignatureRequestPopup({
     message: "Test message.",
     network: networkId == "mainnet" ? new StacksMainnet() : new StacksTestnet(),
     appDetails: appDetails,
     onFinish(response) {
-      currentStorage[address] = response.publicKey;
-      localStorage.setItem(
-        TXTX_LOCAL_STORAGE_KEY,
-        JSON.stringify(currentStorage),
-      );
-      pubKey = response.publicKey;
-      if (pubKey === undefined) {
+      publicKey = response.publicKey;
+      if (publicKey === undefined) {
         console.error(
           `Address mismatch between user session and selected wallet address.`,
         );
       }
     },
   });
-
-  return pubKey;
+  storePublicKeyInLocalStorage(getStorageKey("stacks"), address, publicKey);
+  return publicKey;
 };
 
 export const payloadToUnsignedTxHex = async (
