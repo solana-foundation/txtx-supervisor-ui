@@ -14,40 +14,40 @@ export const GET_PROTOCOL = gql`
   }
 `;
 
-export const GET_MANUAL = gql`
-  query GetRunbook($runbookName: String!) {
-    runbook(runbookName: $runbookName) {
+export const GET_BLOCKS = gql`
+  query GetBlocks {
+    blocks {
       uuid
-      data
+      title
+      description
+      groups {
+        title
+        subGroups {
+          allowBatchCompletion
+          actionItems {
+            uuid
+            index
+            title
+            description
+            actionStatus
+            actionType
+          }
+        }
+      }
+    }
+  }
+`;
+export const GET_RUNBOOK_METADATA = gql`
+  query GetRunbookMetadata {
+    runbook {
+      name
+      description
     }
   }
 `;
 
-export const GET_COMMAND_INSTANCE_STATE = gql`
-  query GetCommandInstanceState(
-    $runbookName: String!
-    $constructUuid: String!
-  ) {
-    runbook(runbookName: $runbookName) {
-      commandInstanceState(constructUuidString: $constructUuid)
-      data
-      uuid
-    }
-  }
-`;
-
-export const UPDATE_COMMAND_INPUT = gql`
-  mutation UpdateCommandInput(
-    $runbookName: String!
-    $commandUuid: Uuid!
-    $inputName: String!
-    $value: String!
-  ) {
-    updateCommandInput(
-      runbookName: $runbookName
-      commandUuid: $commandUuid
-      inputName: $inputName
-      value: $value
-    )
+export const UPDATE_ACTION_ITEM = gql`
+  mutation UpdateActionItem($event: String!) {
+    updateActionItem(event: $event)
   }
 `;
