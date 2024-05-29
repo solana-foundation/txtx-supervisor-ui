@@ -4,14 +4,8 @@ import {
   ConnectWalletFunction,
   ConnectedWalletInfo,
 } from "../../../utils/addons";
-import {
-  SignTransactionPanel,
-  SignTransactionPrimaryButton,
-} from "./sign-transaction";
 import { AppConfig, UserSession, showConnect } from "@stacks/connect";
-import { Action, Prompt } from "../types";
 import { getPublicKey } from "./stacks-helpers";
-import { MultisigPanel, MultisigTransactionPrimaryButton } from "./multisig";
 
 const appConfig = new AppConfig(["store_write", "publish_data"]);
 export const userSession = new UserSession({ appConfig });

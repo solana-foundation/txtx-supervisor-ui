@@ -1,15 +1,12 @@
 import { Header } from "./components/header/header";
-import { Search } from "./components/sidebar/search";
-import { Nav, NavGroup } from "./components/sidebar/nav";
-import React, { createRef, useEffect, useRef, useState } from "react";
+import { NavGroup } from "./components/sidebar/nav";
+import React, { useEffect, useRef, useState } from "react";
 import Runbook from "./components/main/runbook";
-import { Logo } from "./components/header/logo";
-import { useQuery } from "@apollo/client";
-import { GET_PROTOCOL } from "./utils/queries";
-import { RunbookMetadata, Protocol } from "./components/main/types";
-import { sortNavItemsRecursive } from "./utils/helpers";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_BLOCKS, UPDATE_ACTION_ITEM } from "./utils/queries";
+import { Block } from "./components/main/types";
 import { useAppDispatch, useAppSelector } from "./hooks";
-import { addRunbook, selectActiveRunbook } from "./reducers/runbooks-slice";
+import { setBlocks, selectRunbook } from "./reducers/runbooks-slice";
 
 enum PageNav {
   Runbook,
@@ -22,7 +19,6 @@ export default function App() {
   const [protocolName, setProtocolName] = useState<string>("");
   const panelRefs = useRef<any[]>([]);
   const dispatch = useAppDispatch();
-  const { commandSections } = useAppSelector(selectActiveRunbook);
 
   // todo: this is probably a hacky way to do this, but it works for now
   // if an href is provided, scroll to it after a timeout, to give components
@@ -37,37 +33,12 @@ export default function App() {
     }, 200);
   }, []);
 
-  const { loading } = useQuery(GET_PROTOCOL, {
+  const { loading } = useQuery(GET_BLOCKS, {
     onCompleted: (result) => {
-      const protocol: Protocol = result.protocol;
-      const protocolName = protocol.name;
-      const metadatas: RunbookMetadata[] = protocol.runbooks;
-      const navGroup: NavGroup = {
-        name: "Runbooks",
-        children: [],
-      };
-      for (let i = 0; i < metadatas.length; i++) {
-        const metadata = metadatas[i];
-        navGroup.children.push({
-          name: metadata.name,
-          runbookUuid: metadata.uuid,
-        });
-        dispatch(addRunbook([metadata, i === 0]));
-      }
-      let navGroups = [navGroup];
-      navGroups.forEach((group) => group.children.sort(sortNavItemsRecursive));
-      setNavGroups(navGroups);
-      setProtocolName(protocolName);
+      const blocks: Block<false>[] = result.blocks;
+      dispatch(setBlocks(blocks));
     },
   });
-
-  if (commandSections) {
-    panelRefs.current = Array.from(
-      Array(commandSections.length + 2).keys(),
-    ).map((_, i) => {
-      return panelRefs.current[i] ?? createRef();
-    });
-  }
 
   const panelScrollHandler = (index) => {
     window.location.hash = panelRefs.current[index].current.id;

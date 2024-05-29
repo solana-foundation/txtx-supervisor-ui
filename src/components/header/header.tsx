@@ -1,15 +1,30 @@
 import React from "react";
-import { selectActiveRunbook } from "../../reducers/runbooks-slice";
-import { useAppSelector } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import RunbookStatusBar from "../main/runbook-status-bar";
+import { useQuery } from "@apollo/client";
+import { GET_RUNBOOK_METADATA } from "../../utils/queries";
+import { selectRunbook, setMetadata } from "../../reducers/runbooks-slice";
 
 export interface HeaderProps {
   title: string;
   panelScrollHandler: any;
 }
 export function Header({ title, panelScrollHandler }: HeaderProps) {
-  const { metadata, commandSections } = useAppSelector(selectActiveRunbook);
-  if (!metadata) {
+  const dispatch = useAppDispatch();
+  const { loading } = useQuery(GET_RUNBOOK_METADATA, {
+    onCompleted: (result) => {
+      const { name, description } = result.runbook;
+      const metadata = {
+        name,
+        description,
+        uuid: "",
+      };
+      dispatch(setMetadata(metadata));
+    },
+  });
+
+  const { metadata } = useAppSelector(selectRunbook);
+  if (loading) {
     return <div>Loading...</div>;
   }
   return (
@@ -23,10 +38,10 @@ export function Header({ title, panelScrollHandler }: HeaderProps) {
             {metadata.description}
           </div>
 
-          <RunbookStatusBar
+          {/* <RunbookStatusBar
             steps={commandSections.length + 2}
             scrollHandler={panelScrollHandler}
-          />
+          /> */}
         </div>
       </div>
       <div className="py-4">
