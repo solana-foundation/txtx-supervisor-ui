@@ -2,11 +2,12 @@ import { Header } from "./components/header/header";
 import { NavGroup } from "./components/sidebar/nav";
 import React, { useEffect, useRef, useState } from "react";
 import Runbook from "./components/main/runbook";
-import { useMutation, useQuery } from "@apollo/client";
-import { GET_BLOCKS, UPDATE_ACTION_ITEM } from "./utils/queries";
+import { useQuery } from "@apollo/client";
+import { GET_BLOCKS } from "./utils/queries";
 import { Block } from "./components/main/types";
-import { useAppDispatch, useAppSelector } from "./hooks";
-import { setBlocks, selectRunbook } from "./reducers/runbooks-slice";
+import { useAppDispatch } from "./hooks";
+import { setBlocks } from "./reducers/runbooks-slice";
+import useSubscriptions from "./hooks/useSubscriptions";
 
 enum PageNav {
   Runbook,
@@ -35,26 +36,14 @@ export default function App() {
 
   const [completed, setCompleted] = useState(true);
 
-  const { data, loading, stopPolling, startPolling } = useQuery(GET_BLOCKS, {});
-
-  useEffect(() => {
-    if (data) {
-      console.log("again", data);
+  const { loading } = useQuery(GET_BLOCKS, {
+    onCompleted: (data) => {
       const blocks: Block<false>[] = data.blocks;
       dispatch(setBlocks(blocks));
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (!completed) {
-      startPolling(1000);
-    } else {
-      stopPolling();
-    }
-    return () => {
-      stopPolling();
-    };
-  }, [stopPolling, startPolling, completed]);
+    },
+  });
+  // subscribe to new block events, action item updates, etc
+  useSubscriptions();
 
   const panelScrollHandler = (index) => {
     window.location.hash = panelRefs.current[index].current.id;

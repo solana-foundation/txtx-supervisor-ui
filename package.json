@@ -43,6 +43,7 @@
     "debounce": "^2.0.0",
     "ethers": "^5.7.2",
     "graphql": "^16.8.1",
+    "graphql-ws": "^5.16.0",
     "headlessui": "^0.0.0",
     "monaco-editor": "=0.45.0",
     "posthog-js": "^1.130.2",

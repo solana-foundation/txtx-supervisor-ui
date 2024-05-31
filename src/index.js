@@ -1,5 +1,11 @@
 import { createRoot } from "react-dom/client";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  HttpLink,
+  split,
+} from "@apollo/client";
 import App from "./App";
 import { Provider } from "react-redux";
 import { store } from "./store";
@@ -9,13 +15,34 @@ import "./utils/addons-initializer";
 import posthog from "posthog-js";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
+import { getMainDefinition } from "@apollo/client/utilities";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient } from "graphql-ws";
 
-posthog.init("phc_mTZO0r156hfsV6JBDN3YGg727kYHXc675NABuHGh6fg", {
-  api_host: "https://us.i.posthog.com",
+const httpLink = new HttpLink({
+  uri: "http://localhost:8488/graphql",
 });
 
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: "ws://localhost:8488/subscriptions",
+  }),
+);
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    );
+  },
+  wsLink,
+  httpLink,
+);
+
 export const apolloClient = new ApolloClient({
-  uri: "http://localhost:8488/graphql",
+  link: splitLink,
   cache: new InMemoryCache(),
 });
 

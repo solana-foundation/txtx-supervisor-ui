@@ -1,9 +1,4 @@
-import React, {
-  MouseEventHandler,
-  forwardRef,
-  useEffect,
-  useState,
-} from "react";
+import React, { MouseEventHandler, forwardRef, useState } from "react";
 import {
   classNames,
   getPublicKeyFromLocalStorage,
@@ -19,10 +14,7 @@ import {
   Transition,
 } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import {
-  GET_BLOCKS as GET_BLOCKS,
-  UPDATE_ACTION_ITEM,
-} from "../../utils/queries";
+import { GET_BLOCKS, UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import debounce from "debounce";
 import {
@@ -132,16 +124,9 @@ interface SubGroup {
 }
 function SubGroup({ subGroup }: SubGroup) {
   const { actionItems, allowBatchCompletion } = subGroup;
-  const dispatch = useAppDispatch();
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM, {
     refetchQueries: [GET_BLOCKS],
     awaitRefetchQueries: true,
-    onQueryUpdated: (query) => {
-      query.refetch().then(({ data }) => {
-        const blocks: Block<false>[] = data.blocks;
-        dispatch(setBlocks(blocks));
-      });
-    },
   });
 
   const isValidatePanel =
@@ -507,12 +492,12 @@ function ProvidePublicKeyRow({
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM, {
     refetchQueries: [GET_BLOCKS],
     awaitRefetchQueries: true,
-    onQueryUpdated: (query) => {
-      query.refetch().then(({ data }) => {
-        const blocks: Block<false>[] = data.blocks;
-        dispatch(setBlocks(blocks));
-      });
-    },
+    // onQueryUpdated: (query) => {
+    //   query.refetch().then(({ data }) => {
+    //     const blocks: Block<false>[] = data.blocks;
+    //     dispatch(setBlocks(blocks));
+    //   });
+    // },
   });
 
   const isWalletConnected = addonManager.isWalletConnected(

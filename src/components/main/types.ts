@@ -8,6 +8,13 @@ export interface RunbookMetadata {
   uuid: string;
 }
 
+export type BlockAppendEvent = Block<false>;
+
+export interface UpdateActionItemEvent<Deserialized = true> {
+  newStatus: Deserialized extends true ? ActionItemStatus : string;
+  actionItemUuid: string;
+}
+
 export interface Block<Deserialized = true> {
   uuid: string;
   title: string;

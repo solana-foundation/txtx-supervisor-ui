@@ -51,3 +51,42 @@ export const UPDATE_ACTION_ITEM = gql`
     updateActionItem(event: $event)
   }
 `;
+
+export const APPEND_BLOCK_EVENT_SUBSCRIPTION = gql`
+  subscription OnAppendBlockEvent {
+    appendBlockEvent {
+      uuid
+      title
+      description
+      groups {
+        title
+        subGroups {
+          allowBatchCompletion
+          actionItems {
+            uuid
+            index
+            title
+            description
+            actionStatus
+            actionType
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const CLEAR_BLOCKS_EVENT_SUBSCRIPTION = gql`
+  subscription OnClearBlockEvent {
+    clearBlocksEvent
+  }
+`;
+
+export const UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION = gql`
+  subscription OnUpdateActionItems {
+    updateActionItemsEvent {
+      actionItemUuid
+      newStatus
+    }
+  }
+`;
