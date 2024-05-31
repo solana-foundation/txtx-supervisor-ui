@@ -1,8 +1,7 @@
 import React, { MutableRefObject } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks";
+import { useAppSelector } from "../../hooks";
 import { selectRunbook } from "../../reducers/runbooks-slice";
 import { Panel } from "./panel";
-import addonManager from "../../utils/addons-initializer";
 
 export interface RunbookProps {
   panelScrollHandler: any;
@@ -12,7 +11,6 @@ export default function Runbook({
   panelScrollHandler,
   panelRefs,
 }: RunbookProps) {
-  const dispatch = useAppDispatch();
   const { blocks } = useAppSelector(selectRunbook);
 
   return (

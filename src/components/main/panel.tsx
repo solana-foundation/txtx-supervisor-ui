@@ -488,16 +488,9 @@ function ProvidePublicKeyRow({
   const { status } = actionStatus;
   addonManager.addNetworkInstance(namespace, networkId);
 
-  const dispatch = useAppDispatch();
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM, {
     refetchQueries: [GET_BLOCKS],
     awaitRefetchQueries: true,
-    // onQueryUpdated: (query) => {
-    //   query.refetch().then(({ data }) => {
-    //     const blocks: Block<false>[] = data.blocks;
-    //     dispatch(setBlocks(blocks));
-    //   });
-    // },
   });
 
   const isWalletConnected = addonManager.isWalletConnected(
@@ -537,8 +530,6 @@ function ProvidePublicKeyRow({
         getStorageKey(namespace),
         address,
       );
-
-      console.log("key from storage", publicKeyFromStorage);
 
       if (publicKeyFromStorage === undefined) {
         const onClick = async () => {

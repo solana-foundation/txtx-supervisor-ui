@@ -1,9 +1,4 @@
-import React from "react";
-import {
-  Addon,
-  ConnectWalletFunction,
-  ConnectedWalletInfo,
-} from "../../../utils/addons";
+import { Addon } from "../../../utils/addons";
 import {
   AppConfig,
   UserSession,
@@ -17,8 +12,8 @@ import {
 } from "../../../utils/helpers";
 
 const appConfig = new AppConfig(["store_write", "publish_data"]);
-export const userSession = new UserSession({ appConfig });
-export const appDetails = {
+const userSession = new UserSession({ appConfig });
+const appDetails = {
   name: "txtx",
   icon: window.location.origin, // todo
 };
@@ -43,7 +38,6 @@ export class StacksAddon implements Addon {
 
   public getAddress(networkId: string): string {
     if (userSession.isUserSignedIn()) {
-      console.log("stacks user session", userSession);
       const userData = userSession.loadUserData();
       // todo, handle no address
       const address = userData.profile.stxAddress[networkId];
@@ -66,7 +60,6 @@ export class StacksAddon implements Addon {
         networkId == "mainnet" ? new StacksMainnet() : new StacksTestnet(),
       appDetails: appDetails,
       onFinish(response) {
-        console.log("signature popup response", response);
         publicKey = response.publicKey;
         if (publicKey === undefined) {
           console.error(
