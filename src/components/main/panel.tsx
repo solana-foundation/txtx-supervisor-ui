@@ -253,6 +253,40 @@ function SubGroup({ subGroup }: SubGroup) {
           key={uuid}
         />,
       );
+    } else if (type === "ProvideSignedTransaction") {
+      const { type, value } = actionType.data.payload;
+      if (
+        type !== "Primitive" ||
+        value.type !== "String" ||
+        typeof value.value !== "string"
+      ) {
+        throw new Error(
+          "ProvideSignedTransaction action must provide value of Type Primitive::String",
+        );
+      }
+      const { value: transaction } = value;
+      accumulator.push(
+        <Row
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          onClick={() => {}}
+          subRow={{
+            text: transaction,
+            children: (
+              <PanelButton
+                title="Sign Transaction"
+                onClick={() => {}}
+                isDisabled={false}
+                size={ElementSize.S}
+              />
+            ),
+          }}
+        >
+          <div></div>
+        </Row>,
+      );
+    }
     return accumulator;
   }, [] as JSX.Element[]);
 
