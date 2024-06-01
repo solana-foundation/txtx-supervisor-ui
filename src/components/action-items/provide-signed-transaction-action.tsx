@@ -3,7 +3,7 @@ import { ActionItemRow } from "./components/action-item-row";
 import {
   ActionItemRequest,
   ActionItemResponse,
-  stringFromValue,
+  valueToString,
 } from "../main/types";
 import { ElementSize, PanelButton } from "../buttons/panel-button";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
@@ -33,7 +33,7 @@ export function ProvideSignedTransactionAction({
     data: { payload, namespace, networkId },
   } = actionType;
 
-  const transaction = stringFromValue(payload);
+  const transaction = valueToString(payload);
   if (transaction === undefined) {
     throw new Error(
       `ProvideSignedTransactionAction component requires string payload, received ${actionType.data.payload}`,

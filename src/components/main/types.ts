@@ -232,7 +232,7 @@ export function toValue(input: any, typing: PrimitiveType): Value {
   };
 }
 
-export function stringFromValue(input: Value): string | undefined {
+export function valueToString(input: Value): string | undefined {
   const { type, value } = input;
   if (
     type !== "Primitive" ||
