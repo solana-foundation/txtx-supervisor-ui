@@ -37,7 +37,6 @@ export function PickInputOptionAction({
       isFirst={isFirst}
       isLast={isLast}
       onClick={onClick}
-      key={uuid}
     >
       <PickInputOptionCell actionItem={actionItem} setSelected={setSelected} />
     </ActionItemRow>

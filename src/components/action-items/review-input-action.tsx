@@ -36,7 +36,6 @@ export function ReviewInputAction({
       isFirst={isFirst}
       isLast={isLast}
       onClick={onClick}
-      key={uuid}
     >
       <ReviewInputCell description={description} actionStatus={actionStatus} />
     </ActionItemRow>

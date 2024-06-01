@@ -100,6 +100,7 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
+          key={uuid}
         />,
       );
     } else if (type === "ProvideInput") {
@@ -121,7 +122,9 @@ function SubGroup({ subGroup }: SubGroup) {
         />,
       );
     } else if (type === "ValidatePanel") {
-      accumulator.push(<ValidatePanelAction actionItem={actionItem} />);
+      accumulator.push(
+        <ValidatePanelAction actionItem={actionItem} key={uuid} />,
+      );
     } else if (type === "ProvidePublicKey") {
       accumulator.push(
         <ProvidePublicKeyAction

@@ -54,7 +54,6 @@ export function ProvideInputAction({
       isFirst={isFirst}
       isLast={isLast}
       onClick={onClick}
-      key={uuid}
     >
       <ProvideInputCell actionItem={actionItem} onChange={onChange} />
     </ActionItemRow>
