@@ -1,14 +1,13 @@
 import React from "react";
 import { ActionItemRow } from "./components/action-item-row";
-import { ActionItemRequest, ActionItemResponse } from "../main/types";
-import { ReviewInputCell } from "./components/review-input-cell";
+import {
+  ActionItemRequest,
+  ActionItemResponse,
+  stringFromValue,
+} from "../main/types";
 import { ElementSize, PanelButton } from "../buttons/panel-button";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
-import {
-  getPublicKeyFromLocalStorage,
-  getStorageKey,
-} from "../../utils/helpers";
 import addonManager from "../../utils/addons-initializer";
 
 export interface ProvideSignedTransactionAction {
@@ -22,23 +21,47 @@ export function ProvideSignedTransactionAction({
   isLast,
 }: ProvideSignedTransactionAction) {
   const { uuid, actionStatus, actionType } = actionItem;
+  const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
 
   if (actionType.type !== "ProvideSignedTransaction") {
     throw new Error(
       "ProvideSignedTransactionAction component requires ProvideSignedTransaction action type.",
     );
   }
-  const { type, value } = actionType.data.payload;
-  if (
-    type !== "Primitive" ||
-    value.type !== "String" ||
-    typeof value.value !== "string"
-  ) {
+
+  const {
+    data: { payload, namespace, networkId },
+  } = actionType;
+
+  const transaction = stringFromValue(payload);
+  if (transaction === undefined) {
     throw new Error(
-      "ProvideSignedTransaction action must provide value of Type Primitive::String",
+      `ProvideSignedTransactionAction component requires string payload, received ${actionType.data.payload}`,
     );
   }
-  const { value: transaction } = value;
+
+  // insert a zero-width space every other character to allow the text to break as needed
+  const displayedValue = transaction.match(/(.{1})/g)?.join("​") || transaction;
+
+  const address = addonManager.getAddress(namespace, networkId);
+  const onClick = async () => {
+    const signedTxHex = await addonManager.signTransaction(
+      namespace,
+      networkId,
+      address,
+      transaction,
+    );
+    if (signedTxHex !== undefined) {
+      const event: ActionItemResponse = {
+        actionItemUuid: uuid,
+        type: "ProvideSignedTransaction",
+        data: {
+          signedTransactionBytes: signedTxHex,
+        },
+      };
+      updateActionItem({ variables: { event: JSON.stringify(event) } });
+    }
+  };
   return (
     <ActionItemRow
       actionItem={actionItem}
@@ -46,11 +69,11 @@ export function ProvideSignedTransactionAction({
       isLast={isLast}
       onClick={() => {}}
       subRow={{
-        text: transaction,
+        text: displayedValue,
         children: (
           <PanelButton
             title="Sign Transaction"
-            onClick={() => {}}
+            onClick={onClick}
             isDisabled={false}
             size={ElementSize.S}
           />

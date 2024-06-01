@@ -10,6 +10,7 @@ import {
   getStorageKey,
   storePublicKeyInLocalStorage,
 } from "../../../utils/helpers";
+import posthog from "posthog-js";
 
 const appConfig = new AppConfig(["store_write", "publish_data"]);
 const userSession = new UserSession({ appConfig });
@@ -74,5 +75,33 @@ export class StacksAddon implements Addon {
 
   public isWalletConnected(): boolean {
     return userSession.isUserSignedIn();
+  }
+
+  public async signTransaction(txHex: string): Promise<string | undefined> {
+    // @ts-ignore
+    const response = await LeatherProvider.request("stx_signTransaction", {
+      txHex,
+    });
+    if (response.result?.txHex) {
+      posthog.capture("onchain_success");
+      return response.result.txHex;
+    } else {
+      console.error(response.error);
+      posthog.capture("onchain_error", {
+        addon: "stacks",
+        action: "sign_transaction",
+        message: response.error.message,
+        code: response.error.code,
+        data: response.error.data,
+      });
+    }
+  }
+  catch(error) {
+    posthog.capture("onchain_failure", {
+      addon: "stacks",
+      action: "sign_transaction",
+      message: error,
+    });
+    console.error(error);
   }
 }

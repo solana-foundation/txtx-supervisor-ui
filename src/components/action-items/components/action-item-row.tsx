@@ -102,7 +102,7 @@ function ActionItemSubRow({ text, children }: ActionItemSubRow) {
     <div
       className={classNames(
         "w-full px-3 py-2.5 justify-start items-start inline-flex bg-black",
-        children ? "h-20" : "",
+        children ? "min-h-20" : "",
       )}
     >
       <div

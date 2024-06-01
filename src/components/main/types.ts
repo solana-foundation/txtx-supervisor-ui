@@ -147,6 +147,8 @@ export interface ProvidePublicKeyRequest {
 export interface ProvideSignedTransactionRequest {
   checkExpectationActionUuid: string | null;
   payload: Value;
+  namespace: string;
+  networkId: string;
 }
 
 export interface DisplayOutputRequest {
@@ -181,7 +183,9 @@ export interface ProvidePublicKeyResponse {
   publicKey: string;
 }
 
-export interface ProvideSignedTransactionResponse {}
+export interface ProvideSignedTransactionResponse {
+  signedTransactionBytes: string;
+}
 
 export type Primitive = "Primitive";
 export type ArrayType = "Array";
@@ -226,4 +230,16 @@ export function toValue(input: any, typing: PrimitiveType): Value {
       value: input,
     },
   };
+}
+
+export function stringFromValue(input: Value): string | undefined {
+  const { type, value } = input;
+  if (
+    type !== "Primitive" ||
+    value.type !== "String" ||
+    typeof value.value !== "string"
+  ) {
+    return;
+  }
+  return value.value;
 }

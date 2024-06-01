@@ -55,6 +55,16 @@ export class AddonManager {
     const addon = this.getAddon(namespace, networkId);
     return await addon.getPublicKey(networkId, address, message);
   }
+
+  public async signTransaction(
+    namespace: string,
+    networkId: string,
+    address: string,
+    txHex: string,
+  ): Promise<string | undefined> {
+    const addon = this.getAddon(namespace, networkId);
+    return await addon.signTransaction(txHex);
+  }
 }
 
 export type ConnectedWalletInfo = string;
@@ -72,4 +82,6 @@ export abstract class Addon {
     address: string,
     message: string,
   ): Promise<string | undefined>;
+
+  public abstract signTransaction(txHex: string): Promise<string | undefined>;
 }
