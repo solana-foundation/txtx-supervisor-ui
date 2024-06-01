@@ -26,7 +26,6 @@ export const panelRowsSlice = createSlice({
     addPanel: create.reducer(
       (state, action: PayloadAction<{ panelId: string; rowCount: number }>) => {
         const { panelId, rowCount } = action.payload;
-        console.log("rowcount", rowCount);
         if (!state[panelId]) {
           state[panelId] = new Array(rowCount).fill(false);
         }
@@ -54,7 +53,6 @@ export const panelRowsSlice = createSlice({
           });
           state[panelId] = nextState;
         }
-        console.log(state);
         return state;
       },
     ),

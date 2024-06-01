@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import RunbookStatusBar from "../main/runbook-status-bar";
+import RunbookStatusBar from "./runbook-status-bar";
 import { useQuery } from "@apollo/client";
 import { GET_RUNBOOK_METADATA } from "../../utils/queries";
 import { selectRunbook, setMetadata } from "../../reducers/runbooks-slice";
