@@ -93,11 +93,6 @@ export const Panel = forwardRef(function Panel(
       {groups.map((group, i) => (
         <Group group={group} key={i} />
       ))}
-      <div className="pt-2 self-stretch justify-end items-center gap-2.5 inline-flex">
-        <div className="flex-col justify-center items-end gap-8 inline-flex">
-          {/* {primaryButtonEl} */}
-        </div>
-      </div>
     </div>
   );
 });

@@ -10,7 +10,7 @@ import App from "./App";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { Connect } from "@stacks/connect-react";
-import { authOptions } from "./components/main/stacks/stacks";
+import { authOptions } from "./components/main/addons/stacks";
 import "./utils/addons-initializer";
 import posthog from "posthog-js";
 import { persistStore } from "redux-persist";
@@ -54,6 +54,9 @@ root.render(
   <Provider store={store}>
     <PersistGate persistor={persistor}>
       <ApolloProvider client={apolloClient}>
+        {/* TODO: we need to investigate removing this connect wrapper 
+            and finding a way to connect only via the addon manager
+        */}
         <Connect authOptions={authOptions}>
           <App />
         </Connect>
