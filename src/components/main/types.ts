@@ -122,7 +122,7 @@ export type ProvideSignedTransactionActionItemRequest = {
   data: ProvideSignedTransactionRequest;
 };
 export type DisplayOutputActionItemRequest = {
-  type: "ProvideSignedTransaction";
+  type: "DisplayOutput";
   data: DisplayOutputRequest;
 };
 export type ValidatePanelActionItemRequest = { type: "ValidatePanel" };
@@ -183,12 +183,12 @@ export interface ProvidePublicKeyResponse {
 
 export interface ProvideSignedTransactionResponse {}
 
-export enum Type {
-  "Primitive",
-  "Array",
-  "Object",
-  "Addon",
-}
+export type Primitive = "Primitive";
+export type ArrayType = "Array";
+export type Object = "Object";
+export type Addon = "Addon";
+export type Type = Primitive | ArrayType | Object | Addon;
+
 export type PrimitiveType =
   | "String"
   | "UInt"
@@ -199,15 +199,15 @@ export type PrimitiveType =
 
 export type Value =
   | {
-      type: Type.Primitive;
+      type: Primitive;
       value: { type: PrimitiveType; value: string | number | boolean | null };
     }
   | {
-      type: Type.Array;
+      type: ArrayType;
       value: Value[];
     }
   | {
-      type: Type.Object;
+      type: Object;
       value: { [key: string]: { Err: Diagnostic } | { Ok: Value } };
     };
 
@@ -220,7 +220,7 @@ export function toValue(input: any, typing: PrimitiveType): Value {
     throw new Error(`toValue not yet supported for ${typeof input}: ${input}`);
   }
   return {
-    type: Type.Primitive,
+    type: "Primitive",
     value: {
       type: typing,
       value: input,
