@@ -133,7 +133,7 @@ function SubGroup({ subGroup }: SubGroup) {
     actionItems.length === 1 &&
     actionItems[0].actionType.type === "ValidatePanel";
 
-  const uiActionItems = actionItems.map((actionItem, i) => {
+  const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
     const { actionType, uuid, actionStatus, description } = actionItem;
     const { type } = actionType;
     const { status } = actionStatus;
@@ -153,7 +153,7 @@ function SubGroup({ subGroup }: SubGroup) {
         updateActionItem({ variables: { event: JSON.stringify(event) } });
       };
 
-      return (
+      accumulator.push(
         <Row
           actionItem={actionItem}
           isFirst={isFirst}
@@ -165,7 +165,7 @@ function SubGroup({ subGroup }: SubGroup) {
             description={description}
             actionStatus={actionStatus}
           />
-        </Row>
+        </Row>,
       );
     } else if (type === "ProvideInput") {
       const onClick = () => {
@@ -192,7 +192,7 @@ function SubGroup({ subGroup }: SubGroup) {
         updateActionItem({ variables: { event: JSON.stringify(event) } });
       };
 
-      return (
+      accumulator.push(
         <Row
           actionItem={actionItem}
           isFirst={isFirst}
@@ -201,7 +201,7 @@ function SubGroup({ subGroup }: SubGroup) {
           key={uuid}
         >
           <ProvideInputCell actionItem={actionItem} onChange={onChange} />
-        </Row>
+        </Row>,
       );
     } else if (type === "PickInputOption") {
       const onClick = () => {};
@@ -213,7 +213,7 @@ function SubGroup({ subGroup }: SubGroup) {
         };
         updateActionItem({ variables: { event: JSON.stringify(event) } });
       };
-      return (
+      accumulator.push(
         <Row
           actionItem={actionItem}
           isFirst={isFirst}
@@ -225,7 +225,7 @@ function SubGroup({ subGroup }: SubGroup) {
             actionItem={actionItem}
             setSelected={setSelected}
           />
-        </Row>
+        </Row>,
       );
     } else if (type === "ValidatePanel") {
       const onClick = () => {
@@ -235,26 +235,26 @@ function SubGroup({ subGroup }: SubGroup) {
         };
         updateActionItem({ variables: { event: JSON.stringify(event) } });
       };
-      return (
+      accumulator.push(
         <ValidatePanelCell
           actionItem={actionItem}
           onClick={onClick}
           key={uuid}
-        />
+        />,
       );
     } else if (type === "ProvidePublicKey") {
       const { data } = actionType;
-      return (
+      accumulator.push(
         <ProvidePublicKeyRow
           actionItem={actionItem}
           actionTypeData={data}
           isFirst={isFirst}
           isLast={isLast}
           key={uuid}
-        />
+        />,
       );
-    }
-  });
+    return accumulator;
+  }, [] as JSX.Element[]);
 
   return (
     <div
