@@ -101,8 +101,10 @@ function ActionItemSubRow({ text, children }: ActionItemSubRow) {
   return (
     <div
       className={classNames(
-        "w-full px-3 py-2.5 justify-start items-start inline-flex bg-black",
+        "overflow-auto w-full px-3 py-2.5 justify-start items-start inline-flex bg-black",
         children ? "min-h-20" : "",
+        // todo, investigate why scrollbar styling isn't working
+        "scrollbar-thin scrollbar-h-1",
       )}
     >
       <div
