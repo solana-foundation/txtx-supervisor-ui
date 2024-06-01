@@ -1,0 +1,49 @@
+import { ActionItemRequest, valueToString } from "../main/types";
+import { ActionItemRow } from "./components/action-item-row";
+import { ReviewInputCell } from "./components/review-input-cell";
+import React from "react";
+
+export interface DisplayOutputAction {
+  actionItem: ActionItemRequest;
+  isFirst: boolean;
+  isLast: boolean;
+}
+export function DisplayOutputAction({
+  actionItem,
+  isFirst,
+  isLast,
+}: DisplayOutputAction) {
+  const { actionStatus, actionType } = actionItem;
+
+  if (actionType.type !== "DisplayOutput") {
+    throw new Error(
+      "DisplayOutputAction component requires DisplayOutput action type.",
+    );
+  }
+
+  const onClick = () => {};
+  const displayValue = valueToString(actionType.data.value);
+  const subRow =
+    displayValue && displayValue?.length > 50
+      ? { text: displayValue }
+      : undefined;
+  const el = subRow ? (
+    <div></div>
+  ) : (
+    <ReviewInputCell
+      description={displayValue || ""}
+      actionStatus={actionStatus}
+    />
+  );
+  return (
+    <ActionItemRow
+      actionItem={actionItem}
+      isFirst={isFirst}
+      isLast={isLast}
+      onClick={onClick}
+      subRow={subRow}
+    >
+      {el}
+    </ActionItemRow>
+  );
+}

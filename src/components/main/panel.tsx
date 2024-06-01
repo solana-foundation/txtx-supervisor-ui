@@ -13,6 +13,7 @@ import { ValidatePanelAction } from "../action-items/validate-panel-action";
 import { ProvideSignedTransactionAction } from "../action-items/provide-signed-transaction-action";
 import { ProvidePublicKeyAction } from "../action-items/provide-public-key-action";
 import { PickInputOptionAction } from "../action-items/pick-input-option-action";
+import { DisplayOutputAction } from "../action-items/display-output-action";
 
 export interface PanelProps {
   panel: Block;
@@ -137,6 +138,15 @@ function SubGroup({ subGroup }: SubGroup) {
     } else if (type === "ProvideSignedTransaction") {
       accumulator.push(
         <ProvideSignedTransactionAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={uuid}
+        />,
+      );
+    } else if (type === "DisplayOutput") {
+      accumulator.push(
+        <DisplayOutputAction
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
