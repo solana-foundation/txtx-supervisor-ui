@@ -15,15 +15,33 @@ export interface UpdateActionItemEvent<Deserialized = true> {
   actionItemUuid: string;
 }
 
-export interface Block<Deserialized = true> {
-  uuid: string;
+export type BlockType = "ActionPanel" | "ModalPanel";
+export type Block<Deserialized = true> =
+  | ActionPanel<Deserialized>
+  | ModalPanel<Deserialized>;
+
+export interface ActionPanel<Deserialized = true> {
   title: string;
   description: string;
+  uuid: string;
+  visible: boolean;
+  type: "ActionPanel";
+  groups: ActionGroup<Deserialized>[];
+}
+
+export interface ModalPanel<Deserialized = true> {
+  title: string;
+  description: string;
+  uuid: string;
+  visible: boolean;
+  type: "ModalPanel";
   groups: ActionGroup<Deserialized>[];
 }
 
 export function deserializeBlock(block: Block<false>): Block<true> {
   return {
+    visible: block.visible,
+    type: block.type,
     uuid: block.uuid,
     title: block.title,
     description: block.description,

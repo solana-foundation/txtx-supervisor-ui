@@ -1,12 +1,13 @@
-import React, { forwardRef } from "react";
-import { classNames } from "../../utils/helpers";
-import { useAppSelector } from "../../hooks";
 import {
-  RunbookStepStatus,
-  statusForStepNumber,
-} from "../header/runbook-status-bar";
-import { selectRunbookActiveStep } from "../../reducers/runbook-step-slice";
+  ComboboxOptions,
+  Dialog,
+  Transition,
+  TransitionChild,
+  DialogPanel,
+} from "@headlessui/react";
+import React, { forwardRef } from "react";
 import { ActionGroup, ActionSubGroup, Block } from "./types";
+import { classNames } from "../../utils/helpers";
 import { ReviewInputAction } from "../action-items/review-input-action";
 import { ProvideInputAction } from "../action-items/provide-input-action";
 import { ValidatePanelAction } from "../action-items/validate-panel-action";
@@ -14,13 +15,79 @@ import { ProvideSignedTransactionAction } from "../action-items/provide-signed-t
 import { ProvidePublicKeyAction } from "../action-items/provide-public-key-action";
 import { PickInputOptionAction } from "../action-items/pick-input-option-action";
 import { DisplayOutputAction } from "../action-items/display-output-action";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { selectRunbookActiveStep } from "../../reducers/runbook-step-slice";
+import {
+  RunbookStepStatus,
+  statusForStepNumber,
+} from "../header/runbook-status-bar";
+import {
+  selectModalVisibility,
+  setModalVisibility,
+} from "../../reducers/runbooks-slice";
 
-export interface PanelProps {
+export interface Modal {
+  block: Block<true>;
+  index: number;
+}
+export function Modal({ block, index }: Modal) {
+  const dispatch = useAppDispatch();
+  const isVisible = block.visible;
+  const onClick = () => {
+    dispatch(setModalVisibility([block.uuid, !isVisible]));
+  };
+  return (
+    <Transition show={isVisible} afterLeave={() => {}} appear>
+      <Dialog className="relative z-50" onClose={() => {}}>
+        <TransitionChild
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-gray-500 backdrop-blur-sm bg-opacity-25 transition-opacity" />
+        </TransitionChild>
+
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto p-4 sm:p-6 md:p-20">
+          <TransitionChild
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+          >
+            <DialogPanel
+              onClick={onClick}
+              className="mx-auto max-w-[1024px] transform overflow-hidden rounded-xl bg-gradient-to-b from-gray-950 to-neutral-900 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"
+            >
+              <div className="w-full justify-center flex flex-col items-center">
+                <div className="w-[1024px] min-h-full px-6 pt-6 justify-center flex flex-col inline-flex gap-8">
+                  <Panel
+                    key={block.uuid}
+                    panel={block}
+                    panelIndex={index}
+                    scrollHandler={() => {}}
+                  />
+                </div>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </Dialog>
+    </Transition>
+  );
+}
+
+interface PanelProps {
   panel: Block;
   panelIndex: number;
   scrollHandler: any;
 }
-export const Panel = forwardRef(function Panel(
+
+const Panel = forwardRef(function Panel(
   { panel, panelIndex, scrollHandler }: PanelProps,
   ref: React.ForwardedRef<any>,
 ) {
@@ -39,7 +106,7 @@ export const Panel = forwardRef(function Panel(
   return (
     <div
       className={classNames(
-        "w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex",
+        "w-full p-6 bg-zinc-700 rounded-lg shadow drop-shadow-sm border border-zinc-200 flex-col justify-center items-start gap-2.5 inline-flex",
         contentVisibility,
       )}
     >
@@ -56,20 +123,40 @@ export const Panel = forwardRef(function Panel(
         {description}
       </div>
       {groups.map((group, i) => (
-        <Group group={group} key={i} />
+        <Group group={group} key={i} index={i} />
       ))}
     </div>
   );
 });
 
-interface Group {
+export interface Group {
   group: ActionGroup;
+  index: number;
 }
-function Group({ group }: Group) {
+export function Group({ group, index }: Group) {
+  const mod = index % 3;
+  let borderColor, textColor;
+  if (mod === 0) {
+    borderColor = "border-red-600";
+    textColor = "text-red-600";
+  } else if (mod === 1) {
+    borderColor = "border-blue-600";
+    textColor = "text-blue-600";
+  } else {
+    borderColor = "border-amber-400";
+    textColor = "text-amber-400";
+  }
   const { subGroups, title } = group;
   return (
-    <div className="w-full flex-col justify-center items-start gap-2.5 inline-flex">
-      <div className="text-gray-400 text-sm font-normal font-['Inter']">
+    <div className="w-full flex-col justify-center items-start gap-2.5 inline-flex pb-8">
+      <div
+        className={classNames(
+          "px-2 text-sm font-normal font-['Inter'] rounded",
+          !title ? "" : "border",
+          borderColor,
+          textColor,
+        )}
+      >
         {title}
       </div>
       {subGroups.map((subGroup, i) =>
@@ -168,7 +255,7 @@ interface ButtonSubGroup {
 
 function ButtonSubGroup({ subGroup }: ButtonSubGroup) {
   const { actionItems, allowBatchCompletion } = subGroup;
-  if (actionItems.length > 2) {
+  if (actionItems.length > 3) {
     throw new Error(`ButtonSubGroups should have a maximum of 3 action items`);
   }
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {

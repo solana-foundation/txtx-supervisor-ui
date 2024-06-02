@@ -5,6 +5,7 @@ import { classNames } from "../../utils/helpers";
 export enum ButtonColor {
   Emerald,
   Amber,
+  Gray,
 }
 export enum ElementSize {
   S,
@@ -32,7 +33,9 @@ export function PanelButton({
     ? "opacity-30 bg-black text-zinc-400"
     : color === ButtonColor.Emerald
       ? "bg-teal-950 text-emerald-500"
-      : "bg-stone-850 text-amber-400 border-stone-700 border";
+      : color === ButtonColor.Gray
+        ? "bg-gray-700 text-zinc-400"
+        : "bg-stone-850 text-amber-400 border-stone-700 border";
 
   let sizeClass =
     size === ElementSize.XXL

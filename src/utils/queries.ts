@@ -17,6 +17,7 @@ export const GET_PROTOCOL = gql`
 export const GET_BLOCKS = gql`
   query GetBlocks {
     blocks {
+      type
       uuid
       title
       description

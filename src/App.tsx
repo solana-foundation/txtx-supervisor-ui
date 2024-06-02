@@ -5,14 +5,114 @@ import Runbook from "./components/main/runbook";
 import { useQuery } from "@apollo/client";
 import { GET_BLOCKS } from "./utils/queries";
 import { Block } from "./components/main/types";
-import { useAppDispatch } from "./hooks";
-import { setBlocks } from "./reducers/runbooks-slice";
+import { useAppDispatch, useAppSelector } from "./hooks";
+import { selectRunbook, setBlocks } from "./reducers/runbooks-slice";
 import useSubscriptions from "./hooks/useSubscriptions";
+import { Modal } from "./components/main/modal";
+import { Panel } from "./components/main/panel";
 
 enum PageNav {
   Runbook,
   Deploy,
 }
+
+const modalData: Block<false>[] = [
+  {
+    type: "ModalPanel",
+    visible: false,
+    uuid: "1",
+    title: "Stacks Multisig Configuration Assistant",
+    description: "",
+    groups: [
+      {
+        title: "Alice",
+        subGroups: [
+          {
+            allowBatchCompletion: false,
+            actionItems: [
+              {
+                uuid: "1a1",
+                constructUuid: null,
+                index: 0,
+                title: "Sign payload with [alice]",
+                description: "Test",
+                actionStatus: '{"status":"Todo"}',
+                actionType:
+                  '{"type":"ProvidePublicKey","data":{"checkExpectationActionUuid":null,"message":"Test message","namespace":"stacks","networkId":"testnet"}}',
+              },
+              {
+                uuid: "1a2",
+                constructUuid: null,
+                index: 0,
+                title: "Check connected wallet",
+                description: "Test",
+                actionStatus: '{"status":"Todo"}',
+                actionType: '{"type":"ReviewInput"}',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        title: "Bob",
+        subGroups: [
+          {
+            allowBatchCompletion: false,
+            actionItems: [
+              {
+                uuid: "2a1",
+                constructUuid: null,
+                index: 0,
+                title: "Sign payload with [bobert]",
+                description: "Test",
+                actionStatus: '{"status":"Todo"}',
+                actionType:
+                  '{"type":"ProvidePublicKey","data":{"checkExpectationActionUuid":null,"message":"Test message","namespace":"stacks","networkId":"testnet"}}',
+              },
+              {
+                uuid: "2a2",
+                constructUuid: null,
+                index: 0,
+                title: "Check connected wallet",
+                description: "Bob address",
+                actionStatus: '{"status":"Todo"}',
+                actionType: '{"type":"ReviewInput"}',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        title: "",
+        subGroups: [
+          {
+            allowBatchCompletion: false,
+            actionItems: [
+              {
+                uuid: "v1",
+                constructUuid: null,
+                index: 0,
+                title: "Confirm",
+                description: "",
+                actionStatus: '{"status":"Todo"}',
+                actionType: '{"type":"ValidatePanel"}',
+              },
+              {
+                uuid: "c1",
+                constructUuid: null,
+                index: 0,
+                title: "Cancel",
+                description: "",
+                actionStatus: '{"status":"Todo"}',
+                actionType: '{"type":"ValidatePanel"}',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+];
 export default function App() {
   // todo: we should probably introduce a router to actually have this on a separate page
   const [pageNav, setPageNav] = useState<PageNav>(PageNav.Runbook);
@@ -20,6 +120,8 @@ export default function App() {
   const [protocolName, setProtocolName] = useState<string>("");
   const panelRefs = useRef<any[]>([]);
   const dispatch = useAppDispatch();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const { modalPanels } = useAppSelector(selectRunbook);
 
   // todo: this is probably a hacky way to do this, but it works for now
   // if an href is provided, scroll to it after a timeout, to give components
@@ -34,12 +136,11 @@ export default function App() {
     }, 200);
   }, []);
 
-  const [completed, setCompleted] = useState(true);
-
   const { loading } = useQuery(GET_BLOCKS, {
     onCompleted: (data) => {
       const blocks: Block<false>[] = data.blocks;
       dispatch(setBlocks(blocks));
+      dispatch(setBlocks(modalData));
     },
   });
   // subscribe to new block events, action item updates, etc
@@ -61,7 +162,7 @@ export default function App() {
 
   return (
     <>
-      <div className="bg-gradient-to-b from-gray-950 to-neutral-900">
+      <div className="bg-gradient-to-b from-gray-950 to-neutral-900 ">
         {/* Small sidebar */}
         {/*         
         <div className=" fixed inset-y-0 left-0 z-50 block w-20 overflow-y-auto border-r dark:border-slate-500/20 xl:pb-4 transition-all">
@@ -86,13 +187,22 @@ export default function App() {
      */}
 
         {/* Header & main content */}
-        <div className="from-gray-950 to-neutral-900">
+        <div className="from-gray-950 to-neutral-900 ">
           <Header
             {...{ title: protocolName }}
             panelScrollHandler={panelScrollHandler}
           ></Header>
-          <main className="min-h-screen pt-0 mt-0 pl-16 ">
+          <main
+            className="min-h-screen pt-0 mt-0 pl-16 "
+            onClick={() => setModalVisible(!modalVisible)}
+          >
             <div className="flex justify-center py-9">
+              {loading
+                ? ""
+                : modalPanels.map((panel, i) => (
+                    <Modal block={panel} index={i} key={panel.uuid} />
+                  ))}
+
               {loading ? (
                 <div>Loading...</div>
               ) : (
