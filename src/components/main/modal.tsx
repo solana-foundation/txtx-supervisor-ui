@@ -265,7 +265,7 @@ function ButtonSubGroup({ subGroup, modalUuid }: ButtonSubGroup) {
       accumulator.push(
         <ValidateModalAction actionItem={actionItem} key={uuid} index={i} />,
       );
-      accumulator.push(<CloseModalAction modalUuid={modalUuid} />);
+      accumulator.push(<CloseModalAction modalUuid={modalUuid} key={uuid} />);
     } else {
       throw new Error(
         `ValidateModal actions must only be in a sub group with other ValidateModal actions`,
