@@ -15,7 +15,7 @@ export function ProvideInputAction({
   isFirst,
   isLast,
 }: ProvideInputAction) {
-  const { uuid, actionType } = actionItem;
+  const { uuid, actionType, actionStatus } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
 
   if (actionType.type !== "ProvideInput") {
@@ -24,13 +24,15 @@ export function ProvideInputAction({
     );
   }
 
-  const onClick = () => {
+  const onClick = (e: any) => {
+    // don't send review input events if the user was clicking on the input field
+    if (e.target instanceof HTMLInputElement) return;
     const event: ActionItemResponse = {
       actionItemUuid: uuid,
       type: "ReviewInput",
       data: {
-        inputName: actionItem.title,
-        valueChecked: status === "Todo",
+        inputName: actionType.data.inputName,
+        valueChecked: actionStatus.status === "Todo",
       },
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });
