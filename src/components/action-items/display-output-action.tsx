@@ -1,4 +1,7 @@
-import { ActionItemRequest, valueToString } from "../main/types";
+import {
+  ActionItemRequest,
+  valueToString as valueToPrimitive,
+} from "../main/types";
 import { ActionItemRow } from "./components/action-item-row";
 import { ReviewInputCell } from "./components/review-input-cell";
 import React from "react";
@@ -22,16 +25,23 @@ export function DisplayOutputAction({
   }
 
   const onClick = () => {};
-  const displayValue = valueToString(actionType.data.value);
+  const displayValue = valueToPrimitive(actionType.data.value);
+  if (displayValue === undefined) {
+    throw new Error(
+      `DisplayOutputAction component only supports displaying Primitive values, got ${actionType.data.value}`,
+    );
+  }
   const subRow =
-    displayValue && displayValue?.length > 50
+    displayValue &&
+    typeof displayValue === "string" &&
+    displayValue?.length > 50
       ? { text: displayValue }
       : undefined;
   const el = subRow ? (
     <div></div>
   ) : (
     <ReviewInputCell
-      description={displayValue || ""}
+      description={displayValue?.toString() || ""}
       actionStatus={actionStatus}
     />
   );
