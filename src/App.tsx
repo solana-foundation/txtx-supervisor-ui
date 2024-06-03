@@ -87,7 +87,7 @@ export default function App() {
             panelScrollHandler={panelScrollHandler}
           ></Header>
           <main
-            className="min-h-screen pt-0 mt-0 pl-16 "
+            className="min-h-screen pt-0 mt-0" //pl-16 when we reinsatate sidebar
             onClick={() => setModalVisible(!modalVisible)}
           >
             <div className="flex justify-center py-9">

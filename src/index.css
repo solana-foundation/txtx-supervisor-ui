@@ -11,3 +11,6 @@
     src: url(../assets/fonts/GT-America-Mono-Regular.woff2) format("woff2");
   }
 }
+#html {
+  padding: 0px !important;
+}
