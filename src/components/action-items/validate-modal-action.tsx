@@ -34,7 +34,7 @@ export function ValidateModalAction({
     index === 0
       ? ButtonColor.Emerald
       : index === 1
-        ? ButtonColor.Gray
+        ? ButtonColor.Black
         : ButtonColor.Amber;
 
   const orderClass =

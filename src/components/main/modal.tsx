@@ -30,9 +30,6 @@ export interface Modal {
 export function Modal({ block, index }: Modal) {
   const dispatch = useAppDispatch();
   const isVisible = block.visible;
-  const onClick = () => {
-    dispatch(setModalVisibility([block.uuid, !isVisible]));
-  };
   return (
     <Transition show={isVisible} afterLeave={() => {}} appear>
       <Dialog className="relative z-50" onClose={() => {}}>
@@ -56,10 +53,7 @@ export function Modal({ block, index }: Modal) {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <DialogPanel
-              onClick={onClick}
-              className="mx-auto max-w-[1024px] transform overflow-hidden rounded-xl bg-gradient-to-b from-gray-950 to-neutral-900 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"
-            >
+            <DialogPanel className="mx-auto max-w-[1024px] transform overflow-hidden rounded-xl bg-gradient-to-b from-gray-950 to-neutral-900 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
               <div className="w-full justify-center flex flex-col items-center">
                 <div className="w-[1024px] min-h-full px-6 pt-6 justify-center flex flex-col inline-flex gap-8">
                   <Panel
@@ -294,7 +288,7 @@ export function CloseModalAction({ modalUuid }: CloseModalAction) {
     isDisabled = true;
   }
 
-  const color = ButtonColor.Gray;
+  const color = ButtonColor.Black;
 
   return (
     <div>

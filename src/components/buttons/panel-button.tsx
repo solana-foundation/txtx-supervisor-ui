@@ -5,7 +5,7 @@ import { classNames } from "../../utils/helpers";
 export enum ButtonColor {
   Emerald,
   Amber,
-  Gray,
+  Black,
 }
 export enum ElementSize {
   S,
@@ -13,6 +13,7 @@ export enum ElementSize {
   L,
   XL,
   XXL,
+  XXXL,
 }
 export interface PanelButtonProps {
   title: String;
@@ -32,27 +33,28 @@ export function PanelButton({
   let colorClass = isDisabled
     ? "opacity-30 bg-black text-zinc-400"
     : color === ButtonColor.Emerald
-      ? "bg-teal-950 text-emerald-500"
-      : color === ButtonColor.Gray
-        ? "bg-gray-700 text-zinc-400"
+      ? "bg-teal-950 hover:border-emerald-950 hover:bg-emerald-800 text-emerald-500"
+      : color === ButtonColor.Black
+        ? "bg-gray-700 text-zinc-400 hover:bg-black "
         : "bg-stone-850 text-amber-400 border-stone-700 border";
-
   let sizeClass =
-    size === ElementSize.XXL
-      ? "w-80 h-20"
-      : size === ElementSize.XL
-        ? "w-52 h-16"
-        : size === ElementSize.L
-          ? "w-40 h-12"
-          : size === ElementSize.M
-            ? "w-36 h-10"
-            : "w-28 h-8";
+    size === ElementSize.XXXL
+      ? "w-96 h-24"
+      : size === ElementSize.XXL
+        ? "w-80 h-20"
+        : size === ElementSize.XL
+          ? "w-52 h-16"
+          : size === ElementSize.L
+            ? "w-40 h-12"
+            : size === ElementSize.M
+              ? "w-36 h-10"
+              : "w-36 h-8";
   return (
     <button
       disabled={isDisabled}
       onClick={onClick}
       className={classNames(
-        "px-4 py-2 rounded flex-col justify-center items-center gap-2.5 inline-flex text-center text-xs font-normal font-gt uppercase leading-none tracking-tight",
+        "transition duration-200 px-4 py-2 rounded flex-col justify-center items-center gap-2.5 inline-flex text-center text-xs font-normal font-gt uppercase leading-none tracking-tight",
         colorClass,
         sizeClass,
       )}

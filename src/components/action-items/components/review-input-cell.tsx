@@ -39,7 +39,7 @@ export function ReviewInputCell({
               descriptionClass,
             )}
           >
-            {description}
+            {description || "N/A"}
           </div>
         </div>
       </div>
