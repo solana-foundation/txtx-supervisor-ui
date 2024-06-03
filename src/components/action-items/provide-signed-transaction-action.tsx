@@ -34,7 +34,7 @@ export function ProvideSignedTransactionAction({
   } = actionType;
 
   const transaction = valueToString(payload);
-  if (transaction === undefined) {
+  if (transaction == null || typeof transaction !== "string") {
     throw new Error(
       `ProvideSignedTransactionAction component requires string payload, received ${actionType.data.payload}`,
     );

@@ -114,7 +114,10 @@ function ActionItemSubRow({ text, children }: ActionItemSubRow) {
         )}
       >
         <div className="self-stretch text-stone-500 text-sm font-medium font-inter leading-[18.20px]">
-          {text}
+          {/* weird rendering bug I can't figure out: whenever the text here is an empty string
+            there's an unstyled gap. so just insert a zero-width string here
+        */}
+          {text || "​"}
         </div>
         {el}
       </div>
