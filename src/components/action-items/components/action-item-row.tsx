@@ -47,10 +47,10 @@ export function ActionItemRow({
           )}
         >
           <div className="self-stretch py-2.5 justify-center items-center inline-flex">
-            <div className="text-stone-500 text-sm font-normal font-['Inter'] leading-[18.20px]">
+            <div className="text-stone-500 text-sm font-normal font-inter leading-[18.20px]">
               #
             </div>
-            <div className="text-white text-sm font-normal font-['Inter'] leading-[18.20px]">
+            <div className="text-white text-sm font-normal font-inter leading-[18.20px]">
               {index + 1}
             </div>
           </div>
@@ -58,7 +58,7 @@ export function ActionItemRow({
 
         <div className="grow shrink basis-0 self-stretch bg-gray-950 border-gray-800 flex-col justify-center items-start inline-flex">
           <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
-            <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-['Inter'] leading-[18.20px]">
+            <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-inter leading-[18.20px]">
               {title}
             </div>
           </div>
@@ -75,7 +75,7 @@ export function ActionItemRow({
           <div className="self-stretch py-2.5 justify-center items-start inline-flex">
             <div
               className={classNames(
-                "text-xs font-normal font-['Inter'] leading-none",
+                "text-xs font-normal font-inter leading-none",
                 checkClass,
               )}
             >
@@ -104,7 +104,7 @@ function ActionItemSubRow({ text, children }: ActionItemSubRow) {
         "overflow-auto w-full px-3 py-2.5 justify-start items-start inline-flex bg-black",
         children ? "min-h-20" : "",
         // todo, investigate why scrollbar styling isn't working
-        "scrollbar-thin scrollbar-h-1",
+        // "scrollbar-thin scrollbar-h-1",
       )}
     >
       <div
@@ -113,7 +113,7 @@ function ActionItemSubRow({ text, children }: ActionItemSubRow) {
           children ? "gap-2.5" : "",
         )}
       >
-        <div className="self-stretch text-stone-500 text-sm font-medium font-['Inter'] leading-[18.20px]">
+        <div className="self-stretch text-stone-500 text-sm font-medium font-inter leading-[18.20px]">
           {text}
         </div>
         {el}

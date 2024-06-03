@@ -47,14 +47,14 @@ export const Panel = forwardRef(function Panel(
     >
       <div className="self-stretch justify-start items-start inline-flex">
         <div
-          className="scroll-mt-44 grow shrink basis-0 text-emerald-500 text-base font-normal font-['GT America Mono'] uppercase"
+          className="scroll-mt-44 grow shrink basis-0 text-emerald-500 text-base font-normal font-gt uppercase"
           ref={ref}
           id={panelId}
         >
           {title}
         </div>
       </div>
-      <div className="w-full h-[19px] text-gray-400 text-sm font-normal font-['Inter']">
+      <div className="w-full h-[19px] text-gray-400 text-sm font-normal font-inter">
         {description}
       </div>
       {groups.map((group, i) => (
@@ -71,7 +71,7 @@ function Group({ group }: Group) {
   const { subGroups, title } = group;
   return (
     <div className="w-full flex-col justify-center items-start gap-2.5 inline-flex">
-      <div className="text-gray-400 text-sm font-normal font-['Inter']">
+      <div className="text-gray-400 text-sm font-normal font-inter">
         {title}
       </div>
       {subGroups.map((subGroup, i) =>

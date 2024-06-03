@@ -31,10 +31,10 @@ export function Header({ title, panelScrollHandler }: HeaderProps) {
     <div className="backdrop-blur-md bg-opacity-50 sticky top-0 z-50 px-8 py-4 flex shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 bg-zinc-950 border-b dark:border-zinc-900">
       <div className="w-full justify-center flex flex-col items-center">
         <div className="self-stretch px-8 flex-col gap-2 flex">
-          <div className="self-stretch text-emerald-500 text-center font-bold font-['Inter'] uppercase">
+          <div className="self-stretch text-emerald-500 text-center font-bold font-inter uppercase">
             {metadata.name}
           </div>
-          <div className="self-stretch text-white text-sm font-normal font-['Inter'] text-center">
+          <div className="self-stretch text-white text-sm font-normal font-inter text-center">
             {metadata.description}
           </div>
 

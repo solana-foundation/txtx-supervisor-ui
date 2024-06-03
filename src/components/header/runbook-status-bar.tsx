@@ -119,7 +119,7 @@ function RunbookStepStatusItem({
           <div className="left-0 top-0 absolute" />
           <div className="w-8 h-8 left-0 top-0 absolute">
             <div className="w-8 h-8 left-0 top-0 absolute bg-neutral-900 rounded-full border-2 border-white border-opacity-5" />
-            <div className="left-[7.50px] top-[7.50px] absolute text-center text-white text-opacity-5 text-[13px] font-medium font-['Inter']">
+            <div className="left-[7.50px] top-[7.50px] absolute text-center text-white text-opacity-5 text-[13px] font-medium font-inter">
               {formattedNumber}
             </div>
           </div>

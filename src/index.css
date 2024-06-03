@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: "GT America Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(../assets/fonts/GT-America-Mono-Regular.woff2) format("woff2");
+  }
+}

@@ -19,6 +19,10 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 
+// posthog.init("phc_mTZO0r156hfsV6JBDN3YGg727kYHXc675NABuHGh6fg", {
+//   api_host: "https://us.i.posthog.com",
+// });
+
 const httpLink = new HttpLink({
   uri: "http://localhost:8488/graphql",
 });

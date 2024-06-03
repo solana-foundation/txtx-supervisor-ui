@@ -71,7 +71,8 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter var", "GT America Mono", ...defaultTheme.fontFamily.sans],
+        inter: ["Inter var"],
+        gt: ['"GT America Mono"'],
       },
     },
   },

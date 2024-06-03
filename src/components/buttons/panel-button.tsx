@@ -52,7 +52,7 @@ export function PanelButton({
       disabled={isDisabled}
       onClick={onClick}
       className={classNames(
-        "px-4 py-2 rounded flex-col justify-center items-center gap-2.5 inline-flex text-center text-xs font-normal font-['GT America Mono'] uppercase leading-none tracking-tight",
+        "px-4 py-2 rounded flex-col justify-center items-center gap-2.5 inline-flex text-center text-xs font-normal font-gt uppercase leading-none tracking-tight",
         colorClass,
         sizeClass,
       )}

@@ -29,7 +29,7 @@ export function ProvideInputCell({ actionItem, onChange }: ProvideInputCell) {
           <input
             id={uuid}
             className={classNames(
-              "self-stretch text-sm font-normal font-['GT America Mono'] leading-[18.20px] text-right",
+              "self-stretch text-sm font-normal font-gt leading-[18.20px] text-right",
               "border-gray-800  rounded-sm",
               "focus:outline-none focus:ring-0 ring-0 focus:border-emerald-500",
               inputClass,

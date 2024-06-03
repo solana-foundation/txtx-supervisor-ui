@@ -35,7 +35,7 @@ export function ReviewInputCell({
         >
           <div
             className={classNames(
-              "text-sm font-normal font-['GT America Mono'] uppercase leading-[18.20px]",
+              "text-sm font-normal font-gt uppercase leading-[18.20px]",
               descriptionClass,
             )}
           >
