@@ -8,69 +8,112 @@ export interface RunbookMetadata {
   uuid: string;
 }
 
-export type BlockAppendEvent = Block<false>;
-
 export interface UpdateActionItemEvent<Deserialized = true> {
-  newStatus: Deserialized extends true ? ActionItemStatus : string;
-  actionItemUuid: string;
-}
-
-export type BlockType = "ActionPanel" | "ModalPanel";
-export type Block<Deserialized = true> =
-  | ActionPanel<Deserialized>
-  | ModalPanel<Deserialized>;
-
-export interface ActionPanel<Deserialized = true> {
-  title: string;
-  description: string;
   uuid: string;
-  visible: boolean;
-  type: "ActionPanel";
-  groups: ActionGroup<Deserialized>[];
+  title?: string;
+  description?: string;
+  actionStatus?: Deserialized extends true ? ActionItemStatus : string;
+  actionType?: Deserialized extends true ? ActionItemRequestType : string;
 }
 
-export interface ModalPanel<Deserialized = true> {
-  title: string;
-  description: string;
-  uuid: string;
-  visible: boolean;
-  type: "ModalPanel";
-  groups: ActionGroup<Deserialized>[];
-}
-
-export function deserializeBlock(block: Block<false>): Block<true> {
+export function deserializeActionItemEvent(
+  input: UpdateActionItemEvent<false>,
+): UpdateActionItemEvent {
   return {
-    visible: block.visible,
-    type: block.type,
-    uuid: block.uuid,
-    title: block.title,
-    description: block.description,
-    groups: block.groups.map((group) => ({
-      title: group.title,
-      subGroups: group.subGroups.map((subGroup) => ({
-        allowBatchCompletion: subGroup.allowBatchCompletion,
-        actionItems: subGroup.actionItems.map((actionItem) => {
-          const deserializedStatus: ActionItemStatus = JSON.parse(
-            actionItem.actionStatus,
-          );
-          const deserializedType: ActionItemRequestType = JSON.parse(
-            actionItem.actionType,
-          );
-          return {
-            uuid: actionItem.uuid,
-            constructUuid: actionItem.constructUuid,
-            index: actionItem.index,
-            title: actionItem.title,
-            description: actionItem.description,
-            actionStatus: deserializedStatus,
-            actionType: deserializedType,
-          };
-        }),
-      })),
-    })),
+    ...input,
+    actionStatus: input.actionStatus
+      ? JSON.parse(input.actionStatus)
+      : undefined,
+    actionType: input.actionType ? JSON.parse(input.actionType) : undefined,
   };
 }
 
+export type BlockType = "ActionPanel" | "ModalPanel";
+
+export interface ActionBlock<Deserialized = true> {
+  type: BlockType;
+  uuid: string;
+  visible: boolean;
+  panel: ActionPanelData<Deserialized>;
+}
+export interface ModalBlock<Deserialized = true> {
+  type: BlockType;
+  uuid: string;
+  visible: boolean;
+  panel: ModalPanelData<Deserialized>;
+}
+export interface ProgressBlock {
+  type: string;
+  uuid: string;
+  visible: boolean;
+  panel: ProgressBarStatus;
+}
+
+export interface ActionPanelData<Deserialized = true> {
+  title: string;
+  description: string;
+  groups: ActionGroup<Deserialized>[];
+}
+
+export interface ModalPanelData<Deserialized = true> {
+  title: string;
+  description: string;
+  groups: ActionGroup<Deserialized>[];
+}
+
+export interface ProgressBarStatus {
+  status: string;
+  message: string;
+  diagnostic: Diagnostic;
+}
+
+export function deserializeBlock<
+  T extends ModalBlock<false> | ActionBlock<false>,
+>(
+  block: T,
+): T extends ModalBlock<false> ? ModalBlock<true> : ActionBlock<true> {
+  return {
+    uuid: block.uuid,
+    visible: block.visible,
+    type: block.type,
+    panel: {
+      ...block.panel,
+      groups: block.panel.groups.map(deserializeGroup),
+    },
+  };
+}
+
+function deserializeGroup(group: ActionGroup<false>): ActionGroup<true> {
+  return {
+    ...group,
+    subGroups: group.subGroups.map(deserializeSubGroup),
+  };
+}
+
+function deserializeSubGroup(
+  subGroup: ActionSubGroup<false>,
+): ActionSubGroup<true> {
+  return {
+    ...subGroup,
+    actionItems: subGroup.actionItems.map(deserializeActionItem),
+  };
+}
+
+function deserializeActionItem(
+  actionItem: ActionItemRequest<false>,
+): ActionItemRequest<true> {
+  const deserializedStatus: ActionItemStatus = JSON.parse(
+    actionItem.actionStatus,
+  );
+  const deserializedType: ActionItemRequestType = JSON.parse(
+    actionItem.actionType,
+  );
+  return {
+    ...actionItem,
+    actionStatus: deserializedStatus,
+    actionType: deserializedType,
+  };
+}
 export interface ActionGroup<Deserialized = true> {
   title: string;
   subGroups: ActionSubGroup<Deserialized>[];
@@ -120,9 +163,14 @@ export type ActionItemRequestType =
   | ProvidePublicKeyActionItemRequest
   | ProvideSignedTransactionActionItemRequest
   | DisplayOutputActionItemRequest
-  | ValidatePanelActionItemRequest;
+  | ValidateBlockActionItemRequest
+  | ValidateModalActionItemRequest
+  | OpenModalActionItemRequest;
 
-export type ReviewInputActionItemRequest = { type: "ReviewInput" };
+export type ReviewInputActionItemRequest = {
+  type: "ReviewInput";
+  data: ReviewInputRequest;
+};
 export type ProvideInputActionItemRequest = {
   type: "ProvideInput";
   data: ProvideInputRequest;
@@ -143,8 +191,16 @@ export type DisplayOutputActionItemRequest = {
   type: "DisplayOutput";
   data: DisplayOutputRequest;
 };
-export type ValidatePanelActionItemRequest = { type: "ValidatePanel" };
+export type OpenModalActionItemRequest = {
+  type: "OpenModal";
+  data: OpenModalRequest;
+};
+export type ValidateBlockActionItemRequest = { type: "ValidateBlock" };
+export type ValidateModalActionItemRequest = { type: "ValidateModal" };
 
+export interface ReviewInputRequest {
+  inputName: string;
+}
 export interface ProvideInputRequest {
   inputName: string;
   typing: PrimitiveType;
@@ -174,6 +230,10 @@ export interface DisplayOutputRequest {
   description: string | null;
   value: Value;
 }
+export interface OpenModalRequest {
+  modalUuid: string;
+  title: string;
+}
 
 export type ActionItemResponse = {
   actionItemUuid: string;
@@ -185,7 +245,8 @@ type ActionItemResponseType =
   | { type: "PickInputOption"; data: string }
   | { type: "ProvidePublicKey"; data: ProvidePublicKeyResponse }
   | { type: "ProvideSignedTransaction"; data: ProvideSignedTransactionResponse }
-  | { type: "ValidatePanel" };
+  | { type: "ValidateBlock" }
+  | { type: "ValidateModal" };
 
 export interface ReviewInputResponse {
   inputName: string;
@@ -250,13 +311,11 @@ export function toValue(input: any, typing: PrimitiveType): Value {
   };
 }
 
-export function valueToString(input: Value): string | undefined {
+export function valueToString(
+  input: Value,
+): string | number | boolean | null | undefined {
   const { type, value } = input;
-  if (
-    type !== "Primitive" ||
-    value.type !== "String" ||
-    typeof value.value !== "string"
-  ) {
+  if (type !== "Primitive") {
     return;
   }
   return value.value;

@@ -6,24 +6,26 @@ import {
   statusForStepNumber,
 } from "../header/runbook-status-bar";
 import { selectRunbookActiveStep } from "../../reducers/runbook-step-slice";
-import { ActionGroup, ActionSubGroup, Block } from "./types";
+import { ActionBlock, ActionGroup, ActionSubGroup } from "./types";
 import { ReviewInputAction } from "../action-items/review-input-action";
 import { ProvideInputAction } from "../action-items/provide-input-action";
-import { ValidatePanelAction } from "../action-items/validate-panel-action";
+import { ValidateBlockAction } from "../action-items/validate-block-action";
 import { ProvideSignedTransactionAction } from "../action-items/provide-signed-transaction-action";
 import { ProvidePublicKeyAction } from "../action-items/provide-public-key-action";
 import { PickInputOptionAction } from "../action-items/pick-input-option-action";
 import { DisplayOutputAction } from "../action-items/display-output-action";
+import { OpenModalAction } from "../action-items/open-modal-action";
 
 export interface PanelProps {
-  panel: Block;
+  block: ActionBlock;
   panelIndex: number;
   scrollHandler: any;
 }
 export const Panel = forwardRef(function Panel(
-  { panel, panelIndex, scrollHandler }: PanelProps,
+  { block, panelIndex, scrollHandler }: PanelProps,
   ref: React.ForwardedRef<any>,
 ) {
+  const { uuid, visible, panel } = block;
   const { title, description, groups } = panel;
   const activeStep = useAppSelector(selectRunbookActiveStep);
 
@@ -73,9 +75,9 @@ function Group({ group }: Group) {
         {title}
       </div>
       {subGroups.map((subGroup, i) =>
-        // we're assuming that if any action item in this subgroup is a button (ValidatePanel),
+        // we're assuming that if any action item in this subgroup is a button (ValidateBlock),
         // then all actions in this subGroup are buttons
-        subGroup.actionItems[0].actionType.type === "ValidatePanel" ? (
+        subGroup.actionItems[0].actionType.type === "ValidateBlock" ? (
           <ButtonSubGroup subGroup={subGroup} key={i} />
         ) : (
           <SubGroup subGroup={subGroup} key={i} />
@@ -151,6 +153,15 @@ function SubGroup({ subGroup }: SubGroup) {
           key={uuid}
         />,
       );
+    } else if (type === "OpenModal") {
+      accumulator.push(
+        <OpenModalAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={uuid}
+        />,
+      );
     }
     return accumulator;
   }, [] as JSX.Element[]);
@@ -174,13 +185,13 @@ function ButtonSubGroup({ subGroup }: ButtonSubGroup) {
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
     const { actionType, uuid } = actionItem;
     const { type } = actionType;
-    if (type === "ValidatePanel") {
+    if (type === "ValidateBlock") {
       accumulator.push(
-        <ValidatePanelAction actionItem={actionItem} key={uuid} index={i} />,
+        <ValidateBlockAction actionItem={actionItem} key={uuid} index={i} />,
       );
     } else {
       throw new Error(
-        `ValidatePanel actions must only be in a sub group with other ValidatePanel actions`,
+        `ValidateBlock actions must only be in a sub group with other ValidateBlock actions`,
       );
     }
     return accumulator;

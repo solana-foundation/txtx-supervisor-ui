@@ -14,30 +14,75 @@ export const GET_PROTOCOL = gql`
   }
 `;
 
-export const GET_BLOCKS = gql`
-  query GetBlocks {
-    blocks {
+export const GET_ACTION_BLOCKS = gql`
+  query GetActionBlocks {
+    actionBlocks {
       type
       uuid
-      title
-      description
-      groups {
+      visible
+      panel {
         title
-        subGroups {
-          allowBatchCompletion
-          actionItems {
-            uuid
-            index
-            title
-            description
-            actionStatus
-            actionType
+        description
+        groups {
+          title
+          subGroups {
+            allowBatchCompletion
+            actionItems {
+              uuid
+              index
+              title
+              description
+              actionStatus
+              actionType
+            }
           }
         }
       }
     }
   }
 `;
+export const GET_MODAL_BLOCKS = gql`
+  query GetModalBlocks {
+    modalBlocks {
+      type
+      uuid
+      visible
+      panel {
+        title
+        description
+        groups {
+          title
+          subGroups {
+            allowBatchCompletion
+            actionItems {
+              uuid
+              index
+              title
+              description
+              actionStatus
+              actionType
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+export const GET_PROGRESS_BLOCKS = gql`
+  query GetProgressBlocks {
+    progressBlocks {
+      type
+      uuid
+      visible
+      panel {
+        status
+        message
+        diagnostic
+      }
+    }
+  }
+`;
+
 export const GET_RUNBOOK_METADATA = gql`
   query GetRunbookMetadata {
     runbook {
@@ -53,25 +98,70 @@ export const UPDATE_ACTION_ITEM = gql`
   }
 `;
 
-export const APPEND_BLOCK_EVENT_SUBSCRIPTION = gql`
-  subscription OnAppendBlockEvent {
-    appendBlockEvent {
+export const ACTION_BLOCK_EVENT_SUBSCRIPTION = gql`
+  subscription OnActionBlockEvent {
+    actionBlockEvent {
+      type
       uuid
-      title
-      description
-      groups {
+      visible
+      panel {
         title
-        subGroups {
-          allowBatchCompletion
-          actionItems {
-            uuid
-            index
-            title
-            description
-            actionStatus
-            actionType
+        description
+        groups {
+          title
+          subGroups {
+            allowBatchCompletion
+            actionItems {
+              uuid
+              index
+              title
+              description
+              actionStatus
+              actionType
+            }
           }
         }
+      }
+    }
+  }
+`;
+export const MODAL_BLOCK_EVENT_SUBSCRIPTION = gql`
+  subscription OnModalBlockEvent {
+    modalBlockEvent {
+      type
+      uuid
+      visible
+      panel {
+        title
+        description
+        groups {
+          title
+          subGroups {
+            allowBatchCompletion
+            actionItems {
+              uuid
+              index
+              title
+              description
+              actionStatus
+              actionType
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+export const PROGRESS_BLOCK_EVENT_SUBSCRIPTION = gql`
+  subscription OnProgressBlockEvent {
+    progressBlockEvent {
+      type
+      uuid
+      visible
+      panel {
+        status
+        message
+        diagnostic
       }
     }
   }
@@ -86,8 +176,11 @@ export const CLEAR_BLOCKS_EVENT_SUBSCRIPTION = gql`
 export const UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION = gql`
   subscription OnUpdateActionItems {
     updateActionItemsEvent {
-      actionItemUuid
-      newStatus
+      uuid
+      title
+      description
+      actionStatus
+      actionType
     }
   }
 `;

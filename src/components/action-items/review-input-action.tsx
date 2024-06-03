@@ -15,16 +15,22 @@ export function ReviewInputAction({
   isFirst,
   isLast,
 }: ReviewInputAction) {
-  const { uuid, actionStatus, description } = actionItem;
+  const { uuid, actionStatus, description, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
+
+  if (actionType.type !== "ReviewInput") {
+    throw new Error(
+      "ReviewInputAction component requires ReviewInput action type.",
+    );
+  }
 
   const onClick = () => {
     const event: ActionItemResponse = {
       actionItemUuid: uuid,
       type: "ReviewInput",
       data: {
-        inputName: actionItem.title,
-        valueChecked: status === "Todo",
+        inputName: actionType.data.inputName,
+        valueChecked: actionStatus.status === "Todo",
       },
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });

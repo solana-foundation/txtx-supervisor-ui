@@ -5,14 +5,14 @@ import React from "react";
 import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { classNames } from "../../utils/helpers";
 
-export interface ValidatePanelAction {
+export interface ValidateBlockAction {
   actionItem: ActionItemRequest;
   index: number;
 }
-export function ValidatePanelAction({
+export function ValidateBlockAction({
   actionItem,
   index,
-}: ValidatePanelAction) {
+}: ValidateBlockAction) {
   const { uuid, title, actionStatus } = actionItem;
   const { status } = actionStatus;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
@@ -20,7 +20,7 @@ export function ValidatePanelAction({
   const onClick = () => {
     const event: ActionItemResponse = {
       actionItemUuid: uuid,
-      type: "ValidatePanel",
+      type: "ValidateBlock",
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });
   };

@@ -1,25 +1,39 @@
 import { useSubscription } from "@apollo/client";
 import {
-  APPEND_BLOCK_EVENT_SUBSCRIPTION,
+  ACTION_BLOCK_EVENT_SUBSCRIPTION,
   CLEAR_BLOCKS_EVENT_SUBSCRIPTION,
+  MODAL_BLOCK_EVENT_SUBSCRIPTION,
+  PROGRESS_BLOCK_EVENT_SUBSCRIPTION,
   UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION,
 } from "../utils/queries";
 import { useEffect } from "react";
 import {
-  BlockAppendEvent,
+  ActionBlock,
+  ModalBlock,
+  ProgressBlock,
   UpdateActionItemEvent,
 } from "../components/main/types";
 import {
-  appendBlock,
   clearBlocks,
+  setActionBlocks,
+  setModalBlocks,
+  setProgressBlocks,
   updateActionItems,
 } from "../reducers/runbooks-slice";
 import { useAppDispatch } from "../hooks";
 
 export default function useSubscriptions() {
   const dispatch = useAppDispatch();
-  const { data: appendBlockEvent } = useSubscription(
-    APPEND_BLOCK_EVENT_SUBSCRIPTION,
+  const { data: actionBlockEvent } = useSubscription(
+    ACTION_BLOCK_EVENT_SUBSCRIPTION,
+    {},
+  );
+  const { data: modalBlockEvent } = useSubscription(
+    MODAL_BLOCK_EVENT_SUBSCRIPTION,
+    {},
+  );
+  const { data: progressBlockEvent } = useSubscription(
+    PROGRESS_BLOCK_EVENT_SUBSCRIPTION,
     {},
   );
   const { data: updateActionItemsEvent } = useSubscription(
@@ -32,15 +46,27 @@ export default function useSubscriptions() {
   );
 
   useEffect(() => {
-    if (appendBlockEvent !== undefined) {
-      const block: BlockAppendEvent = appendBlockEvent.appendBlockEvent;
-      dispatch(appendBlock(block));
+    if (actionBlockEvent !== undefined) {
+      const block: ActionBlock<false> = actionBlockEvent.actionBlockEvent;
+      dispatch(setActionBlocks([block]));
     }
-  }, [appendBlockEvent]);
+  }, [actionBlockEvent]);
+  useEffect(() => {
+    if (modalBlockEvent !== undefined) {
+      const block: ModalBlock<false> = modalBlockEvent.modalBlockEvent;
+      dispatch(setModalBlocks([modalBlockEvent]));
+    }
+  }, [modalBlockEvent]);
+  useEffect(() => {
+    if (progressBlockEvent !== undefined) {
+      const block: ProgressBlock = progressBlockEvent.progressBlockEvent;
+      dispatch(setProgressBlocks([progressBlockEvent]));
+    }
+  }, [actionBlockEvent]);
 
   useEffect(() => {
     if (clearBlocksEvent !== undefined) {
-      dispatch(clearBlocks(true));
+      dispatch(clearBlocks("ActionPanel"));
     }
   }, [clearBlocksEvent]);
 

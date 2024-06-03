@@ -2,18 +2,20 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import {
   RunbookMetadata,
-  Block,
   deserializeBlock,
   UpdateActionItemEvent,
-  ActionPanel,
-  ModalPanel,
   BlockType,
+  ActionBlock,
+  ModalBlock,
+  ProgressBlock,
+  deserializeActionItemEvent,
 } from "../components/main/types";
 
 export interface Runbook {
   metadata: RunbookMetadata;
-  actionPanels: ActionPanel[];
-  modalPanels: ModalPanel[];
+  actionBlocks: ActionBlock[];
+  modalBlocks: ModalBlock[];
+  progressBlocks: ProgressBlock[];
   namespacedNetworks: { [key: string]: string[] };
 }
 const initialState: Runbook = {
@@ -22,8 +24,9 @@ const initialState: Runbook = {
     description: "",
     uuid: "",
   },
-  actionPanels: [],
-  modalPanels: [],
+  actionBlocks: [],
+  modalBlocks: [],
+  progressBlocks: [],
   namespacedNetworks: {},
 };
 
@@ -31,40 +34,52 @@ export const runbooksSlice = createSlice({
   name: "runbooks",
   initialState,
   reducers: (create) => ({
-    setBlocks: create.reducer(
-      (state, action: PayloadAction<Block<false>[]>) => {
-        let actionPanels: ActionPanel[] = state.actionPanels;
-        let modalPanels: ModalPanel[] = state.modalPanels;
+    setActionBlocks: create.reducer(
+      (state, action: PayloadAction<ActionBlock<false>[]>) => {
+        let actionBlocks: ActionBlock[] = state.actionBlocks;
         action.payload.forEach((serializedBlock) => {
           const block = deserializeBlock(serializedBlock);
-          if (block.type === "ActionPanel") {
-            actionPanels.push(block);
-          } else if (block.type === "ModalPanel") {
-            modalPanels.push(block);
-          }
+          actionBlocks.push(block);
         });
       },
     ),
-    appendBlock: create.reducer(
-      (state, action: PayloadAction<Block<false>>) => {
-        const block: Block = deserializeBlock(action.payload);
-        if (block.type === "ActionPanel") {
-          state.actionPanels.push(block);
-        } else if (block.type === "ModalPanel") {
-          state.modalPanels.push(block);
-        }
+    setModalBlocks: create.reducer(
+      (state, action: PayloadAction<ModalBlock<false>[]>) => {
+        let modalBlocks: ModalBlock[] = state.modalBlocks;
+        action.payload.forEach((serializedBlock) => {
+          const block = deserializeBlock(serializedBlock);
+          modalBlocks.push(block);
+        });
       },
     ),
+    setProgressBlocks: create.reducer(
+      (state, action: PayloadAction<ProgressBlock[]>) => {
+        let progressBlocks: ProgressBlock[] = state.progressBlocks;
+        action.payload.forEach((block) => {
+          progressBlocks.push(block);
+        });
+      },
+    ),
+    // appendBlock: create.reducer(
+    //   (state, action: PayloadAction<Block<false>>) => {
+    //     const block: Block = deserializeBlock(action.payload);
+    //     if (block.type === "ActionPanel") {
+    //       state.actionBlocks.push(block);
+    //     } else if (block.type === "ModalPanel") {
+    //       state.modalPanels.push(block);
+    //     }
+    //   },
+    // ),
     clearBlocks: create.reducer((state, action: PayloadAction<BlockType>) => {
       if (action.payload === "ActionPanel") {
         return {
           ...state,
-          actionPanels: [],
+          actionBlocks: [],
         };
       } else if (action.payload === "ModalPanel") {
         return {
           ...state,
-          modalPanels: [],
+          modalBlocks: [],
         };
       }
       return state;
@@ -73,56 +88,69 @@ export const runbooksSlice = createSlice({
     updateActionItems: create.reducer(
       (state, action: PayloadAction<UpdateActionItemEvent<false>[]>) => {
         const actionItemEvents: UpdateActionItemEvent[] = action.payload.map(
-          (update) => {
-            return {
-              actionItemUuid: update.actionItemUuid,
-              newStatus: JSON.parse(update.newStatus),
-            };
-          },
+          deserializeActionItemEvent,
         );
-        state.actionPanels = state.actionPanels.map((block) => ({
+        state.actionBlocks = state.actionBlocks.map((block) => ({
           ...block,
-          groups: block.groups.map((group) => ({
-            ...group,
-            subGroups: group.subGroups.map((subGroup) => ({
-              ...subGroup,
-              actionItems: subGroup.actionItems.map((actionItem) => {
-                const matchingUpdate = actionItemEvents.find(
-                  (update) => update.actionItemUuid === actionItem.uuid,
-                );
-                if (matchingUpdate) {
-                  return {
-                    ...actionItem,
-                    actionStatus: matchingUpdate.newStatus,
-                  };
-                } else {
-                  return actionItem;
-                }
-              }),
+          panel: {
+            ...block.panel,
+            groups: block.panel.groups.map((group) => ({
+              ...group,
+              subGroups: group.subGroups.map((subGroup) => ({
+                ...subGroup,
+                actionItems: subGroup.actionItems.map((actionItem) => {
+                  const matchingUpdate = actionItemEvents.find(
+                    (update) => update.uuid === actionItem.uuid,
+                  );
+                  if (matchingUpdate) {
+                    return {
+                      ...actionItem,
+                      title: matchingUpdate.title || actionItem.title,
+                      description:
+                        matchingUpdate.description || actionItem.description,
+                      actionStatus:
+                        matchingUpdate.actionStatus || actionItem.actionStatus,
+                      actionType:
+                        matchingUpdate.actionType || actionItem.actionType,
+                    };
+                  } else {
+                    return actionItem;
+                  }
+                }),
+              })),
             })),
-          })),
+          },
         }));
-        state.modalPanels = state.modalPanels.map((block) => ({
+        state.modalBlocks = state.modalBlocks.map((block) => ({
           ...block,
-          groups: block.groups.map((group) => ({
-            ...group,
-            subGroups: group.subGroups.map((subGroup) => ({
-              ...subGroup,
-              actionItems: subGroup.actionItems.map((actionItem) => {
-                const matchingUpdate = actionItemEvents.find(
-                  (update) => update.actionItemUuid === actionItem.uuid,
-                );
-                if (matchingUpdate) {
-                  return {
-                    ...actionItem,
-                    actionStatus: matchingUpdate.newStatus,
-                  };
-                } else {
-                  return actionItem;
-                }
-              }),
+          panel: {
+            ...block.panel,
+            groups: block.panel.groups.map((group) => ({
+              ...group,
+              subGroups: group.subGroups.map((subGroup) => ({
+                ...subGroup,
+                actionItems: subGroup.actionItems.map((actionItem) => {
+                  const matchingUpdate = actionItemEvents.find(
+                    (update) => update.uuid === actionItem.uuid,
+                  );
+                  if (matchingUpdate) {
+                    return {
+                      ...actionItem,
+                      title: matchingUpdate.title || actionItem.title,
+                      description:
+                        matchingUpdate.description || actionItem.description,
+                      actionStatus:
+                        matchingUpdate.actionStatus || actionItem.actionStatus,
+                      actionType:
+                        matchingUpdate.actionType || actionItem.actionType,
+                    };
+                  } else {
+                    return actionItem;
+                  }
+                }),
+              })),
             })),
-          })),
+          },
         }));
       },
     ),
@@ -130,12 +158,12 @@ export const runbooksSlice = createSlice({
       (state, action: PayloadAction<[uuid: string, visibility: boolean]>) => {
         const [uuid, visibility] = action.payload;
         console.log("setting visibility", uuid, visibility);
-        const modalIdx = state.modalPanels.findIndex(
+        const modalIdx = state.modalBlocks.findIndex(
           (modal) => modal.uuid === uuid,
         );
         if (modalIdx === undefined) return;
-        state.modalPanels[modalIdx].visible = visibility;
-        console.log(state.modalPanels[modalIdx]);
+        state.modalBlocks[modalIdx].visible = visibility;
+        console.log(state.modalBlocks[modalIdx]);
       },
     ),
     setMetadata: create.reducer(
@@ -154,20 +182,22 @@ export const runbooksSlice = createSlice({
     selectModalVisibility: createSelector(
       [
         // first selector gets the modals
-        (state: Runbook) => state.modalPanels,
+        (state: Runbook) => state.modalBlocks,
         // next sector forwards the uuid arg
         (state: Runbook, uuid: string) => uuid,
       ],
       // output selector can actually use those params
-      (modalPanels: Block[], uuid: string): boolean =>
+      (modalPanels: ModalBlock[], uuid: string): boolean =>
         modalPanels.find((panel) => panel.uuid === uuid)?.visible || false,
     ),
   },
 });
 
 export const {
-  setBlocks,
-  appendBlock,
+  setActionBlocks,
+  setModalBlocks,
+  setProgressBlocks,
+  // appendBlock,
   setMetadata,
   clearBlocks,
   updateActionItems,

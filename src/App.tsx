@@ -2,117 +2,17 @@ import { Header } from "./components/header/header";
 import { NavGroup } from "./components/sidebar/nav";
 import React, { useEffect, useRef, useState } from "react";
 import Runbook from "./components/main/runbook";
-import { useQuery } from "@apollo/client";
-import { GET_BLOCKS } from "./utils/queries";
-import { Block } from "./components/main/types";
 import { useAppDispatch, useAppSelector } from "./hooks";
-import { selectRunbook, setBlocks } from "./reducers/runbooks-slice";
+import { selectRunbook } from "./reducers/runbooks-slice";
 import useSubscriptions from "./hooks/useSubscriptions";
 import { Modal } from "./components/main/modal";
-import { Panel } from "./components/main/panel";
+import useQueries from "./hooks/useQueries";
 
 enum PageNav {
   Runbook,
   Deploy,
 }
 
-const modalData: Block<false>[] = [
-  {
-    type: "ModalPanel",
-    visible: false,
-    uuid: "1",
-    title: "Stacks Multisig Configuration Assistant",
-    description: "",
-    groups: [
-      {
-        title: "Alice",
-        subGroups: [
-          {
-            allowBatchCompletion: false,
-            actionItems: [
-              {
-                uuid: "1a1",
-                constructUuid: null,
-                index: 0,
-                title: "Sign payload with [alice]",
-                description: "Test",
-                actionStatus: '{"status":"Todo"}',
-                actionType:
-                  '{"type":"ProvidePublicKey","data":{"checkExpectationActionUuid":null,"message":"Test message","namespace":"stacks","networkId":"testnet"}}',
-              },
-              {
-                uuid: "1a2",
-                constructUuid: null,
-                index: 0,
-                title: "Check connected wallet",
-                description: "Test",
-                actionStatus: '{"status":"Todo"}',
-                actionType: '{"type":"ReviewInput"}',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        title: "Bob",
-        subGroups: [
-          {
-            allowBatchCompletion: false,
-            actionItems: [
-              {
-                uuid: "2a1",
-                constructUuid: null,
-                index: 0,
-                title: "Sign payload with [bobert]",
-                description: "Test",
-                actionStatus: '{"status":"Todo"}',
-                actionType:
-                  '{"type":"ProvidePublicKey","data":{"checkExpectationActionUuid":null,"message":"Test message","namespace":"stacks","networkId":"testnet"}}',
-              },
-              {
-                uuid: "2a2",
-                constructUuid: null,
-                index: 0,
-                title: "Check connected wallet",
-                description: "Bob address",
-                actionStatus: '{"status":"Todo"}',
-                actionType: '{"type":"ReviewInput"}',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        title: "",
-        subGroups: [
-          {
-            allowBatchCompletion: false,
-            actionItems: [
-              {
-                uuid: "v1",
-                constructUuid: null,
-                index: 0,
-                title: "Confirm",
-                description: "",
-                actionStatus: '{"status":"Todo"}',
-                actionType: '{"type":"ValidatePanel"}',
-              },
-              {
-                uuid: "c1",
-                constructUuid: null,
-                index: 0,
-                title: "Cancel",
-                description: "",
-                actionStatus: '{"status":"Todo"}',
-                actionType: '{"type":"ValidatePanel"}',
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-];
 export default function App() {
   // todo: we should probably introduce a router to actually have this on a separate page
   const [pageNav, setPageNav] = useState<PageNav>(PageNav.Runbook);
@@ -121,7 +21,7 @@ export default function App() {
   const panelRefs = useRef<any[]>([]);
   const dispatch = useAppDispatch();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const { modalPanels } = useAppSelector(selectRunbook);
+  const { modalBlocks } = useAppSelector(selectRunbook);
 
   // todo: this is probably a hacky way to do this, but it works for now
   // if an href is provided, scroll to it after a timeout, to give components
@@ -136,13 +36,7 @@ export default function App() {
     }, 200);
   }, []);
 
-  const { loading } = useQuery(GET_BLOCKS, {
-    onCompleted: (data) => {
-      const blocks: Block<false>[] = data.blocks;
-      dispatch(setBlocks(blocks));
-      dispatch(setBlocks(modalData));
-    },
-  });
+  const { loading } = useQueries();
   // subscribe to new block events, action item updates, etc
   useSubscriptions();
 
@@ -199,8 +93,8 @@ export default function App() {
             <div className="flex justify-center py-9">
               {loading
                 ? ""
-                : modalPanels.map((panel, i) => (
-                    <Modal block={panel} index={i} key={panel.uuid} />
+                : modalBlocks.map((block, i) => (
+                    <Modal block={block} index={i} key={block.uuid} />
                   ))}
 
               {loading ? (
