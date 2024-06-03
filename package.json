@@ -45,6 +45,7 @@
     "graphql": "^16.8.1",
     "graphql-ws": "^5.16.0",
     "headlessui": "^0.0.0",
+    "lottie-react": "^2.4.0",
     "monaco-editor": "=0.45.0",
     "posthog-js": "^1.130.2",
     "preact": "^10.19.3",
