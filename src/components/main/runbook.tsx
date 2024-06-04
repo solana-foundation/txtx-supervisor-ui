@@ -27,7 +27,7 @@ export default function Runbook({
             />
           );
         })}
-        {/* <ProgressAnimation /> */}
+        <ProgressAnimation />
       </div>
     </div>
   );
