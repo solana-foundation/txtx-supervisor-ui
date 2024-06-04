@@ -72,13 +72,33 @@ export function deserializeBlock<
 >(
   block: T,
 ): T extends ModalBlock<false> ? ModalBlock<true> : ActionBlock<true> {
+  const deserializedGroups = block.panel.groups.map(deserializeGroup);
+  const filtered = deserializedGroups.reduce((acc, group) => {
+    const subGroups = group.subGroups;
+    const uniqueSubGroups: any[] = [];
+    for (let i = 0; i < subGroups.length; i++) {
+      const a = subGroups[i];
+      let isUnique = true;
+      for (let j = i + 1; j < subGroups.length; j++) {
+        const b = subGroups[j];
+        if (a.actionItems[0].uuid === b.actionItems[0].uuid) {
+          isUnique = false;
+        }
+      }
+      if (isUnique) {
+        uniqueSubGroups.push(a);
+      }
+    }
+    acc.push({ ...group, subGroups: uniqueSubGroups });
+    return acc;
+  }, [] as any[]);
   return {
     uuid: block.uuid,
     visible: block.visible,
     type: block.type,
     panel: {
       ...block.panel,
-      groups: block.panel.groups.map(deserializeGroup),
+      groups: filtered,
     },
   };
 }
