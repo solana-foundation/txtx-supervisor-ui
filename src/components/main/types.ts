@@ -283,7 +283,10 @@ export type PrimitiveType =
 export type Value =
   | {
       type: Primitive;
-      value: { type: PrimitiveType; value: string | number | boolean | null };
+      value: {
+        type: PrimitiveType;
+        value: string | number | boolean | null | BufferData;
+      };
     }
   | {
       type: ArrayType;
@@ -293,7 +296,10 @@ export type Value =
       type: Object;
       value: { [key: string]: { Err: Diagnostic } | { Ok: Value } };
     };
-
+export interface BufferData {
+  bytes: number[];
+  typing: { id: string; documentation: string };
+}
 export function toValue(input: any, typing: PrimitiveType): Value {
   if (
     typeof input === "object" ||
@@ -318,5 +324,16 @@ export function valueToString(
   if (type !== "Primitive") {
     return;
   }
+  if (value.type === "Buffer" || typeof value.value === "object") {
+    const bufferData = value.value as BufferData;
+
+    return "0x" + toHexString(bufferData.bytes);
+  }
   return value.value;
+}
+function toHexString(byteArray) {
+  return Array.from(byteArray, function (byte) {
+    // @ts-ignore
+    return ("0" + (byte & 0xff).toString(16)).slice(-2);
+  }).join("");
 }
