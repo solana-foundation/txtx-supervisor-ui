@@ -98,6 +98,16 @@ function ActionItemSubRow({ text, children }: ActionItemSubRow) {
       {children}
     </div>
   ) : null;
+
+  let textEl = !text ? (
+    "N/A"
+  ) : text.includes("https://") ? (
+    <a className="text-emerald-500" href={text} target="_blank">
+      {text}
+    </a>
+  ) : (
+    text
+  );
   return (
     <div
       className={classNames(
@@ -117,7 +127,7 @@ function ActionItemSubRow({ text, children }: ActionItemSubRow) {
           {/* weird rendering bug I can't figure out: whenever the text here is an empty string
             there's an unstyled gap. so just insert a zero-width string here
         */}
-          {text || "​"}
+          {textEl}
         </div>
         {el}
       </div>
