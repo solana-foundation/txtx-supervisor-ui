@@ -54,10 +54,17 @@ export const runbooksSlice = createSlice({
     ),
     setProgressBlocks: create.reducer(
       (state, action: PayloadAction<ProgressBlock[]>) => {
-        let progressBlocks: ProgressBlock[] = state.progressBlocks;
-        action.payload.forEach((block) => {
-          progressBlocks.push(block);
-        });
+        const newBlocks = action.payload;
+        for (const newBlock of newBlocks) {
+          const found_idx = state.progressBlocks.findIndex(
+            (existing) => existing.uuid === newBlock.uuid,
+          );
+          if (found_idx === -1) {
+            state.progressBlocks.push(newBlock);
+          } else {
+            state.progressBlocks[found_idx] = newBlock;
+          }
+        }
       },
     ),
     // appendBlock: create.reducer(
@@ -179,17 +186,8 @@ export const runbooksSlice = createSlice({
   }),
   selectors: {
     selectRunbook: (state) => state,
-    selectModalVisibility: createSelector(
-      [
-        // first selector gets the modals
-        (state: Runbook) => state.modalBlocks,
-        // next sector forwards the uuid arg
-        (state: Runbook, uuid: string) => uuid,
-      ],
-      // output selector can actually use those params
-      (modalPanels: ModalBlock[], uuid: string): boolean =>
-        modalPanels.find((panel) => panel.uuid === uuid)?.visible || false,
-    ),
+    selectVisibleProgressBlock: (state) =>
+      state.progressBlocks.find((block) => block.visible),
   },
 });
 
@@ -204,4 +202,5 @@ export const {
   setModalVisibility,
 } = runbooksSlice.actions;
 
-export const { selectRunbook, selectModalVisibility } = runbooksSlice.selectors;
+export const { selectRunbook, selectVisibleProgressBlock } =
+  runbooksSlice.selectors;
