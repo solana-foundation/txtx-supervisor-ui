@@ -51,18 +51,20 @@ export default function useSubscriptions() {
       dispatch(setActionBlocks([block]));
     }
   }, [actionBlockEvent]);
+
   useEffect(() => {
     if (modalBlockEvent !== undefined) {
       const block: ModalBlock<false> = modalBlockEvent.modalBlockEvent;
-      dispatch(setModalBlocks([modalBlockEvent]));
+      dispatch(setModalBlocks([block]));
     }
   }, [modalBlockEvent]);
+
   useEffect(() => {
     if (progressBlockEvent !== undefined) {
       const block: ProgressBlock = progressBlockEvent.progressBlockEvent;
-      dispatch(setProgressBlocks([progressBlockEvent]));
+      dispatch(setProgressBlocks([block]));
     }
-  }, [actionBlockEvent]);
+  }, [progressBlockEvent]);
 
   useEffect(() => {
     if (clearBlocksEvent !== undefined) {
