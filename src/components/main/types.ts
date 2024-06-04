@@ -156,7 +156,7 @@ export interface ActionItemRequest<Deserialized = true> {
 
 export type ActionItemStatus =
   | { status: "Todo" }
-  | { status: "Success" }
+  | { status: "Success"; data: string }
   | { status: "InProgress"; data: string }
   | { status: "Error"; data: Diagnostic }
   | { status: "Warning"; data: Diagnostic };

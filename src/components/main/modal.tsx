@@ -257,7 +257,12 @@ function ButtonSubGroup({ subGroup, modalUuid }: ButtonSubGroup) {
     const { type } = actionType;
     if (type === "ValidateModal") {
       accumulator.push(
-        <ValidateModalAction actionItem={actionItem} key={uuid} index={i} />,
+        <ValidateModalAction
+          actionItem={actionItem}
+          modalUuid={modalUuid}
+          key={uuid}
+          index={i}
+        />,
       );
       accumulator.push(<CloseModalAction modalUuid={modalUuid} key={uuid} />);
     } else {

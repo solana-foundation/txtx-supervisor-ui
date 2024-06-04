@@ -4,18 +4,23 @@ import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
 import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { classNames } from "../../utils/helpers";
+import { useAppDispatch } from "../../hooks";
+import { setModalVisibility } from "../../reducers/runbooks-slice";
 
 export interface ValidateModalAction {
   actionItem: ActionItemRequest;
   index: number;
+  modalUuid: string;
 }
 export function ValidateModalAction({
   actionItem,
   index,
+  modalUuid,
 }: ValidateModalAction) {
   const { uuid, title, actionStatus } = actionItem;
   const { status } = actionStatus;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
+  const dispatch = useAppDispatch();
 
   const onClick = () => {
     const event: ActionItemResponse = {
@@ -23,6 +28,7 @@ export function ValidateModalAction({
       type: "ValidateModal",
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });
+    dispatch(setModalVisibility([modalUuid, false]));
   };
 
   let isDisabled = false;

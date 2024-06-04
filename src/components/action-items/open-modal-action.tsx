@@ -4,6 +4,7 @@ import { ActionItemRequest } from "../main/types";
 import { ElementSize, PanelButton } from "../buttons/panel-button";
 import { useAppDispatch } from "../../hooks";
 import { setModalVisibility } from "../../reducers/runbooks-slice";
+import { ReviewInputCell } from "./components/review-input-cell";
 
 export interface OpenModalAction {
   actionItem: ActionItemRequest;
@@ -16,7 +17,7 @@ export function OpenModalAction({
   isLast,
 }: OpenModalAction) {
   const dispatch = useAppDispatch();
-  const { actionType, description } = actionItem;
+  const { actionType, description, actionStatus } = actionItem;
 
   if (actionType.type !== "OpenModal") {
     throw new Error(
@@ -27,29 +28,43 @@ export function OpenModalAction({
   const {
     data: { modalUuid, title },
   } = actionType;
-
   const onClick = () => {
     dispatch(setModalVisibility([modalUuid, true]));
   };
+  const subRow =
+    actionStatus.status === "Success"
+      ? undefined
+      : {
+          text: description,
+          children: (
+            <PanelButton
+              title={title}
+              onClick={onClick}
+              isDisabled={false}
+              size={ElementSize.S}
+            />
+          ),
+        };
+
+  const el =
+    actionStatus.status === "Success" ? (
+      <ReviewInputCell
+        description={actionStatus.data}
+        actionStatus={actionStatus}
+      />
+    ) : (
+      <div></div>
+    );
+
   return (
     <ActionItemRow
       actionItem={actionItem}
       isFirst={isFirst}
       isLast={isLast}
       onClick={() => {}}
-      subRow={{
-        text: description,
-        children: (
-          <PanelButton
-            title={title}
-            onClick={onClick}
-            isDisabled={false}
-            size={ElementSize.S}
-          />
-        ),
-      }}
+      subRow={subRow}
     >
-      <div></div>
+      {el}
     </ActionItemRow>
   );
 }

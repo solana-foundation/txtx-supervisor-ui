@@ -35,7 +35,10 @@ export function ReviewInputAction({
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });
   };
-
+  const value =
+    actionStatus.status === "Success" && actionStatus.data !== undefined
+      ? actionStatus.data
+      : description;
   return (
     <ActionItemRow
       actionItem={actionItem}
@@ -43,7 +46,7 @@ export function ReviewInputAction({
       isLast={isLast}
       onClick={onClick}
     >
-      <ReviewInputCell description={description} actionStatus={actionStatus} />
+      <ReviewInputCell description={value} actionStatus={actionStatus} />
     </ActionItemRow>
   );
 }
