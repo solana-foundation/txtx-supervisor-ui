@@ -158,18 +158,22 @@ export function ProvidePublicKeyAction({
     } else if (status === "Error") {
       const statusData = actionStatus.data;
 
-      <ActionItemRow
-        actionItem={actionItem}
-        isFirst={isFirst}
-        isLast={isLast}
-        onClick={() => {}}
-        subRow={{
-          text: statusData.message,
-          children: <div></div>,
-        }}
-      >
-        <div></div>
-      </ActionItemRow>;
+      return (
+        <ActionItemRow
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          onClick={() => {}}
+          subRow={{
+            text: statusData.message,
+          }}
+        >
+          <ReviewInputCell
+            value={address}
+            actionStatus={actionItem.actionStatus}
+          />
+        </ActionItemRow>
+      );
     }
   }
 }
