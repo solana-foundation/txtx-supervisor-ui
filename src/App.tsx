@@ -1,20 +1,18 @@
 import { Header } from "./components/header/header";
-import { Search } from "./components/sidebar/search";
-import { Nav, NavGroup } from "./components/sidebar/nav";
-import React, { createRef, useEffect, useRef, useState } from "react";
+import { NavGroup } from "./components/sidebar/nav";
+import React, { useEffect, useRef, useState } from "react";
 import Runbook from "./components/main/runbook";
-import { Logo } from "./components/header/logo";
-import { useQuery } from "@apollo/client";
-import { GET_PROTOCOL } from "./utils/queries";
-import { RunbookMetadata, Protocol } from "./components/main/types";
-import { sortNavItemsRecursive } from "./utils/helpers";
 import { useAppDispatch, useAppSelector } from "./hooks";
-import { addRunbook, selectActiveRunbook } from "./reducers/runbooks-slice";
+import { selectRunbook } from "./reducers/runbooks-slice";
+import useSubscriptions from "./hooks/useSubscriptions";
+import { Modal } from "./components/main/modal";
+import useQueries from "./hooks/useQueries";
 
 enum PageNav {
   Runbook,
   Deploy,
 }
+
 export default function App() {
   // todo: we should probably introduce a router to actually have this on a separate page
   const [pageNav, setPageNav] = useState<PageNav>(PageNav.Runbook);
@@ -22,7 +20,8 @@ export default function App() {
   const [protocolName, setProtocolName] = useState<string>("");
   const panelRefs = useRef<any[]>([]);
   const dispatch = useAppDispatch();
-  const { commandSections } = useAppSelector(selectActiveRunbook);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const { modalBlocks } = useAppSelector(selectRunbook);
 
   // todo: this is probably a hacky way to do this, but it works for now
   // if an href is provided, scroll to it after a timeout, to give components
@@ -37,37 +36,9 @@ export default function App() {
     }, 200);
   }, []);
 
-  const { loading } = useQuery(GET_PROTOCOL, {
-    onCompleted: (result) => {
-      const protocol: Protocol = result.protocol;
-      const protocolName = protocol.name;
-      const metadatas: RunbookMetadata[] = protocol.runbooks;
-      const navGroup: NavGroup = {
-        name: "Runbooks",
-        children: [],
-      };
-      for (let i = 0; i < metadatas.length; i++) {
-        const metadata = metadatas[i];
-        navGroup.children.push({
-          name: metadata.name,
-          runbookUuid: metadata.uuid,
-        });
-        dispatch(addRunbook([metadata, i === 0]));
-      }
-      let navGroups = [navGroup];
-      navGroups.forEach((group) => group.children.sort(sortNavItemsRecursive));
-      setNavGroups(navGroups);
-      setProtocolName(protocolName);
-    },
-  });
-
-  if (commandSections) {
-    panelRefs.current = Array.from(
-      Array(commandSections.length + 2).keys(),
-    ).map((_, i) => {
-      return panelRefs.current[i] ?? createRef();
-    });
-  }
+  const { loading } = useQueries();
+  // subscribe to new block events, action item updates, etc
+  useSubscriptions();
 
   const panelScrollHandler = (index) => {
     window.location.hash = panelRefs.current[index].current.id;
@@ -85,7 +56,7 @@ export default function App() {
 
   return (
     <>
-      <div className="bg-gradient-to-b from-gray-950 to-neutral-900">
+      <div className="bg-gradient-to-b from-gray-950 to-neutral-900 ">
         {/* Small sidebar */}
         {/*         
         <div className=" fixed inset-y-0 left-0 z-50 block w-20 overflow-y-auto border-r dark:border-slate-500/20 xl:pb-4 transition-all">
@@ -110,13 +81,22 @@ export default function App() {
      */}
 
         {/* Header & main content */}
-        <div className="from-gray-950 to-neutral-900">
+        <div className="from-gray-950 to-neutral-900 ">
           <Header
             {...{ title: protocolName }}
             panelScrollHandler={panelScrollHandler}
           ></Header>
-          <main className="min-h-screen pt-0 mt-0 pl-16 ">
+          <main
+            className="min-h-screen pt-0 mt-0" //pl-16 when we reinsatate sidebar
+            onClick={() => setModalVisible(!modalVisible)}
+          >
             <div className="flex justify-center py-9">
+              {loading
+                ? ""
+                : modalBlocks.map((block, i) => (
+                    <Modal block={block} index={i} key={block.uuid} />
+                  ))}
+
               {loading ? (
                 <div>Loading...</div>
               ) : (

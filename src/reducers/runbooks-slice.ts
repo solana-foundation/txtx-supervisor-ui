@@ -1,277 +1,206 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { createSlice, createSelector } from "@reduxjs/toolkit";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 import {
-  CommandData,
-  CommandSectionIndex,
-  CommandSectionType,
-  Input,
-  Output,
-  Prompt,
-  Action,
   RunbookMetadata,
-  SerializedRunbookData,
+  deserializeBlock,
+  UpdateActionItemEvent,
+  BlockType,
+  ActionBlock,
+  ModalBlock,
+  ProgressBlock,
+  deserializeActionItemEvent,
 } from "../components/main/types";
-import { sortCommands } from "../utils/helpers";
-import addonManager from "../utils/addons-initializer";
 
-export interface IndexedRunbook {
+export interface Runbook {
   metadata: RunbookMetadata;
-  data?: CommandData[]; // todo: see if we can remove
-  commandSections: CommandSectionIndex[];
+  actionBlocks: ActionBlock[];
+  modalBlocks: ModalBlock[];
+  progressBlocks: ProgressBlock[];
   namespacedNetworks: { [key: string]: string[] };
-  outputs: Output[];
-  isDirty: boolean;
-  fieldDirtinessMap: { [key: string]: boolean };
-  isActive: boolean;
 }
-export type RunbookState = IndexedRunbook[];
-const EMPTY_MANUAL = {} as IndexedRunbook;
-const initialState: RunbookState = [];
-
-function findRunbookIdx(runbooks: IndexedRunbook[], uuid: string): number {
-  return runbooks.findIndex((runbook) => runbook.metadata.uuid === uuid);
-}
-
-const findRunbook = (
-  runbooks: IndexedRunbook[],
-  uuid: string,
-): IndexedRunbook => {
-  return (
-    runbooks.find((runbook) => runbook.metadata.uuid === uuid) || EMPTY_MANUAL
-  );
-};
-
-const findActiveRunbook = (runbooks: IndexedRunbook[]): IndexedRunbook => {
-  return runbooks.find((runbook) => runbook.isActive === true) || EMPTY_MANUAL;
+const initialState: Runbook = {
+  metadata: {
+    name: "",
+    description: "",
+    uuid: "",
+  },
+  actionBlocks: [],
+  modalBlocks: [],
+  progressBlocks: [],
+  namespacedNetworks: {},
 };
 
 export const runbooksSlice = createSlice({
   name: "runbooks",
   initialState,
   reducers: (create) => ({
-    addRunbook: create.reducer(
-      (state, action: PayloadAction<[RunbookMetadata, boolean]>) => {
-        const [metadata, isActive] = action.payload;
-        const { uuid } = metadata;
-        if (findRunbookIdx(state, uuid) !== -1) {
-          console.error("uuid collision", uuid);
-          return;
-        }
-        state.push({
-          metadata,
-          isDirty: false,
-          commandSections: [],
-          namespacedNetworks: {},
-          outputs: [],
-          fieldDirtinessMap: {},
-          isActive,
+    setActionBlocks: create.reducer(
+      (state, action: PayloadAction<ActionBlock<false>[]>) => {
+        let actionBlocks: ActionBlock[] = state.actionBlocks;
+        action.payload.forEach((serializedBlock) => {
+          const block = deserializeBlock(serializedBlock);
+          actionBlocks.push(block);
         });
       },
     ),
-    setRunbookData: create.reducer(
-      (state, action: PayloadAction<SerializedRunbookData>) => {
-        const { data, uuid } = action.payload;
-        const runbookIdx = findRunbookIdx(state, uuid);
-        if (runbookIdx === -1) {
-          console.error(`runbook has not been initialized: ${uuid}`);
-          return;
-        }
-        let runbookData: CommandData[] = JSON.parse(data);
-        runbookData.sort(sortCommands);
-        let namespacedNetworks = {};
-        const fieldDirtinessMap: { [key: string]: boolean } = {};
-        let commandSections: CommandSectionIndex[] = [];
-        let currentSection: CommandSectionType | null = null;
-        let cursor = -1;
-        let outputs: Output[] = [];
-
-        for (const {
-          constructUuid,
-          commandInstance,
-          commandInputsEvaluationResult,
-          constructsExecutionResult,
-        } of runbookData) {
-          for (const key in commandInputsEvaluationResult) {
-            fieldDirtinessMap[`${key}-${constructUuid}`] = false;
-          }
-          for (const key in constructsExecutionResult) {
-            fieldDirtinessMap[`${key}-${constructUuid}`] = false;
-          }
-
-          const type = commandInstance.typing;
-          if (type === "Prompt") {
-            const namespace = commandInstance.namespace;
-            if (namespace === null) {
-              console.error("prompt must have namespace");
-              continue;
-            }
-            let prompt: Prompt = {
-              name: commandInstance.specification.name,
-              instanceName: commandInstance.name,
-              inputs: commandInputsEvaluationResult,
-              uuid: constructUuid,
-              runbookUuid: uuid,
-              namespace: namespace,
-            };
-
-            const networkId = commandInputsEvaluationResult
-              ? commandInputsEvaluationResult["network_id"]
-              : undefined; // todo
-            if (networkId !== undefined) {
-              addonManager.addNetworkInstance(namespace, networkId);
-            }
-
-            currentSection = CommandSectionType.Prompt;
-            commandSections.push({
-              type: currentSection,
-              items: [prompt],
-            });
-            cursor++;
-          } else if (type === "Action") {
-            if (commandInstance.namespace === null) {
-              console.error("action must have namespace");
-              continue;
-            }
-            let action: Action = {
-              name: commandInstance.specification.name,
-              instanceName: commandInstance.name,
-              inputs: commandInputsEvaluationResult,
-              uuid: constructUuid,
-              runbookUuid: uuid,
-              namespace: commandInstance.namespace,
-            };
-            // TODO: our addons need to provide onclick handlers that perform a
-            // dispatch. However, you can only perform a dispatch from inside of
-            // a react component. We can directly call store.dispatch(), and this
-            // was working before, but once we import the addonManager here,
-            // which has dependencies that import the store, we create weird
-            // circular dependency issues. Apparently it's a big no-no with redux.
-            // So we need to find a workaround. One idea I don't like is to
-            // have the addon return a button rather than the onclick handler
-            // I don't like this because we can't enforce properties of that
-            // component with types. When just providing the onclick handler,
-            // we can enable/disable and style all buttons without giving
-            // addons any control
-
-            // let namespace = action.namespace;
-            // let addon = addonManager.getAddonFromNamespace(namespace);
-
-            // let actionContent = addon.getActionElement(action);
-
-            // if (actionContent !== undefined) {
-            if (false) {
-              if (currentSection === CommandSectionType.Action) {
-                commandSections[cursor].items.push(action);
-              } else {
-                currentSection = CommandSectionType.Action;
-                commandSections.push({
-                  //@ts-ignore
-                  type: currentSection,
-                  items: [action],
-                });
-                cursor++;
-              }
-            }
-          } else if (type === "Input") {
-            let input: Input = {
-              commandUuid: constructUuid,
-              runbookUuid: uuid,
-              value: commandInputsEvaluationResult.value,
-              default: commandInputsEvaluationResult.default,
-              description: commandInputsEvaluationResult.description,
-            };
-            if (input.value === undefined) {
-              if (currentSection === CommandSectionType.Input) {
-                commandSections[cursor].items.push(input);
-              } else {
-                currentSection = CommandSectionType.Input;
-                commandSections.push({
-                  type: currentSection,
-                  items: [input],
-                });
-                cursor++;
-              }
-            }
-          } else if (type === "Output") {
-            outputs.push({
-              commandUuid: constructUuid,
-              value: commandInputsEvaluationResult.value,
-              name: commandInstance.name,
-            });
+    setModalBlocks: create.reducer(
+      (state, action: PayloadAction<ModalBlock<false>[]>) => {
+        let modalBlocks: ModalBlock[] = state.modalBlocks;
+        action.payload.forEach((serializedBlock) => {
+          const block = deserializeBlock(serializedBlock);
+          modalBlocks.push(block);
+        });
+      },
+    ),
+    setProgressBlocks: create.reducer(
+      (state, action: PayloadAction<ProgressBlock[]>) => {
+        const newBlocks = action.payload;
+        for (const newBlock of newBlocks) {
+          const found_idx = state.progressBlocks.findIndex(
+            (existing) => existing.uuid === newBlock.uuid,
+          );
+          if (found_idx === -1) {
+            state.progressBlocks.push(newBlock);
           } else {
-            console.error(
-              `invalid command type ${type} for command ${constructUuid}`,
-            );
-            continue;
+            state.progressBlocks[found_idx] = newBlock;
           }
         }
-
-        state[runbookIdx] = {
-          ...state[runbookIdx],
-          data: runbookData,
-          commandSections,
-          namespacedNetworks,
-          fieldDirtinessMap,
-          outputs,
-        };
       },
     ),
-    updateFieldDirtinessMap: create.reducer(
-      (
-        state,
-        action: PayloadAction<{
-          runbookUuid: string;
-          mapKey: string;
-          fieldIsDirty: boolean;
-        }>,
-      ) => {
-        const { runbookUuid, mapKey, fieldIsDirty } = action.payload;
-        const runbookIdx = findRunbookIdx(state, runbookUuid);
-        if (runbookIdx === -1) {
-          console.error(`runbook has not been initialized: ${runbookUuid}`);
-          return;
-        }
-
-        const { fieldDirtinessMap } = state[runbookIdx];
-        fieldDirtinessMap[mapKey] = fieldIsDirty;
-        const isDirty = Object.keys(fieldDirtinessMap).some(
-          (key) => fieldDirtinessMap[key],
-        );
-        state[runbookIdx] = {
-          ...state[runbookIdx],
-          isDirty,
-          fieldDirtinessMap,
+    // appendBlock: create.reducer(
+    //   (state, action: PayloadAction<Block<false>>) => {
+    //     const block: Block = deserializeBlock(action.payload);
+    //     if (block.type === "ActionPanel") {
+    //       state.actionBlocks.push(block);
+    //     } else if (block.type === "ModalPanel") {
+    //       state.modalPanels.push(block);
+    //     }
+    //   },
+    // ),
+    clearBlocks: create.reducer((state, action: PayloadAction<BlockType>) => {
+      if (action.payload === "ActionPanel") {
+        return {
+          ...state,
+          actionBlocks: [],
         };
-      },
-    ),
-    setActiveRunbook: create.reducer((state, action: PayloadAction<string>) => {
-      const newActiveUuid = action.payload;
-      const newActiveIdx = findRunbookIdx(state, newActiveUuid);
-      if (newActiveIdx === -1) {
-        console.error(`runbook has not been initialized: ${newActiveUuid}`);
-        return;
+      } else if (action.payload === "ModalPanel") {
+        return {
+          ...state,
+          modalBlocks: [],
+        };
       }
-      const currentActiveIdx = state.findIndex(
-        (runbook) => runbook.isActive === true,
-      );
-      state[currentActiveIdx] = { ...state[currentActiveIdx], isActive: false };
-      state[newActiveIdx] = { ...state[newActiveIdx], isActive: true };
+      return state;
     }),
+    // todo: this reducer could use some cleanup
+    updateActionItems: create.reducer(
+      (state, action: PayloadAction<UpdateActionItemEvent<false>[]>) => {
+        const actionItemEvents: UpdateActionItemEvent[] = action.payload.map(
+          deserializeActionItemEvent,
+        );
+        state.actionBlocks = state.actionBlocks.map((block) => ({
+          ...block,
+          panel: {
+            ...block.panel,
+            groups: block.panel.groups.map((group) => ({
+              ...group,
+              subGroups: group.subGroups.map((subGroup) => ({
+                ...subGroup,
+                actionItems: subGroup.actionItems.map((actionItem) => {
+                  const matchingUpdate = actionItemEvents.find(
+                    (update) => update.uuid === actionItem.uuid,
+                  );
+                  if (matchingUpdate) {
+                    return {
+                      ...actionItem,
+                      title: matchingUpdate.title || actionItem.title,
+                      description:
+                        matchingUpdate.description || actionItem.description,
+                      actionStatus:
+                        matchingUpdate.actionStatus || actionItem.actionStatus,
+                      actionType:
+                        matchingUpdate.actionType || actionItem.actionType,
+                    };
+                  } else {
+                    return actionItem;
+                  }
+                }),
+              })),
+            })),
+          },
+        }));
+        state.modalBlocks = state.modalBlocks.map((block) => ({
+          ...block,
+          panel: {
+            ...block.panel,
+            groups: block.panel.groups.map((group) => ({
+              ...group,
+              subGroups: group.subGroups.map((subGroup) => ({
+                ...subGroup,
+                actionItems: subGroup.actionItems.map((actionItem) => {
+                  const matchingUpdate = actionItemEvents.find(
+                    (update) => update.uuid === actionItem.uuid,
+                  );
+                  if (matchingUpdate) {
+                    return {
+                      ...actionItem,
+                      title: matchingUpdate.title || actionItem.title,
+                      description:
+                        matchingUpdate.description || actionItem.description,
+                      actionStatus:
+                        matchingUpdate.actionStatus || actionItem.actionStatus,
+                      actionType:
+                        matchingUpdate.actionType || actionItem.actionType,
+                    };
+                  } else {
+                    return actionItem;
+                  }
+                }),
+              })),
+            })),
+          },
+        }));
+      },
+    ),
+    setModalVisibility: create.reducer(
+      (state, action: PayloadAction<[uuid: string, visibility: boolean]>) => {
+        const [uuid, visibility] = action.payload;
+        console.log("setting visibility", uuid, visibility);
+        const modalIdx = state.modalBlocks.findIndex(
+          (modal) => modal.uuid === uuid,
+        );
+        if (modalIdx === undefined) return;
+        state.modalBlocks[modalIdx].visible = visibility;
+        console.log(state.modalBlocks[modalIdx]);
+      },
+    ),
+    setMetadata: create.reducer(
+      (state, action: PayloadAction<RunbookMetadata>) => {
+        const metadata = action.payload;
+        state = {
+          ...state,
+          metadata,
+        };
+        return state;
+      },
+    ),
   }),
   selectors: {
-    selectActiveRunbook: findActiveRunbook,
-    selectRunbook: findRunbook,
-    selectIsDirty:
-      createSelector([findRunbook], (runbook) => runbook.isDirty) || false,
+    selectRunbook: (state) => state,
+    selectVisibleProgressBlock: (state) =>
+      state.progressBlocks.find((block) => block.visible),
   },
 });
 
 export const {
-  addRunbook,
-  setRunbookData,
-  updateFieldDirtinessMap,
-  setActiveRunbook,
+  setActionBlocks,
+  setModalBlocks,
+  setProgressBlocks,
+  // appendBlock,
+  setMetadata,
+  clearBlocks,
+  updateActionItems,
+  setModalVisibility,
 } = runbooksSlice.actions;
 
-export const { selectRunbook, selectActiveRunbook, selectIsDirty } =
+export const { selectRunbook, selectVisibleProgressBlock } =
   runbooksSlice.selectors;

@@ -1,5 +1,3 @@
-import { Action, Prompt } from "../components/main/types";
-
 export class AddonManager {
   public addons: { [namespace: string]: { addon: Addon; networks: string[] } } =
     {};
@@ -18,81 +16,72 @@ export class AddonManager {
     }
   }
 
-  public getAddonFromNamespace(namespace: string): Addon {
+  getAddon(namespace: string, networkId: string): Addon {
     if (!this.addons[namespace]) {
       throw new Error(`could not find addon for namespace ${namespace}`);
     }
-    return this.addons[namespace].addon;
+    const { addon, networks } = this.addons[namespace];
+
+    const network = networks.find((network) => network === networkId);
+    if (!network) {
+      throw new Error(
+        `could not find network ${networkId} for addon ${namespace}`,
+      );
+    }
+    return addon;
   }
 
-  public async getWalletConnectionPrompts(): Promise<
-    (ConnectedWalletInfo | ConnectWalletFunction)[]
-  > {
-    const addons = this.addons;
-    const namespaces = Object.keys(addons);
-    const prompts: any[] = [];
-    for (const namespace of namespaces) {
-      const { addon, networks } = addons[namespace];
-      for (const network of networks) {
-        prompts.push(await addon.walletConnection(network));
-      }
-    }
-    return prompts;
+  public async connectWallet(namespace: string, networkId: string) {
+    const addon = this.getAddon(namespace, networkId);
+    addon.connectWallet();
   }
 
-  public areAllWalletsConnected() {
-    const addons = this.addons;
-    for (let namespace of Object.keys(addons)) {
-      let addon = addons[namespace].addon;
-      if (!addon.isWalletConnected()) {
-        return false;
-      }
-    }
-    return true;
+  public isWalletConnected(namespace: string, networkId: string): boolean {
+    const addon = this.getAddon(namespace, networkId);
+    return addon.isWalletConnected();
+  }
+
+  public getAddress(namespace: string, networkId: string): string {
+    const addon = this.getAddon(namespace, networkId);
+    return addon.getAddress(networkId);
+  }
+
+  public async getPublicKey(
+    namespace: string,
+    networkId: string,
+    address: string,
+    message: string,
+  ): Promise<string | undefined> {
+    const addon = this.getAddon(namespace, networkId);
+    return await addon.getPublicKey(networkId, address, message);
+  }
+
+  public async signTransaction(
+    namespace: string,
+    networkId: string,
+    address: string,
+    txHex: string,
+  ): Promise<string | undefined> {
+    const addon = this.getAddon(namespace, networkId);
+    return await addon.signTransaction(txHex);
   }
 }
 
-export interface ConnectedWalletInfo {
-  chain: string;
-  address: string;
-  network: string;
-  walletName: string;
-  balance: number;
-  requiredBalance: number;
-  chainTip: number;
-  ticker: string;
-}
+export type ConnectedWalletInfo = string;
 export type ConnectWalletFunction = () => void;
 
 export abstract class Addon {
-  public abstract walletConnection(
-    networkId: string,
-  ): Promise<ConnectedWalletInfo | ConnectWalletFunction>;
+  public abstract connectWallet();
+
   public abstract isWalletConnected(): boolean;
 
-  // prompts
-  public abstract getPromptElement(prompt: Prompt): React.JSX.Element;
+  public abstract getAddress(networkId: string): string;
 
-  public abstract getPromptPrimaryButton(
-    prompt: Prompt,
-    panelIndex: number,
-    scrollHandler: any,
-  ): JSX.Element | undefined;
+  public abstract getPublicKey(
+    networkId: string,
+    address: string,
+    message: string,
+  ): Promise<string | undefined>;
 
-  public abstract getPromptSecondaryButton(
-    prompt: Prompt,
-  ): JSX.Element | undefined;
-
-  // actions
-  public abstract getActionElement(prompt: Action): JSX.Element | undefined;
-
-  public abstract getActionPrimaryButton(
-    prompt: Action,
-    panelIndex: number,
-    scrollHandler: any,
-  ): JSX.Element | undefined;
-
-  public abstract getActionSecondaryButton(
-    prompt: Action,
-  ): JSX.Element | undefined;
+  public abstract signTransaction(txHex: string): Promise<string | undefined>;
 }

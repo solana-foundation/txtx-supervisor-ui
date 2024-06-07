@@ -1,70 +1,3 @@
-export interface CommandOutput {
-  name: string;
-  documentation: string;
-  typing: string;
-}
-
-export interface CommandInput {
-  name: string;
-  documentation: string;
-  typing: string;
-  optional: boolean;
-}
-
-export interface CommandSpecification {
-  documentation: string;
-  name: string;
-  inputs: CommandInput[];
-  outputs: CommandOutput[];
-}
-
-export type CommandInstanceType = CommandSectionTypeString;
-export interface CommandInstance {
-  name: string;
-  packageUuid: string;
-  specification: CommandSpecification;
-  state: CommandInstanceState;
-  namespace: string | null;
-  typing: CommandInstanceType;
-}
-
-export interface ConstructExecutionResult {
-  [key: string]: string;
-}
-
-export interface CommandInputEvaluationResult {
-  [key: string]: string;
-}
-
-export enum CommandInstanceState {
-  New = "New",
-  Evaluated = "Evaluated",
-  AwaitingUserInput = "AwaitingUserInput",
-  AwaitingAsyncRequest = "AwaitingAsyncRequest",
-  Aborted = "Aborted",
-  Failed = "Failed",
-}
-
-export interface CommandData {
-  index: number;
-  constructUuid: string;
-  commandInstance: CommandInstance;
-  constructsExecutionResult: ConstructExecutionResult;
-  commandInputsEvaluationResult: CommandInputEvaluationResult;
-}
-export enum CommandSectionType {
-  Input,
-  Action,
-  Prompt,
-  Output,
-}
-export type CommandSectionTypeString =
-  | "Input"
-  | "Action"
-  | "Prompt"
-  | "Output"
-  | "Module";
-
 export interface Protocol {
   name: string;
   runbooks: Array<RunbookMetadata>;
@@ -73,47 +6,413 @@ export interface RunbookMetadata {
   name: string;
   description: string;
   uuid: string;
-  constructUuids: string[];
 }
 
-export interface Prompt {
-  name: string;
-  instanceName: string;
-  inputs: CommandInputEvaluationResult | null;
+export interface UpdateActionItemEvent<Deserialized = true> {
   uuid: string;
-  runbookUuid: string;
-  namespace: string;
-}
-
-export interface Action {
-  name: string;
-  instanceName: string;
-  inputs: CommandInputEvaluationResult | null;
-  uuid: string;
-  runbookUuid: string;
-  namespace: string;
-}
-
-export interface Input {
-  value?: string | boolean | number;
-  default?: string | boolean | number;
+  title?: string;
   description?: string;
-  commandUuid: string;
-  runbookUuid: string;
+  actionStatus?: Deserialized extends true ? ActionItemStatus : string;
+  actionType?: Deserialized extends true ? ActionItemRequestType : string;
 }
 
-export interface Output {
-  value?: string | boolean | number;
-  name: string;
-  commandUuid: string;
+export function deserializeActionItemEvent(
+  input: UpdateActionItemEvent<false>,
+): UpdateActionItemEvent {
+  return {
+    ...input,
+    actionStatus: input.actionStatus
+      ? JSON.parse(input.actionStatus)
+      : undefined,
+    actionType: input.actionType ? JSON.parse(input.actionType) : undefined,
+  };
 }
 
-export interface SerializedRunbookData {
+export type BlockType = "ActionPanel" | "ModalPanel";
+
+export interface ActionBlock<Deserialized = true> {
+  type: BlockType;
   uuid: string;
-  data: string;
+  visible: boolean;
+  panel: ActionPanelData<Deserialized>;
+}
+export interface ModalBlock<Deserialized = true> {
+  type: BlockType;
+  uuid: string;
+  visible: boolean;
+  panel: ModalPanelData<Deserialized>;
+}
+export interface ProgressBlock {
+  type: string;
+  uuid: string;
+  visible: boolean;
+  panel: ProgressBarStatus;
 }
 
-export type CommandSectionIndex = {
-  type: CommandSectionType;
-  items: (Input | Prompt | Action)[];
+export interface ActionPanelData<Deserialized = true> {
+  title: string;
+  description: string;
+  groups: ActionGroup<Deserialized>[];
+}
+
+export interface ModalPanelData<Deserialized = true> {
+  title: string;
+  description: string;
+  groups: ActionGroup<Deserialized>[];
+}
+
+export interface ProgressBarStatus {
+  status: string;
+  message: string;
+  diagnostic: Diagnostic;
+}
+
+export function deserializeBlock<
+  T extends ModalBlock<false> | ActionBlock<false>,
+>(
+  block: T,
+): T extends ModalBlock<false> ? ModalBlock<true> : ActionBlock<true> {
+  const deserializedGroups = block.panel.groups.map(deserializeGroup);
+  const filtered = deserializedGroups.reduce((acc, group) => {
+    const subGroups = group.subGroups;
+    const uniqueSubGroups: any[] = [];
+    for (let i = 0; i < subGroups.length; i++) {
+      const a = subGroups[i];
+      let isUnique = true;
+      for (let j = i + 1; j < subGroups.length; j++) {
+        const b = subGroups[j];
+        if (a.actionItems[0].uuid === b.actionItems[0].uuid) {
+          isUnique = false;
+        }
+      }
+      if (isUnique) {
+        uniqueSubGroups.push(a);
+      }
+    }
+    acc.push({ ...group, subGroups: uniqueSubGroups });
+    return acc;
+  }, [] as any[]);
+  return {
+    uuid: block.uuid,
+    visible: block.visible,
+    type: block.type,
+    panel: {
+      ...block.panel,
+      groups: filtered,
+    },
+  };
+}
+
+function deserializeGroup(group: ActionGroup<false>): ActionGroup<true> {
+  return {
+    ...group,
+    subGroups: group.subGroups.map(deserializeSubGroup),
+  };
+}
+
+function deserializeSubGroup(
+  subGroup: ActionSubGroup<false>,
+): ActionSubGroup<true> {
+  return {
+    ...subGroup,
+    actionItems: subGroup.actionItems.map(deserializeActionItem),
+  };
+}
+
+function deserializeActionItem(
+  actionItem: ActionItemRequest<false>,
+): ActionItemRequest<true> {
+  const deserializedStatus: ActionItemStatus = JSON.parse(
+    actionItem.actionStatus,
+  );
+  const deserializedType: ActionItemRequestType = JSON.parse(
+    actionItem.actionType,
+  );
+  return {
+    ...actionItem,
+    actionStatus: deserializedStatus,
+    actionType: deserializedType,
+  };
+}
+export interface ActionGroup<Deserialized = true> {
+  title: string;
+  subGroups: ActionSubGroup<Deserialized>[];
+}
+
+export interface ActionSubGroup<Deserialized = true> {
+  actionItems: ActionItemRequest<Deserialized>[];
+  allowBatchCompletion: boolean;
+}
+
+export interface ActionItemRequest<Deserialized = true> {
+  uuid: string;
+  constructUuid: string | null;
+  index: number;
+  title: string;
+  description?: string;
+  actionStatus: Deserialized extends true ? ActionItemStatus : string;
+  actionType: Deserialized extends true ? ActionItemRequestType : string;
+}
+
+export type ActionItemStatus =
+  | { status: "Todo" }
+  | { status: "Success"; data: string }
+  | { status: "InProgress"; data: string }
+  | { status: "Error"; data: Diagnostic }
+  | { status: "Warning"; data: Diagnostic };
+
+export interface Diagnostic {
+  span: DiagnosticSpan | null;
+  message: string;
+  level: DiagnosticLevel;
+}
+
+export interface DiagnosticSpan {
+  line_start: number;
+  line_end: number;
+  column_start: number;
+  column_end: number;
+}
+
+export type DiagnosticLevel = "Error" | "Warning" | "Note";
+
+export type ActionItemRequestType =
+  | ReviewInputActionItemRequest
+  | ProvideInputActionItemRequest
+  | PickInputOptionActionItemRequest
+  | ProvidePublicKeyActionItemRequest
+  | ProvideSignedTransactionActionItemRequest
+  | DisplayOutputActionItemRequest
+  | ValidateBlockActionItemRequest
+  | ValidateModalActionItemRequest
+  | OpenModalActionItemRequest;
+
+export type ReviewInputActionItemRequest = {
+  type: "ReviewInput";
+  data: ReviewInputRequest;
 };
+export type ProvideInputActionItemRequest = {
+  type: "ProvideInput";
+  data: ProvideInputRequest;
+};
+export type PickInputOptionActionItemRequest = {
+  type: "PickInputOption";
+  data: PickInputOptionRequest;
+};
+export type ProvidePublicKeyActionItemRequest = {
+  type: "ProvidePublicKey";
+  data: ProvidePublicKeyRequest;
+};
+export type ProvideSignedTransactionActionItemRequest = {
+  type: "ProvideSignedTransaction";
+  data: ProvideSignedTransactionRequest;
+};
+export type DisplayOutputActionItemRequest = {
+  type: "DisplayOutput";
+  data: DisplayOutputRequest;
+};
+export type OpenModalActionItemRequest = {
+  type: "OpenModal";
+  data: OpenModalRequest;
+};
+export type ValidateBlockActionItemRequest = { type: "ValidateBlock" };
+export type ValidateModalActionItemRequest = { type: "ValidateModal" };
+
+export interface ReviewInputRequest {
+  inputName: string;
+  value: Value;
+}
+export interface ProvideInputRequest {
+  inputName: string;
+  typing: PrimitiveType;
+  defaultValue?: Value;
+}
+
+export interface PickInputOptionRequest {
+  options: InputOption[];
+  selected: InputOption;
+}
+export interface InputOption {
+  value: string;
+  displayedValue: string;
+}
+
+export interface ProvidePublicKeyRequest {
+  checkExpectationActionUuid: string | null;
+  message: string;
+  namespace: string;
+  networkId: string;
+}
+
+export interface ProvideSignedTransactionRequest {
+  checkExpectationActionUuid: string | null;
+  payload: Value;
+  namespace: string;
+  networkId: string;
+}
+
+export interface DisplayOutputRequest {
+  name: string;
+  description: string | null;
+  value: Value;
+}
+export interface OpenModalRequest {
+  modalUuid: string;
+  title: string;
+}
+
+export type ActionItemResponse = {
+  actionItemUuid: string;
+} & ActionItemResponseType;
+
+type ActionItemResponseType =
+  | { type: "ReviewInput"; data: ReviewInputResponse }
+  | { type: "ProvideInput"; data: ProvidedInputResponse }
+  | { type: "PickInputOption"; data: string }
+  | { type: "ProvidePublicKey"; data: ProvidePublicKeyResponse }
+  | { type: "ProvideSignedTransaction"; data: ProvideSignedTransactionResponse }
+  | { type: "ValidateBlock" }
+  | { type: "ValidateModal" };
+
+export interface ReviewInputResponse {
+  inputName: string;
+  valueChecked: boolean;
+}
+
+export interface ProvidedInputResponse {
+  inputName: string;
+  updatedValue: Value;
+}
+
+export interface ProvidePublicKeyResponse {
+  publicKey: string;
+}
+
+export interface ProvideSignedTransactionResponse {
+  signedTransactionBytes: string;
+}
+
+export type Primitive = "Primitive";
+export type ArrayType = "Array";
+export type Object = "Object";
+export type Addon = "Addon";
+export type Type = Primitive | ArrayType | Object | Addon;
+
+export type PrimitiveType =
+  | "String"
+  | "UInt"
+  | "Int"
+  | "Boolean"
+  | "Null"
+  | "Buffer";
+
+export type Value =
+  | {
+      type: Primitive;
+      value: PrimitiveValue;
+    }
+  | {
+      type: ArrayType;
+      value: Value[];
+    }
+  | {
+      type: Object;
+      value: { [key: string]: { Err: Diagnostic } | { Ok: Value } };
+    };
+
+export type PrimitiveValue =
+  | { type: "String"; value: string }
+  | { type: "UInt"; value: number }
+  | { type: "Int"; value: number }
+  | { type: "Boolean"; value: boolean }
+  | { type: "Null"; value: null }
+  | { type: "Buffer"; value: BufferData };
+
+export interface BufferData {
+  bytes: Uint8Array;
+  typing: { id: string; documentation: string };
+}
+export function toValue(input: any, typing: PrimitiveType): Value {
+  if (
+    typeof input === "object" ||
+    typeof input === "function" ||
+    Array.isArray(input)
+  ) {
+    throw new Error(`toValue not yet supported for ${typeof input}: ${input}`);
+  }
+  let primitiveValue: PrimitiveValue;
+  if (typing === "Boolean") {
+    primitiveValue = { type: "Boolean", value: !!input };
+  } else if (typing === "Buffer") {
+    primitiveValue = {
+      type: "Buffer",
+      value: {
+        bytes: Uint8Array.from(input),
+        typing: { id: "unknown", documentation: "unknown" },
+      },
+    };
+  } else if (typing === "Int") {
+    primitiveValue = {
+      type: "Int",
+      value: parseInt(input),
+    };
+  } else if (typing === "UInt") {
+    primitiveValue = {
+      type: "UInt",
+      value: Math.max(0, parseInt(input)),
+    };
+  } else if (typing === "Null") {
+    primitiveValue = {
+      type: "Null",
+      value: null,
+    };
+  } else {
+    primitiveValue = {
+      type: "String",
+      value: input.toString(),
+    };
+  }
+  return {
+    type: "Primitive",
+    value: primitiveValue,
+  };
+}
+
+export type DisplayableValue = string | number | boolean;
+export function formatValueForDisplay(input: Value): DisplayableValue {
+  const { type, value } = input;
+  if (type === "Primitive") {
+    if (value.type === "Buffer") {
+      const bufferData = value.value;
+      return "0x" + toHexString(bufferData.bytes);
+    } else if (value.type === "Null") {
+      return "N/A";
+    } else {
+      return value.value;
+    }
+  } else if (type === "Array") {
+    return JSON.stringify(value.map((v) => formatValueForDisplay(v)));
+  } else if (type === "Object") {
+    const keys = Object.keys(value);
+    return JSON.stringify(
+      keys.map((k) => {
+        let val = value[k];
+        if ("Err" in val) {
+          return { k: JSON.stringify(val.Err) };
+        } else {
+          return { k: formatValueForDisplay(val.Ok) };
+        }
+      }),
+    );
+  }
+  throw new Error(
+    `Unable to format value for display: ${JSON.stringify(value)}`,
+  );
+}
+
+function toHexString(byteArray) {
+  return Array.from(byteArray, function (byte) {
+    // @ts-ignore
+    return ("0" + (byte & 0xff).toString(16)).slice(-2);
+  }).join("");
+}

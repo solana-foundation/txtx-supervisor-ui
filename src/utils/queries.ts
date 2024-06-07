@@ -14,40 +14,173 @@ export const GET_PROTOCOL = gql`
   }
 `;
 
-export const GET_MANUAL = gql`
-  query GetRunbook($runbookName: String!) {
-    runbook(runbookName: $runbookName) {
+export const GET_ACTION_BLOCKS = gql`
+  query GetActionBlocks {
+    actionBlocks {
+      type
       uuid
-      data
+      visible
+      panel {
+        title
+        description
+        groups {
+          title
+          subGroups {
+            allowBatchCompletion
+            actionItems {
+              uuid
+              index
+              title
+              description
+              actionStatus
+              actionType
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+export const GET_MODAL_BLOCKS = gql`
+  query GetModalBlocks {
+    modalBlocks {
+      type
+      uuid
+      visible
+      panel {
+        title
+        description
+        groups {
+          title
+          subGroups {
+            allowBatchCompletion
+            actionItems {
+              uuid
+              index
+              title
+              description
+              actionStatus
+              actionType
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+export const GET_PROGRESS_BLOCKS = gql`
+  query GetProgressBlocks {
+    progressBlocks {
+      type
+      uuid
+      visible
+      panel {
+        status
+        message
+        diagnostic
+      }
     }
   }
 `;
 
-export const GET_COMMAND_INSTANCE_STATE = gql`
-  query GetCommandInstanceState(
-    $runbookName: String!
-    $constructUuid: String!
-  ) {
-    runbook(runbookName: $runbookName) {
-      commandInstanceState(constructUuidString: $constructUuid)
-      data
-      uuid
+export const GET_RUNBOOK_METADATA = gql`
+  query GetRunbookMetadata {
+    runbook {
+      name
+      description
     }
   }
 `;
 
-export const UPDATE_COMMAND_INPUT = gql`
-  mutation UpdateCommandInput(
-    $runbookName: String!
-    $commandUuid: Uuid!
-    $inputName: String!
-    $value: String!
-  ) {
-    updateCommandInput(
-      runbookName: $runbookName
-      commandUuid: $commandUuid
-      inputName: $inputName
-      value: $value
-    )
+export const UPDATE_ACTION_ITEM = gql`
+  mutation UpdateActionItem($event: String!) {
+    updateActionItem(event: $event)
+  }
+`;
+
+export const ACTION_BLOCK_EVENT_SUBSCRIPTION = gql`
+  subscription OnActionBlockEvent {
+    actionBlockEvent {
+      type
+      uuid
+      visible
+      panel {
+        title
+        description
+        groups {
+          title
+          subGroups {
+            allowBatchCompletion
+            actionItems {
+              uuid
+              index
+              title
+              description
+              actionStatus
+              actionType
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+export const MODAL_BLOCK_EVENT_SUBSCRIPTION = gql`
+  subscription OnModalBlockEvent {
+    modalBlockEvent {
+      type
+      uuid
+      visible
+      panel {
+        title
+        description
+        groups {
+          title
+          subGroups {
+            allowBatchCompletion
+            actionItems {
+              uuid
+              index
+              title
+              description
+              actionStatus
+              actionType
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+export const PROGRESS_BLOCK_EVENT_SUBSCRIPTION = gql`
+  subscription OnProgressBlockEvent {
+    progressBlockEvent {
+      type
+      uuid
+      visible
+      panel {
+        status
+        message
+        diagnostic
+      }
+    }
+  }
+`;
+
+export const CLEAR_BLOCKS_EVENT_SUBSCRIPTION = gql`
+  subscription OnClearBlockEvent {
+    clearBlocksEvent
+  }
+`;
+
+export const UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION = gql`
+  subscription OnUpdateActionItems {
+    updateActionItemsEvent {
+      uuid
+      title
+      description
+      actionStatus
+      actionType
+    }
   }
 `;

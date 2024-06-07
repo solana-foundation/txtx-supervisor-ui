@@ -10,7 +10,7 @@ module.exports = {
       },
       black: "#000000",
       blue: {
-        600: "blue",
+        600: "#5EA2F5",
       },
       cyan: {
         300: "cyan",
@@ -20,12 +20,13 @@ module.exports = {
         400: "#34d399",
         500: "#00D992",
         600: "#059669",
-        800: "#192423",
+        700: "#111F1F",
+        800: "#112221",
         950: "#102924",
       },
       fuchsia: { 500: "fuchsia" },
       green: { 600: "#33d398" },
-      gray: { 400: "#B7BBBC", 800: "#2C3335", 950: "#060F11" },
+      gray: { 400: "#B7BBBC", 700: "#313131", 800: "#2C3335", 950: "#060F11" },
       indigo: { 500: "indigo" },
       lime: { 300: "lime" },
       neutral: {
@@ -37,7 +38,7 @@ module.exports = {
       orange: { 500: "orange" },
       pink: { 500: "pink" },
       purple: { 400: "#9f74d7", 500: "#9747FF" },
-      red: { 600: "red" },
+      red: { 600: "#FB7185" },
       rose: { 400: "#FB6D88" },
       sky: { 500: "sky" },
       slate: {
@@ -58,12 +59,12 @@ module.exports = {
       yellow: { 400: "#e9ba4c", 500: "#FFB200" },
       zinc: {
         100: "#F0F1F1",
-        200: "zinc",
+        200: "#101618",
         300: "#DBDBDB",
         400: "#A9ADAE",
         500: "#6c7375",
         600: "#5B5B5B",
-        700: "zinc",
+        700: "#1C2225",
         800: "#271F2D",
         900: "#121B1D",
         950: "#0a0f0f",
@@ -71,7 +72,8 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter var", "GT America Mono", ...defaultTheme.fontFamily.sans],
+        inter: ["Inter var"],
+        gt: ['"GT America Mono"'],
       },
     },
   },

@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.8.8",
-    "@headlessui/react": "^2.0.0-alpha.4",
+    "@headlessui/react": "^2.0.4",
     "@heroicons/react": "^2.1.1",
     "@monaco-editor/react": "^4.6.0",
     "@reduxjs/toolkit": "^2.2.1",
@@ -43,7 +43,9 @@
     "debounce": "^2.0.0",
     "ethers": "^5.7.2",
     "graphql": "^16.8.1",
+    "graphql-ws": "^5.16.0",
     "headlessui": "^0.0.0",
+    "lottie-react": "^2.4.0",
     "monaco-editor": "=0.45.0",
     "posthog-js": "^1.130.2",
     "preact": "^10.19.3",
