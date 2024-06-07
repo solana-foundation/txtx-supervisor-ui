@@ -4,6 +4,8 @@ import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
 import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { classNames } from "../../utils/helpers";
+import { useSelector } from "react-redux";
+import { selectPanelValidationReady } from "../../reducers/runbooks-slice";
 
 export interface ValidateBlockAction {
   actionItem: ActionItemRequest;
@@ -15,6 +17,9 @@ export function ValidateBlockAction({
 }: ValidateBlockAction) {
   const { uuid, title, actionStatus } = actionItem;
   const { status } = actionStatus;
+  const validationReady = useSelector((state: any) =>
+    selectPanelValidationReady(state, uuid),
+  );
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
 
   const onClick = () => {
@@ -25,7 +30,7 @@ export function ValidateBlockAction({
     updateActionItem({ variables: { event: JSON.stringify(event) } });
   };
 
-  let isDisabled = false;
+  let isDisabled = !validationReady;
   if (status === "Success") {
     isDisabled = true;
   }
@@ -34,7 +39,7 @@ export function ValidateBlockAction({
     index === 0
       ? ButtonColor.Emerald
       : index === 1
-        ? ButtonColor.Gray
+        ? ButtonColor.Black
         : ButtonColor.Amber;
 
   const orderClass =
