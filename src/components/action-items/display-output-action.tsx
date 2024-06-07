@@ -1,6 +1,6 @@
 import {
   ActionItemRequest,
-  valueToString as valueToPrimitive,
+  formatValueForDisplay as valueToPrimitive,
 } from "../main/types";
 import { ActionItemRow } from "./components/action-item-row";
 import { ReviewInputCell } from "./components/review-input-cell";
@@ -41,7 +41,7 @@ export function DisplayOutputAction({
     <div></div>
   ) : (
     <ReviewInputCell
-      description={displayValue?.toString() || ""}
+      value={displayValue?.toString() || ""}
       actionStatus={actionStatus}
     />
   );

@@ -1,5 +1,10 @@
 import { useMutation } from "@apollo/client";
-import { ActionItemRequest, ActionItemResponse, toValue } from "../main/types";
+import {
+  ActionItemRequest,
+  ActionItemResponse,
+  formatValueForDisplay,
+  toValue,
+} from "../main/types";
 import { ActionItemRow } from "./components/action-item-row";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
@@ -49,7 +54,7 @@ export function ProvideInputAction({
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });
   };
-
+  const defaultValue = actionType.data.defaultValue;
   return (
     <ActionItemRow
       actionItem={actionItem}
@@ -57,7 +62,15 @@ export function ProvideInputAction({
       isLast={isLast}
       onClick={onClick}
     >
-      <ProvideInputCell actionItem={actionItem} onChange={onChange} />
+      <ProvideInputCell
+        actionItem={actionItem}
+        onChange={onChange}
+        defaultValue={
+          defaultValue !== undefined
+            ? formatValueForDisplay(defaultValue)
+            : undefined
+        }
+      />
     </ActionItemRow>
   );
 }

@@ -1,5 +1,9 @@
 import { useMutation } from "@apollo/client";
-import { ActionItemRequest, ActionItemResponse } from "../main/types";
+import {
+  ActionItemRequest,
+  ActionItemResponse,
+  formatValueForDisplay,
+} from "../main/types";
 import { ActionItemRow } from "./components/action-item-row";
 import { ReviewInputCell } from "./components/review-input-cell";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
@@ -15,7 +19,7 @@ export function ReviewInputAction({
   isFirst,
   isLast,
 }: ReviewInputAction) {
-  const { uuid, actionStatus, description, actionType } = actionItem;
+  const { uuid, actionStatus, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
 
   if (actionType.type !== "ReviewInput") {
@@ -35,10 +39,7 @@ export function ReviewInputAction({
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });
   };
-  const value =
-    actionStatus.status === "Success" && actionStatus.data !== undefined
-      ? actionStatus.data
-      : description;
+  const value = formatValueForDisplay(actionType.data.value);
   return (
     <ActionItemRow
       actionItem={actionItem}
@@ -46,7 +47,7 @@ export function ReviewInputAction({
       isLast={isLast}
       onClick={onClick}
     >
-      <ReviewInputCell description={value} actionStatus={actionStatus} />
+      <ReviewInputCell value={value} actionStatus={actionStatus} />
     </ActionItemRow>
   );
 }

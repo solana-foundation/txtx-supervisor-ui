@@ -31,27 +31,24 @@ export function OpenModalAction({
   const onClick = () => {
     dispatch(setModalVisibility([modalUuid, true]));
   };
-  const subRow =
-    actionStatus.status === "Success"
-      ? undefined
-      : {
-          text: description,
-          children: (
-            <PanelButton
-              title={title}
-              onClick={onClick}
-              isDisabled={false}
-              size={ElementSize.S}
-            />
-          ),
-        };
+  let subRow;
+  if (actionStatus.status !== "Success") {
+    subRow = {
+      text: description,
+      children: (
+        <PanelButton
+          title={title}
+          onClick={onClick}
+          isDisabled={false}
+          size={ElementSize.S}
+        />
+      ),
+    };
+  }
 
   const el =
     actionStatus.status === "Success" ? (
-      <ReviewInputCell
-        description={actionStatus.data}
-        actionStatus={actionStatus}
-      />
+      <ReviewInputCell value={actionStatus.data} actionStatus={actionStatus} />
     ) : (
       <div></div>
     );

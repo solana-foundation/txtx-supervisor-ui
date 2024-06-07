@@ -22,10 +22,7 @@ export default function PickInputOptionCell({
   setSelected,
 }: PickInputOptionCell) {
   const actionType = actionItem.actionType as PickInputOptionActionItemRequest;
-  const options = actionType.data;
-  const selectedOption = options.find(
-    (option) => option.value === actionItem.description,
-  );
+  const { options, selected: selectedOption } = actionType.data;
   const [selected, setSelectedState] = useState(selectedOption);
   const onChange = (option: any) => {
     setSelectedState(option);
@@ -33,7 +30,7 @@ export default function PickInputOptionCell({
   };
   if (selected === undefined) {
     throw new Error(
-      `selected option for PickInputOptionCell class is not a valid option. Selected: ${actionItem.description}, Options: ${options}`,
+      `selected option for PickInputOptionCell class is not a valid option. Selected: ${selectedOption}, Options: ${options}`,
     );
   }
   return (

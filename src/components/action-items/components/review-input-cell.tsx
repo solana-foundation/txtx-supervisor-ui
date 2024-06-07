@@ -1,15 +1,12 @@
 import React from "react";
 import { classNames } from "../../../utils/helpers";
-import { ActionItemStatus } from "../../main/types";
+import { ActionItemStatus, DisplayableValue } from "../../main/types";
 
 export interface ReviewInputCell {
-  description: string;
+  value: DisplayableValue;
   actionStatus: ActionItemStatus;
 }
-export function ReviewInputCell({
-  description,
-  actionStatus,
-}: ReviewInputCell) {
+export function ReviewInputCell({ value, actionStatus }: ReviewInputCell) {
   const { status } = actionStatus;
   // todo: handle other statuses
   let descriptionContainerClass, descriptionClass;
@@ -23,15 +20,14 @@ export function ReviewInputCell({
     descriptionContainerClass = "bg-stone-900";
     descriptionClass = "text-rose-400";
   }
-  let el = !description ? (
-    "N/A"
-  ) : description.includes("https://") ? (
-    <a className="text-emerald-500" href={description} target="_blank">
-      {description}
-    </a>
-  ) : (
-    description
-  );
+  let el =
+    typeof value === "string" && value.includes("https://") ? (
+      <a className="text-emerald-500" href={value} target="_blank">
+        {value}
+      </a>
+    ) : (
+      value
+    );
   return (
     <div className="self-stretch bg-gray-950 flex-col justify-center items-start inline-flex">
       <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">

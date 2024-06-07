@@ -17,7 +17,7 @@ export function ActionItemRow({
   onClick,
   subRow,
 }: ActionItemRow & { children }) {
-  const { uuid, index, title, description, actionStatus } = actionItem;
+  const { index, title, actionStatus } = actionItem;
   const { status } = actionStatus;
   // todo: handle other statuses
   let checkClass;

@@ -134,7 +134,7 @@ export function ProvidePublicKeyAction({
             onClick={onClick}
           >
             <ReviewInputCell
-              description={address}
+              value={address}
               actionStatus={actionItem.actionStatus}
             />
           </ActionItemRow>
@@ -150,7 +150,7 @@ export function ProvidePublicKeyAction({
           onClick={onClick}
         >
           <ReviewInputCell
-            description={address}
+            value={address}
             actionStatus={actionItem.actionStatus}
           />
         </ActionItemRow>
