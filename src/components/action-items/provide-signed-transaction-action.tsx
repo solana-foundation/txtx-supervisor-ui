@@ -9,6 +9,7 @@ import { ElementSize, PanelButton } from "../buttons/panel-button";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import addonManager from "../../utils/addons-initializer";
+import { ReviewInputCell } from "./components/review-input-cell";
 
 export interface ProvideSignedTransactionAction {
   actionItem: ActionItemRequest;
@@ -20,7 +21,7 @@ export function ProvideSignedTransactionAction({
   isFirst,
   isLast,
 }: ProvideSignedTransactionAction) {
-  const { uuid, actionStatus, actionType } = actionItem;
+  const { uuid, actionStatus, title, description, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
 
   if (actionType.type !== "ProvideSignedTransaction") {
@@ -80,7 +81,10 @@ export function ProvideSignedTransactionAction({
         ),
       }}
     >
-      <div></div>
+      <ReviewInputCell
+        value={description ? `${description} (${title})` : title}
+        actionStatus={actionStatus}
+      />
     </ActionItemRow>
   );
 }
