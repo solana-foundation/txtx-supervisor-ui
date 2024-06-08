@@ -5,7 +5,11 @@ import React from "react";
 import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { classNames } from "../../utils/helpers";
 import { useAppDispatch } from "../../hooks";
-import { setModalVisibility } from "../../reducers/runbooks-slice";
+import {
+  selectPanelValidationReady,
+  setModalVisibility,
+} from "../../reducers/runbooks-slice";
+import { useSelector } from "react-redux";
 
 export interface ValidateModalAction {
   actionItem: ActionItemRequest;
@@ -19,6 +23,9 @@ export function ValidateModalAction({
 }: ValidateModalAction) {
   const { uuid, title, actionStatus } = actionItem;
   const { status } = actionStatus;
+  const validationReady = useSelector((state: any) =>
+    selectPanelValidationReady(state, uuid),
+  );
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
   const dispatch = useAppDispatch();
 
@@ -31,7 +38,7 @@ export function ValidateModalAction({
     dispatch(setModalVisibility([modalUuid, false]));
   };
 
-  let isDisabled = false;
+  let isDisabled = !validationReady;
   if (status === "Success") {
     isDisabled = true;
   }

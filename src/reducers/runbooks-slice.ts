@@ -188,8 +188,45 @@ export const runbooksSlice = createSlice({
     selectRunbook: (state) => state,
     selectVisibleProgressBlock: (state) =>
       state.progressBlocks.find((block) => block.visible),
+    selectPanelValidationReady: createSelector(
+      [(state) => state.actionBlocks, (_, buttonUuid: string) => buttonUuid],
+      (actionBlocks: ActionBlock[], buttonUuid: string): boolean => {
+        return checkValidationReady(actionBlocks, buttonUuid);
+      },
+    ),
+    selectModalValidationReady: createSelector(
+      [(state) => state.modalBlocks, (_, buttonUuid: string) => buttonUuid],
+      (modalBlocks: ModalBlock[], buttonUuid: string): boolean => {
+        return checkValidationReady(modalBlocks, buttonUuid);
+      },
+    ),
   },
 });
+
+function checkValidationReady(
+  blocks: ModalBlock[] | ActionBlock[],
+  buttonUuid: string,
+): boolean {
+  const block = blocks.find((block) =>
+    block.panel.groups.some((group) =>
+      group.subGroups.some((subGroup) =>
+        subGroup.actionItems.some(
+          (actionItem) => actionItem.uuid == buttonUuid,
+        ),
+      ),
+    ),
+  );
+  if (block === undefined) return false;
+  return !block.panel.groups.some((group) =>
+    group.subGroups.some((subGroup) =>
+      subGroup.actionItems.some(
+        (actionItem) =>
+          actionItem.actionStatus.status !== "Success" &&
+          actionItem.uuid !== buttonUuid,
+      ),
+    ),
+  );
+}
 
 export const {
   setActionBlocks,
@@ -202,5 +239,8 @@ export const {
   setModalVisibility,
 } = runbooksSlice.actions;
 
-export const { selectRunbook, selectVisibleProgressBlock } =
-  runbooksSlice.selectors;
+export const {
+  selectRunbook,
+  selectVisibleProgressBlock,
+  selectPanelValidationReady,
+} = runbooksSlice.selectors;
