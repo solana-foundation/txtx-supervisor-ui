@@ -17,7 +17,7 @@ export function ActionItemRow({
   onClick,
   subRow,
 }: ActionItemRow & { children }) {
-  const { index, title, actionStatus } = actionItem;
+  const { index, title, description, actionStatus } = actionItem;
   const { status } = actionStatus;
   // todo: handle other statuses
   let checkClass;
@@ -59,7 +59,7 @@ export function ActionItemRow({
         <div className="grow shrink basis-0 self-stretch bg-gray-950 border-gray-800 flex-col justify-center items-start inline-flex">
           <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
             <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-inter leading-[18.20px]">
-              {title}
+              {description ? `${description} (${title})` : title}
             </div>
           </div>
         </div>
