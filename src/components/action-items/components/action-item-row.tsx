@@ -92,7 +92,7 @@ export interface ActionItemSubRow {
   text: string;
   children?: JSX.Element;
 }
-function ActionItemSubRow({ text, children }: ActionItemSubRow) {
+export function ActionItemSubRow({ text, children }: ActionItemSubRow) {
   let el = children ? (
     <div className="self-stretch justify-end items-end gap-2.5 inline-flex">
       {children}
