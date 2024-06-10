@@ -24,6 +24,7 @@ export default function Runbook({
               block={block}
               panelIndex={i}
               scrollHandler={() => {}}
+              isLast={i === actionBlocks.length - 1}
             />
           );
         })}

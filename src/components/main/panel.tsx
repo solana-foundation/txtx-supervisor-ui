@@ -16,18 +16,26 @@ import { PickInputOptionAction } from "../action-items/pick-input-option-action"
 import { DisplayOutputAction } from "../action-items/display-output-action";
 import { OpenModalAction } from "../action-items/open-modal-action";
 
+function useFirstRender() {
+  const ref = useRef(true);
+  const firstRender = ref.current;
+  ref.current = false;
+  return firstRender;
+}
 export interface PanelProps {
   block: ActionBlock;
   panelIndex: number;
   scrollHandler: any;
+  isLast: boolean;
 }
 export const Panel = forwardRef(function Panel(
-  { block, panelIndex, scrollHandler }: PanelProps,
+  { block, panelIndex, scrollHandler, isLast }: PanelProps,
   ref: React.ForwardedRef<any>,
 ) {
   const { uuid, visible, panel } = block;
   const { title, description, groups } = panel;
   const activeStep = useAppSelector(selectRunbookActiveStep);
+  const firstRender = useFirstRender();
 
   let status = statusForStepNumber(panelIndex, activeStep);
 
@@ -38,12 +46,21 @@ export const Panel = forwardRef(function Panel(
   const panelId =
     title.toLocaleLowerCase().split(" ").join("-") + "-" + panelIndex;
 
+  if (firstRender && isLast) {
+    setTimeout(() => {
+      document
+        .getElementById(uuid)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 200);
+  }
+
   return (
     <div
       className={classNames(
         "w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex",
         contentVisibility,
       )}
+      id={uuid}
     >
       <div className="self-stretch justify-start items-start inline-flex">
         <div
