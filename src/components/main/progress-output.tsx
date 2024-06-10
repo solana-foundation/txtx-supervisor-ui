@@ -9,6 +9,7 @@ export default function ProgressOutput() {
   const progressBlock = useAppSelector(selectVisibleProgressBlock);
   const [statuses, setStatuses] = useState<ProgressBarStatus[][]>([]);
   const height = progressBlock === undefined ? "h-0" : "h-auto";
+
   useEffect(() => {
     if (progressBlock === undefined) {
       setStatuses([]);
@@ -20,12 +21,19 @@ export default function ProgressOutput() {
       );
     }
   }, [progressBlock]);
+
+  if (progressBlock === undefined) {
+    return <div></div>;
+  }
+  setTimeout(() => {
+    document
+      .getElementById("progress-bar")
+      ?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, 200);
   return (
     <div
-      className={classNames(
-        "w-full justify-center flex flex-col items-center",
-        height,
-      )}
+      id="progress-bar"
+      className={classNames("w-full justify-center items-center", height)}
     >
       <div className="relative mx-auto w-[1024px] max-w-full min-h-full px-6 justify-center flex flex-col inline-flex gap-8">
         <ProgressAnimation />

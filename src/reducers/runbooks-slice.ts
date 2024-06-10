@@ -239,12 +239,12 @@ export const runbooksSlice = createSlice({
     selectVisibleProgressBlock: createSelector(
       [(state) => state.progressBlocks],
       (progressBlocks: ProgressBlock[]) =>
-        progressBlocks.find((block) => block.visible), // todo: invert!!!
+        progressBlocks.find((block) => block.visible),
     ),
     selectIsSomeProgressBlockVisible: createSelector(
       [(state) => state.progressBlocks],
       (progressBlocks: ProgressBlock[]) =>
-        progressBlocks.some((block) => block.visible), // todo: invert!!!
+        progressBlocks.some((block) => block.visible),
     ),
     selectPanelValidationReady: createSelector(
       [(state) => state.actionBlocks, (_, buttonUuid: string) => buttonUuid],
