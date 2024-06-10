@@ -46,7 +46,7 @@ export interface ProgressBlock {
   type: string;
   uuid: string;
   visible: boolean;
-  panel: ProgressBarStatus;
+  panel: ConstructProgressBarStatuses[];
 }
 
 export interface ActionPanelData<Deserialized = true> {
@@ -61,10 +61,26 @@ export interface ModalPanelData<Deserialized = true> {
   groups: ActionGroup<Deserialized>[];
 }
 
+export interface ConstructProgressBarStatuses {
+  constructUuid: string;
+  statuses: ProgressBarStatus[];
+}
+
+export interface ProgressBarStatusUpdate {
+  progressBarUuid: string;
+  constructUuid: string;
+  newStatus: ProgressBarStatus;
+}
+
+export interface ProgressBarVisibilityUpdate {
+  progressBarUuid: string;
+  visible: boolean;
+}
+
 export interface ProgressBarStatus {
   status: string;
   message: string;
-  diagnostic: Diagnostic;
+  diagnostic?: Diagnostic;
 }
 
 export function deserializeBlock<

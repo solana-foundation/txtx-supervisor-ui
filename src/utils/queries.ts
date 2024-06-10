@@ -75,9 +75,12 @@ export const GET_PROGRESS_BLOCKS = gql`
       uuid
       visible
       panel {
-        status
-        message
-        diagnostic
+        constructUuid
+        statuses {
+          status
+          message
+          diagnostic
+        }
       }
     }
   }
@@ -159,9 +162,12 @@ export const PROGRESS_BLOCK_EVENT_SUBSCRIPTION = gql`
       uuid
       visible
       panel {
-        status
-        message
-        diagnostic
+        constructUuid
+        statuses {
+          status
+          message
+          diagnostic
+        }
       }
     }
   }
@@ -181,6 +187,29 @@ export const UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION = gql`
       description
       actionStatus
       actionType
+    }
+  }
+`;
+
+export const UPDATE_PROGRESS_BAR_STATUS_SUBSCRIPTION = gql`
+  subscription OnProgressBarUpdateEvent {
+    updateProgressBarStatusEvent {
+      progressBarUuid
+      constructUuid
+      newStatus {
+        status
+        message
+        diagnostic
+      }
+    }
+  }
+`;
+
+export const UPDATE_PROGRESS_BAR_VISIBILITY_SUBSCRIPTION = gql`
+  subscription OnProgressBarVisibilityUpdate {
+    updateProgressBarVisibilityEvent {
+      progressBarUuid
+      visible
     }
   }
 `;

@@ -3,6 +3,7 @@ import { useAppSelector } from "../../hooks";
 import { selectRunbook } from "../../reducers/runbooks-slice";
 import { Panel } from "./panel";
 import ProgressAnimation from "../animations/progress-animation";
+import ProgressOutput from "./progress-output";
 
 export interface RunbookProps {
   panelScrollHandler: any;
@@ -28,7 +29,7 @@ export default function Runbook({
             />
           );
         })}
-        <ProgressAnimation />
+        <ProgressOutput />
       </div>
     </div>
   );

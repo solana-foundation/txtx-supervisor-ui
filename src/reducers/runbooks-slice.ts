@@ -9,6 +9,8 @@ import {
   ModalBlock,
   ProgressBlock,
   deserializeActionItemEvent,
+  ProgressBarStatusUpdate,
+  ProgressBarVisibilityUpdate,
 } from "../components/main/types";
 
 export interface Runbook {
@@ -65,6 +67,42 @@ export const runbooksSlice = createSlice({
             state.progressBlocks[found_idx] = newBlock;
           }
         }
+      },
+    ),
+    pushProgressBlockStatus: create.reducer(
+      (state, action: PayloadAction<ProgressBarStatusUpdate>) => {
+        const { progressBarUuid, constructUuid, newStatus } = action.payload;
+
+        const progressBarIdx = state.progressBlocks.findIndex(
+          (bar) => (bar.uuid = progressBarUuid),
+        );
+        if (progressBarIdx === -1) return;
+        const progressBar = state.progressBlocks[progressBarIdx];
+        const constructStatusesIdx = progressBar?.panel.findIndex(
+          (p) => p.constructUuid === constructUuid,
+        );
+        if (constructStatusesIdx === -1) {
+          state.progressBlocks[progressBarIdx].panel.push({
+            constructUuid: constructUuid,
+            statuses: [newStatus],
+          });
+        } else {
+          const constructStatuses = progressBar.panel[constructStatusesIdx];
+          constructStatuses.statuses.push(newStatus);
+          state.progressBlocks[progressBarIdx].panel[constructStatusesIdx] =
+            constructStatuses;
+        }
+      },
+    ),
+    setProgressBlockVisibility: create.reducer(
+      (state, action: PayloadAction<ProgressBarVisibilityUpdate>) => {
+        const { progressBarUuid, visible } = action.payload;
+
+        const progressBarIdx = state.progressBlocks.findIndex(
+          (bar) => (bar.uuid = progressBarUuid),
+        );
+        if (progressBarIdx === undefined) return;
+        state.progressBlocks[progressBarIdx].visible = visible;
       },
     ),
     // appendBlock: create.reducer(
@@ -186,8 +224,16 @@ export const runbooksSlice = createSlice({
   }),
   selectors: {
     selectRunbook: (state) => state,
-    selectVisibleProgressBlock: (state) =>
-      state.progressBlocks.find((block) => block.visible),
+    selectVisibleProgressBlock: createSelector(
+      [(state) => state.progressBlocks],
+      (progressBlocks: ProgressBlock[]) =>
+        progressBlocks.find((block) => block.visible), // todo: invert!!!
+    ),
+    selectIsSomeProgressBlockVisible: createSelector(
+      [(state) => state.progressBlocks],
+      (progressBlocks: ProgressBlock[]) =>
+        progressBlocks.some((block) => block.visible), // todo: invert!!!
+    ),
     selectPanelValidationReady: createSelector(
       [(state) => state.actionBlocks, (_, buttonUuid: string) => buttonUuid],
       (actionBlocks: ActionBlock[], buttonUuid: string): boolean => {
@@ -237,10 +283,13 @@ export const {
   clearBlocks,
   updateActionItems,
   setModalVisibility,
+  pushProgressBlockStatus,
+  setProgressBlockVisibility,
 } = runbooksSlice.actions;
 
 export const {
   selectRunbook,
   selectVisibleProgressBlock,
   selectPanelValidationReady,
+  selectIsSomeProgressBlockVisible,
 } = runbooksSlice.selectors;

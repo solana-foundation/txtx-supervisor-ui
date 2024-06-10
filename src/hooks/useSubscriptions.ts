@@ -5,18 +5,24 @@ import {
   MODAL_BLOCK_EVENT_SUBSCRIPTION,
   PROGRESS_BLOCK_EVENT_SUBSCRIPTION,
   UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION,
+  UPDATE_PROGRESS_BAR_STATUS_SUBSCRIPTION,
+  UPDATE_PROGRESS_BAR_VISIBILITY_SUBSCRIPTION,
 } from "../utils/queries";
 import { useEffect } from "react";
 import {
   ActionBlock,
   ModalBlock,
+  ProgressBarStatusUpdate,
+  ProgressBarVisibilityUpdate,
   ProgressBlock,
   UpdateActionItemEvent,
 } from "../components/main/types";
 import {
   clearBlocks,
+  pushProgressBlockStatus,
   setActionBlocks,
   setModalBlocks,
+  setProgressBlockVisibility,
   setProgressBlocks,
   updateActionItems,
 } from "../reducers/runbooks-slice";
@@ -42,6 +48,14 @@ export default function useSubscriptions() {
   );
   const { data: clearBlocksEvent } = useSubscription(
     CLEAR_BLOCKS_EVENT_SUBSCRIPTION,
+    {},
+  );
+  const { data: updateProgressBarStatusEvent } = useSubscription(
+    UPDATE_PROGRESS_BAR_STATUS_SUBSCRIPTION,
+    {},
+  );
+  const { data: updateProgressBarVisibilityEvent } = useSubscription(
+    UPDATE_PROGRESS_BAR_VISIBILITY_SUBSCRIPTION,
     {},
   );
 
@@ -79,4 +93,20 @@ export default function useSubscriptions() {
       dispatch(updateActionItems(updates));
     }
   }, [updateActionItemsEvent]);
+
+  useEffect(() => {
+    if (updateProgressBarStatusEvent !== undefined) {
+      const update: ProgressBarStatusUpdate =
+        updateProgressBarStatusEvent.updateProgressBarStatusEvent;
+      dispatch(pushProgressBlockStatus(update));
+    }
+  }, [updateProgressBarStatusEvent]);
+
+  useEffect(() => {
+    if (updateProgressBarVisibilityEvent !== undefined) {
+      const update: ProgressBarVisibilityUpdate =
+        updateProgressBarVisibilityEvent.updateProgressBarVisibilityEvent;
+      dispatch(setProgressBlockVisibility(update));
+    }
+  }, [updateProgressBarVisibilityEvent]);
 }
