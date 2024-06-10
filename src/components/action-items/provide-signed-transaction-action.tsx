@@ -64,6 +64,11 @@ export function ProvideSignedTransactionAction({
       updateActionItem({ variables: { event: JSON.stringify(event) } });
     }
   };
+
+  let isDisabled = false;
+  if (actionStatus.status === "Success") {
+    isDisabled = true;
+  }
   return (
     <SignTransactionRow
       actionItem={actionItem}
@@ -76,7 +81,7 @@ export function ProvideSignedTransactionAction({
           <PanelButton
             title="Sign Transaction"
             onClick={onClick}
-            isDisabled={false}
+            isDisabled={isDisabled}
             size={ElementSize.S}
           />
         ),
