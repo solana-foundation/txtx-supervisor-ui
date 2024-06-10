@@ -68,6 +68,33 @@ export const GET_MODAL_BLOCKS = gql`
     }
   }
 `;
+export const GET_ERROR_BLOCKS = gql`
+  query GetErrorBlocks {
+    errorBlocks {
+      type
+      uuid
+      visible
+      panel {
+        title
+        description
+        groups {
+          title
+          subGroups {
+            allowBatchCompletion
+            actionItems {
+              uuid
+              index
+              title
+              description
+              actionStatus
+              actionType
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 export const GET_PROGRESS_BLOCKS = gql`
   query GetProgressBlocks {
     progressBlocks {
@@ -131,6 +158,33 @@ export const ACTION_BLOCK_EVENT_SUBSCRIPTION = gql`
 export const MODAL_BLOCK_EVENT_SUBSCRIPTION = gql`
   subscription OnModalBlockEvent {
     modalBlockEvent {
+      type
+      uuid
+      visible
+      panel {
+        title
+        description
+        groups {
+          title
+          subGroups {
+            allowBatchCompletion
+            actionItems {
+              uuid
+              index
+              title
+              description
+              actionStatus
+              actionType
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+export const ERROR_BLOCK_EVENT_SUBSCRIPTION = gql`
+  subscription OnErrorBlockEvent {
+    errorBlockEvent {
       type
       uuid
       visible

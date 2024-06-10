@@ -28,7 +28,7 @@ export function deserializeActionItemEvent(
   };
 }
 
-export type BlockType = "ActionPanel" | "ModalPanel";
+export type BlockType = "ActionPanel" | "ModalPanel" | "ErrorPanel";
 
 export interface ActionBlock<Deserialized = true> {
   type: BlockType;
@@ -41,6 +41,12 @@ export interface ModalBlock<Deserialized = true> {
   uuid: string;
   visible: boolean;
   panel: ModalPanelData<Deserialized>;
+}
+export interface ErrorBlock<Deserialized = true> {
+  type: BlockType;
+  uuid: string;
+  visible: boolean;
+  panel: ErrorPanelData<Deserialized>;
 }
 export interface ProgressBlock {
   type: string;
@@ -56,6 +62,12 @@ export interface ActionPanelData<Deserialized = true> {
 }
 
 export interface ModalPanelData<Deserialized = true> {
+  title: string;
+  description: string;
+  groups: ActionGroup<Deserialized>[];
+}
+
+export interface ErrorPanelData<Deserialized = true> {
   title: string;
   description: string;
   groups: ActionGroup<Deserialized>[];
@@ -84,38 +96,25 @@ export interface ProgressBarStatus {
 }
 
 export function deserializeBlock<
-  T extends ModalBlock<false> | ActionBlock<false>,
+  T extends ModalBlock<false> | ActionBlock<false> | ErrorBlock<false>,
 >(
   block: T,
-): T extends ModalBlock<false> ? ModalBlock<true> : ActionBlock<true> {
+): T extends ErrorBlock<false>
+  ? ErrorBlock<true>
+  : T extends ModalBlock<false>
+    ? ModalBlock<true>
+    : ActionBlock<true> {
   const deserializedGroups = block.panel.groups.map(deserializeGroup);
-  const filtered = deserializedGroups.reduce((acc, group) => {
-    const subGroups = group.subGroups;
-    const uniqueSubGroups: any[] = [];
-    for (let i = 0; i < subGroups.length; i++) {
-      const a = subGroups[i];
-      let isUnique = true;
-      for (let j = i + 1; j < subGroups.length; j++) {
-        const b = subGroups[j];
-        if (a.actionItems[0].uuid === b.actionItems[0].uuid) {
-          isUnique = false;
-        }
-      }
-      if (isUnique) {
-        uniqueSubGroups.push(a);
-      }
-    }
-    acc.push({ ...group, subGroups: uniqueSubGroups });
-    return acc;
-  }, [] as any[]);
+  const panel = {
+    ...block.panel,
+    groups: deserializedGroups,
+  };
+  //@ts-ignore (todo)
   return {
     uuid: block.uuid,
     visible: block.visible,
     type: block.type,
-    panel: {
-      ...block.panel,
-      groups: filtered,
-    },
+    panel,
   };
 }
 
@@ -199,6 +198,7 @@ export type ActionItemRequestType =
   | ProvidePublicKeyActionItemRequest
   | ProvideSignedTransactionActionItemRequest
   | DisplayOutputActionItemRequest
+  | DisplayErrorLogActionItemRequest
   | ValidateBlockActionItemRequest
   | ValidateModalActionItemRequest
   | OpenModalActionItemRequest;
@@ -226,6 +226,10 @@ export type ProvideSignedTransactionActionItemRequest = {
 export type DisplayOutputActionItemRequest = {
   type: "DisplayOutput";
   data: DisplayOutputRequest;
+};
+export type DisplayErrorLogActionItemRequest = {
+  type: "DisplayErrorLog";
+  data: DisplayErrorLogRequest;
 };
 export type OpenModalActionItemRequest = {
   type: "OpenModal";
@@ -271,6 +275,9 @@ export interface DisplayOutputRequest {
   name: string;
   description: string | null;
   value: Value;
+}
+export interface DisplayErrorLogRequest {
+  diagnostic: Diagnostic;
 }
 export interface OpenModalRequest {
   modalUuid: string;
@@ -431,4 +438,8 @@ function toHexString(byteArray) {
     // @ts-ignore
     return ("0" + (byte & 0xff).toString(16)).slice(-2);
   }).join("");
+}
+
+export function formatDiagnosticForDisplay(input: Diagnostic) {
+  return input.message;
 }

@@ -2,6 +2,7 @@ import { useSubscription } from "@apollo/client";
 import {
   ACTION_BLOCK_EVENT_SUBSCRIPTION,
   CLEAR_BLOCKS_EVENT_SUBSCRIPTION,
+  ERROR_BLOCK_EVENT_SUBSCRIPTION,
   MODAL_BLOCK_EVENT_SUBSCRIPTION,
   PROGRESS_BLOCK_EVENT_SUBSCRIPTION,
   UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION,
@@ -11,6 +12,7 @@ import {
 import { useEffect } from "react";
 import {
   ActionBlock,
+  ErrorBlock,
   ModalBlock,
   ProgressBarStatusUpdate,
   ProgressBarVisibilityUpdate,
@@ -21,6 +23,7 @@ import {
   clearBlocks,
   pushProgressBlockStatus,
   setActionBlocks,
+  setErrorBlocks,
   setModalBlocks,
   setProgressBlockVisibility,
   setProgressBlocks,
@@ -36,6 +39,10 @@ export default function useSubscriptions() {
   );
   const { data: modalBlockEvent } = useSubscription(
     MODAL_BLOCK_EVENT_SUBSCRIPTION,
+    {},
+  );
+  const { data: errorBlockEvent } = useSubscription(
+    ERROR_BLOCK_EVENT_SUBSCRIPTION,
     {},
   );
   const { data: progressBlockEvent } = useSubscription(
@@ -72,6 +79,13 @@ export default function useSubscriptions() {
       dispatch(setModalBlocks([block]));
     }
   }, [modalBlockEvent]);
+
+  useEffect(() => {
+    if (errorBlockEvent !== undefined) {
+      const block: ErrorBlock<false> = errorBlockEvent.errorBlockEvent;
+      dispatch(setErrorBlocks([block]));
+    }
+  }, [errorBlockEvent]);
 
   useEffect(() => {
     if (progressBlockEvent !== undefined) {

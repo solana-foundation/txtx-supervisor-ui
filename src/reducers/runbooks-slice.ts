@@ -11,12 +11,14 @@ import {
   deserializeActionItemEvent,
   ProgressBarStatusUpdate,
   ProgressBarVisibilityUpdate,
+  ErrorBlock,
 } from "../components/main/types";
 
 export interface Runbook {
   metadata: RunbookMetadata;
   actionBlocks: ActionBlock[];
   modalBlocks: ModalBlock[];
+  errorBlocks: ErrorBlock[];
   progressBlocks: ProgressBlock[];
   namespacedNetworks: { [key: string]: string[] };
 }
@@ -28,6 +30,7 @@ const initialState: Runbook = {
   },
   actionBlocks: [],
   modalBlocks: [],
+  errorBlocks: [],
   progressBlocks: [],
   namespacedNetworks: {},
 };
@@ -51,6 +54,15 @@ export const runbooksSlice = createSlice({
         action.payload.forEach((serializedBlock) => {
           const block = deserializeBlock(serializedBlock);
           modalBlocks.push(block);
+        });
+      },
+    ),
+    setErrorBlocks: create.reducer(
+      (state, action: PayloadAction<ErrorBlock<false>[]>) => {
+        let errorBlocks: ErrorBlock[] = state.errorBlocks;
+        action.payload.forEach((serializedBlock) => {
+          const block = deserializeBlock(serializedBlock);
+          errorBlocks.push(block);
         });
       },
     ),
@@ -277,6 +289,7 @@ function checkValidationReady(
 export const {
   setActionBlocks,
   setModalBlocks,
+  setErrorBlocks,
   setProgressBlocks,
   // appendBlock,
   setMetadata,
