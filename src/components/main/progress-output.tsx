@@ -8,10 +8,12 @@ import { ProgressBarStatus } from "./types";
 export default function ProgressOutput() {
   const progressBlock = useAppSelector(selectVisibleProgressBlock);
   const [statuses, setStatuses] = useState<ProgressBarStatus[][]>([]);
+  const [doScroll, setDoScroll] = useState<boolean>(true);
   const height = progressBlock === undefined ? "h-0" : "h-auto";
 
   useEffect(() => {
     if (progressBlock === undefined) {
+      setDoScroll(true);
       setStatuses([]);
     } else {
       setStatuses(
@@ -26,9 +28,12 @@ export default function ProgressOutput() {
     return <div></div>;
   }
   setTimeout(() => {
-    document
-      .getElementById("progress-bar")
-      ?.scrollIntoView({ behavior: "smooth", block: "end" });
+    if (doScroll) {
+      document
+        .getElementById("progress-bar")
+        ?.scrollIntoView({ behavior: "smooth", block: "end" });
+      setDoScroll(false);
+    }
   }, 200);
   return (
     <div
