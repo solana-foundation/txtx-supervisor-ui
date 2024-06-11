@@ -157,7 +157,10 @@ export function ProvidePublicKeyAction({
       );
     } else if (status === "Error") {
       const statusData = actionStatus.data;
-
+      const onClick = () => {
+        addonManager.disconnectWallet(namespace, networkId);
+      };
+      console.log(actionStatus);
       return (
         <ActionItemRow
           actionItem={actionItem}
@@ -166,6 +169,14 @@ export function ProvidePublicKeyAction({
           onClick={() => {}}
           subRow={{
             text: statusData.message,
+            children: (
+              <PanelButton
+                title="Disconnect Wallet"
+                onClick={onClick}
+                isDisabled={false}
+                size={ElementSize.S}
+              />
+            ),
           }}
         >
           <ReviewInputCell
