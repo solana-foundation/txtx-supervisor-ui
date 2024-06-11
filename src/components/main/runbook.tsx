@@ -2,7 +2,8 @@ import React, { MutableRefObject } from "react";
 import { useAppSelector } from "../../hooks";
 import { selectRunbook } from "../../reducers/runbooks-slice";
 import { Panel } from "./panel";
-import ProgressAnimation from "../animations/progress-animation";
+import ProgressOutput from "./progress-output";
+import { ErrorPanel } from "./error";
 
 export interface RunbookProps {
   panelScrollHandler: any;
@@ -12,7 +13,7 @@ export default function Runbook({
   panelScrollHandler,
   panelRefs,
 }: RunbookProps) {
-  const { actionBlocks } = useAppSelector(selectRunbook);
+  const { actionBlocks, errorBlocks } = useAppSelector(selectRunbook);
 
   return (
     <div className="w-full justify-center flex flex-col items-center">
@@ -24,10 +25,22 @@ export default function Runbook({
               block={block}
               panelIndex={i}
               scrollHandler={() => {}}
+              isLast={i === actionBlocks.length - 1}
             />
           );
         })}
-        <ProgressAnimation />
+        {errorBlocks.map((block, i) => {
+          return (
+            <ErrorPanel
+              key={block.uuid}
+              block={block}
+              panelIndex={i}
+              scrollHandler={() => {}}
+              isLast={i === errorBlocks.length - 1}
+            />
+          );
+        })}
+        <ProgressOutput />
       </div>
     </div>
   );

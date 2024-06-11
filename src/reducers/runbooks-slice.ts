@@ -9,12 +9,16 @@ import {
   ModalBlock,
   ProgressBlock,
   deserializeActionItemEvent,
+  ProgressBarStatusUpdate,
+  ProgressBarVisibilityUpdate,
+  ErrorBlock,
 } from "../components/main/types";
 
 export interface Runbook {
   metadata: RunbookMetadata;
   actionBlocks: ActionBlock[];
   modalBlocks: ModalBlock[];
+  errorBlocks: ErrorBlock[];
   progressBlocks: ProgressBlock[];
   namespacedNetworks: { [key: string]: string[] };
 }
@@ -26,6 +30,7 @@ const initialState: Runbook = {
   },
   actionBlocks: [],
   modalBlocks: [],
+  errorBlocks: [],
   progressBlocks: [],
   namespacedNetworks: {},
 };
@@ -52,19 +57,76 @@ export const runbooksSlice = createSlice({
         });
       },
     ),
+    setErrorBlocks: create.reducer(
+      (state, action: PayloadAction<ErrorBlock<false>[]>) => {
+        let errorBlocks: ErrorBlock[] = state.errorBlocks;
+        action.payload.forEach((serializedBlock) => {
+          const block = deserializeBlock(serializedBlock);
+          errorBlocks.push(block);
+        });
+      },
+    ),
     setProgressBlocks: create.reducer(
       (state, action: PayloadAction<ProgressBlock[]>) => {
         const newBlocks = action.payload;
         for (const newBlock of newBlocks) {
-          const found_idx = state.progressBlocks.findIndex(
+          const foundIdx = state.progressBlocks.findIndex(
             (existing) => existing.uuid === newBlock.uuid,
           );
-          if (found_idx === -1) {
+          if (foundIdx === -1) {
             state.progressBlocks.push(newBlock);
           } else {
-            state.progressBlocks[found_idx] = newBlock;
+            state.progressBlocks[foundIdx] = newBlock;
           }
         }
+      },
+    ),
+    pushProgressBlockStatus: create.reducer(
+      (state, action: PayloadAction<ProgressBarStatusUpdate>) => {
+        const { progressBarUuid, constructUuid, newStatus } = action.payload;
+
+        const progressBarIdx = state.progressBlocks.findIndex(
+          (bar) => bar.uuid === progressBarUuid,
+        );
+        if (progressBarIdx === -1) {
+          state.progressBlocks.push({
+            type: "ProgressBar",
+            uuid: progressBarUuid,
+            visible: false,
+            panel: [
+              {
+                constructUuid: constructUuid,
+                statuses: [newStatus],
+              },
+            ],
+          });
+        }
+        const progressBar = state.progressBlocks[progressBarIdx];
+        const constructStatusesIdx = progressBar?.panel.findIndex(
+          (p) => p.constructUuid === constructUuid,
+        );
+        if (constructStatusesIdx === -1) {
+          state.progressBlocks[progressBarIdx].panel.push({
+            constructUuid: constructUuid,
+            statuses: [newStatus],
+          });
+        } else {
+          const constructStatuses = progressBar.panel[constructStatusesIdx];
+          constructStatuses.statuses.push(newStatus);
+          state.progressBlocks[progressBarIdx].panel[constructStatusesIdx] =
+            constructStatuses;
+        }
+      },
+    ),
+    setProgressBlockVisibility: create.reducer(
+      (state, action: PayloadAction<ProgressBarVisibilityUpdate>) => {
+        const { progressBarUuid, visible } = action.payload;
+
+        const progressBarIdx = state.progressBlocks.findIndex(
+          (bar) => (bar.uuid = progressBarUuid),
+        );
+        if (progressBarIdx === undefined) return;
+        state.progressBlocks[progressBarIdx].visible = visible;
       },
     ),
     // appendBlock: create.reducer(
@@ -186,8 +248,16 @@ export const runbooksSlice = createSlice({
   }),
   selectors: {
     selectRunbook: (state) => state,
-    selectVisibleProgressBlock: (state) =>
-      state.progressBlocks.find((block) => block.visible),
+    selectVisibleProgressBlock: createSelector(
+      [(state) => state.progressBlocks],
+      (progressBlocks: ProgressBlock[]) =>
+        progressBlocks.find((block) => block.visible),
+    ),
+    selectIsSomeProgressBlockVisible: createSelector(
+      [(state) => state.progressBlocks],
+      (progressBlocks: ProgressBlock[]) =>
+        progressBlocks.some((block) => block.visible),
+    ),
     selectPanelValidationReady: createSelector(
       [(state) => state.actionBlocks, (_, buttonUuid: string) => buttonUuid],
       (actionBlocks: ActionBlock[], buttonUuid: string): boolean => {
@@ -231,16 +301,20 @@ function checkValidationReady(
 export const {
   setActionBlocks,
   setModalBlocks,
+  setErrorBlocks,
   setProgressBlocks,
   // appendBlock,
   setMetadata,
   clearBlocks,
   updateActionItems,
   setModalVisibility,
+  pushProgressBlockStatus,
+  setProgressBlockVisibility,
 } = runbooksSlice.actions;
 
 export const {
   selectRunbook,
   selectVisibleProgressBlock,
   selectPanelValidationReady,
+  selectIsSomeProgressBlockVisible,
 } = runbooksSlice.selectors;

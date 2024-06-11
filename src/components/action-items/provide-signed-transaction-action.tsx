@@ -64,6 +64,11 @@ export function ProvideSignedTransactionAction({
       updateActionItem({ variables: { event: JSON.stringify(event) } });
     }
   };
+
+  let isDisabled = false;
+  if (actionStatus.status === "Success") {
+    isDisabled = true;
+  }
   return (
     <SignTransactionRow
       actionItem={actionItem}
@@ -76,16 +81,13 @@ export function ProvideSignedTransactionAction({
           <PanelButton
             title="Sign Transaction"
             onClick={onClick}
-            isDisabled={false}
+            isDisabled={isDisabled}
             size={ElementSize.S}
           />
         ),
       }}
     >
-      <ReviewInputCell
-        value={description ? `${description} (${title})` : title}
-        actionStatus={actionStatus}
-      />
+      <div></div>
     </SignTransactionRow>
   );
 }
@@ -147,7 +149,7 @@ function SignTransactionRow({
         <div className="test grow shrink basis-0 self-stretch bg-gray-950 border-l border-gray-800 flex-col justify-center items-start inline-flex">
           <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
             <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-inter leading-[18.20px]">
-              Sign Transaction
+              {description ? `${description} (${title})` : title}
             </div>
           </div>
         </div>

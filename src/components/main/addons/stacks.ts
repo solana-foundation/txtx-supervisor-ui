@@ -37,6 +37,10 @@ export class StacksAddon implements Addon {
     showConnect(authOptions);
   }
 
+  public disconnectWallet() {
+    userSession.signUserOut();
+  }
+
   public getAddress(networkId: string): string {
     if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData();

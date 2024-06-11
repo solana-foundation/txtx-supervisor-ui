@@ -68,6 +68,33 @@ export const GET_MODAL_BLOCKS = gql`
     }
   }
 `;
+export const GET_ERROR_BLOCKS = gql`
+  query GetErrorBlocks {
+    errorBlocks {
+      type
+      uuid
+      visible
+      panel {
+        title
+        description
+        groups {
+          title
+          subGroups {
+            allowBatchCompletion
+            actionItems {
+              uuid
+              index
+              title
+              description
+              actionStatus
+              actionType
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 export const GET_PROGRESS_BLOCKS = gql`
   query GetProgressBlocks {
     progressBlocks {
@@ -75,9 +102,12 @@ export const GET_PROGRESS_BLOCKS = gql`
       uuid
       visible
       panel {
-        status
-        message
-        diagnostic
+        constructUuid
+        statuses {
+          status
+          message
+          diagnostic
+        }
       }
     }
   }
@@ -152,6 +182,33 @@ export const MODAL_BLOCK_EVENT_SUBSCRIPTION = gql`
     }
   }
 `;
+export const ERROR_BLOCK_EVENT_SUBSCRIPTION = gql`
+  subscription OnErrorBlockEvent {
+    errorBlockEvent {
+      type
+      uuid
+      visible
+      panel {
+        title
+        description
+        groups {
+          title
+          subGroups {
+            allowBatchCompletion
+            actionItems {
+              uuid
+              index
+              title
+              description
+              actionStatus
+              actionType
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 export const PROGRESS_BLOCK_EVENT_SUBSCRIPTION = gql`
   subscription OnProgressBlockEvent {
     progressBlockEvent {
@@ -159,9 +216,12 @@ export const PROGRESS_BLOCK_EVENT_SUBSCRIPTION = gql`
       uuid
       visible
       panel {
-        status
-        message
-        diagnostic
+        constructUuid
+        statuses {
+          status
+          message
+          diagnostic
+        }
       }
     }
   }
@@ -181,6 +241,29 @@ export const UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION = gql`
       description
       actionStatus
       actionType
+    }
+  }
+`;
+
+export const UPDATE_PROGRESS_BAR_STATUS_SUBSCRIPTION = gql`
+  subscription OnProgressBarUpdateEvent {
+    updateProgressBarStatusEvent {
+      progressBarUuid
+      constructUuid
+      newStatus {
+        status
+        message
+        diagnostic
+      }
+    }
+  }
+`;
+
+export const UPDATE_PROGRESS_BAR_VISIBILITY_SUBSCRIPTION = gql`
+  subscription OnProgressBarVisibilityUpdate {
+    updateProgressBarVisibilityEvent {
+      progressBarUuid
+      visible
     }
   }
 `;

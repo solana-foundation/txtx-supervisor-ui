@@ -2,21 +2,30 @@ import { useSubscription } from "@apollo/client";
 import {
   ACTION_BLOCK_EVENT_SUBSCRIPTION,
   CLEAR_BLOCKS_EVENT_SUBSCRIPTION,
+  ERROR_BLOCK_EVENT_SUBSCRIPTION,
   MODAL_BLOCK_EVENT_SUBSCRIPTION,
   PROGRESS_BLOCK_EVENT_SUBSCRIPTION,
   UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION,
+  UPDATE_PROGRESS_BAR_STATUS_SUBSCRIPTION,
+  UPDATE_PROGRESS_BAR_VISIBILITY_SUBSCRIPTION,
 } from "../utils/queries";
 import { useEffect } from "react";
 import {
   ActionBlock,
+  ErrorBlock,
   ModalBlock,
+  ProgressBarStatusUpdate,
+  ProgressBarVisibilityUpdate,
   ProgressBlock,
   UpdateActionItemEvent,
 } from "../components/main/types";
 import {
   clearBlocks,
+  pushProgressBlockStatus,
   setActionBlocks,
+  setErrorBlocks,
   setModalBlocks,
+  setProgressBlockVisibility,
   setProgressBlocks,
   updateActionItems,
 } from "../reducers/runbooks-slice";
@@ -32,6 +41,10 @@ export default function useSubscriptions() {
     MODAL_BLOCK_EVENT_SUBSCRIPTION,
     {},
   );
+  const { data: errorBlockEvent } = useSubscription(
+    ERROR_BLOCK_EVENT_SUBSCRIPTION,
+    {},
+  );
   const { data: progressBlockEvent } = useSubscription(
     PROGRESS_BLOCK_EVENT_SUBSCRIPTION,
     {},
@@ -42,6 +55,14 @@ export default function useSubscriptions() {
   );
   const { data: clearBlocksEvent } = useSubscription(
     CLEAR_BLOCKS_EVENT_SUBSCRIPTION,
+    {},
+  );
+  const { data: updateProgressBarStatusEvent } = useSubscription(
+    UPDATE_PROGRESS_BAR_STATUS_SUBSCRIPTION,
+    {},
+  );
+  const { data: updateProgressBarVisibilityEvent } = useSubscription(
+    UPDATE_PROGRESS_BAR_VISIBILITY_SUBSCRIPTION,
     {},
   );
 
@@ -58,6 +79,13 @@ export default function useSubscriptions() {
       dispatch(setModalBlocks([block]));
     }
   }, [modalBlockEvent]);
+
+  useEffect(() => {
+    if (errorBlockEvent !== undefined) {
+      const block: ErrorBlock<false> = errorBlockEvent.errorBlockEvent;
+      dispatch(setErrorBlocks([block]));
+    }
+  }, [errorBlockEvent]);
 
   useEffect(() => {
     if (progressBlockEvent !== undefined) {
@@ -79,4 +107,20 @@ export default function useSubscriptions() {
       dispatch(updateActionItems(updates));
     }
   }, [updateActionItemsEvent]);
+
+  useEffect(() => {
+    if (updateProgressBarStatusEvent !== undefined) {
+      const update: ProgressBarStatusUpdate =
+        updateProgressBarStatusEvent.updateProgressBarStatusEvent;
+      dispatch(pushProgressBlockStatus(update));
+    }
+  }, [updateProgressBarStatusEvent]);
+
+  useEffect(() => {
+    if (updateProgressBarVisibilityEvent !== undefined) {
+      const update: ProgressBarVisibilityUpdate =
+        updateProgressBarVisibilityEvent.updateProgressBarVisibilityEvent;
+      dispatch(setProgressBlockVisibility(update));
+    }
+  }, [updateProgressBarVisibilityEvent]);
 }

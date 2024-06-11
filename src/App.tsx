@@ -23,19 +23,6 @@ export default function App() {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { modalBlocks } = useAppSelector(selectRunbook);
 
-  // todo: this is probably a hacky way to do this, but it works for now
-  // if an href is provided, scroll to it after a timeout, to give components
-  // time to load
-  useEffect(() => {
-    setTimeout(() => {
-      const hash = window.location.hash.replace("#", "");
-      const el = document.getElementById(hash);
-      if (el) {
-        el.scrollIntoView();
-      }
-    }, 200);
-  }, []);
-
   const { loading } = useQueries();
   // subscribe to new block events, action item updates, etc
   useSubscriptions();

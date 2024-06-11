@@ -15,6 +15,7 @@ import { ProvidePublicKeyAction } from "../action-items/provide-public-key-actio
 import { PickInputOptionAction } from "../action-items/pick-input-option-action";
 import { DisplayOutputAction } from "../action-items/display-output-action";
 import { OpenModalAction } from "../action-items/open-modal-action";
+import { DisplayErrorLogAction } from "../action-items/display-error-log-action";
 
 function useFirstRender() {
   const ref = useRef(true);
@@ -22,14 +23,14 @@ function useFirstRender() {
   ref.current = false;
   return firstRender;
 }
-export interface PanelProps {
+export interface ErrorPanelProps {
   block: ActionBlock;
   panelIndex: number;
   scrollHandler: any;
   isLast: boolean;
 }
-export const Panel = forwardRef(function Panel(
-  { block, panelIndex, scrollHandler, isLast }: PanelProps,
+export const ErrorPanel = forwardRef(function Panel(
+  { block, panelIndex, scrollHandler, isLast }: ErrorPanelProps,
   ref: React.ForwardedRef<any>,
 ) {
   const { uuid, visible, panel } = block;
@@ -57,14 +58,14 @@ export const Panel = forwardRef(function Panel(
   return (
     <div
       className={classNames(
-        "w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex",
+        "w-full p-6 bg-stone-900 rounded-lg shadow border border-stone-800 flex-col justify-center items-start gap-2.5 inline-flex",
         contentVisibility,
       )}
       id={uuid}
     >
       <div className="self-stretch justify-start items-start inline-flex">
         <div
-          className="scroll-mt-44 grow shrink basis-0 text-emerald-500 text-base font-normal font-gt uppercase"
+          className="scroll-mt-44 grow shrink basis-0 text-rose-400 text-base font-normal font-gt uppercase"
           ref={ref}
           id={panelId}
         >
@@ -169,6 +170,10 @@ function SubGroup({ subGroup }: SubGroup) {
           isLast={isLast}
           key={uuid}
         />,
+      );
+    } else if (type === "DisplayErrorLog") {
+      accumulator.push(
+        <DisplayErrorLogAction actionItem={actionItem} key={uuid} />,
       );
     } else if (type === "OpenModal") {
       accumulator.push(
