@@ -28,7 +28,7 @@ export function ActionItemRow({
   } else if (status === "Error") {
     const diag = actionStatus.data;
     checkClass = "text-rose-400";
-    subRow = { text: diag.message };
+    subRow = subRow ? subRow : { text: diag.message };
   }
 
   return (
