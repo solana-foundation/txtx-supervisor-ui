@@ -36,6 +36,11 @@ export class AddonManager {
     addon.connectWallet();
   }
 
+  public disconnectWallet(namespace: string, networkId: string) {
+    const addon = this.getAddon(namespace, networkId);
+    addon.disconnectWallet();
+  }
+
   public isWalletConnected(namespace: string, networkId: string): boolean {
     const addon = this.getAddon(namespace, networkId);
     return addon.isWalletConnected();
@@ -72,6 +77,8 @@ export type ConnectWalletFunction = () => void;
 
 export abstract class Addon {
   public abstract connectWallet();
+
+  public abstract disconnectWallet();
 
   public abstract isWalletConnected(): boolean;
 
