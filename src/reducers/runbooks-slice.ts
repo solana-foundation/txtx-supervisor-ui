@@ -70,13 +70,13 @@ export const runbooksSlice = createSlice({
       (state, action: PayloadAction<ProgressBlock[]>) => {
         const newBlocks = action.payload;
         for (const newBlock of newBlocks) {
-          const found_idx = state.progressBlocks.findIndex(
+          const foundIdx = state.progressBlocks.findIndex(
             (existing) => existing.uuid === newBlock.uuid,
           );
-          if (found_idx === -1) {
+          if (foundIdx === -1) {
             state.progressBlocks.push(newBlock);
           } else {
-            state.progressBlocks[found_idx] = newBlock;
+            state.progressBlocks[foundIdx] = newBlock;
           }
         }
       },
@@ -86,9 +86,21 @@ export const runbooksSlice = createSlice({
         const { progressBarUuid, constructUuid, newStatus } = action.payload;
 
         const progressBarIdx = state.progressBlocks.findIndex(
-          (bar) => (bar.uuid = progressBarUuid),
+          (bar) => bar.uuid === progressBarUuid,
         );
-        if (progressBarIdx === -1) return;
+        if (progressBarIdx === -1) {
+          state.progressBlocks.push({
+            type: "ProgressBar",
+            uuid: progressBarUuid,
+            visible: false,
+            panel: [
+              {
+                constructUuid: constructUuid,
+                statuses: [newStatus],
+              },
+            ],
+          });
+        }
         const progressBar = state.progressBlocks[progressBarIdx];
         const constructStatusesIdx = progressBar?.panel.findIndex(
           (p) => p.constructUuid === constructUuid,

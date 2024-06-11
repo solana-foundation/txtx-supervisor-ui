@@ -49,7 +49,7 @@ export interface ErrorBlock<Deserialized = true> {
   panel: ErrorPanelData<Deserialized>;
 }
 export interface ProgressBlock {
-  type: string;
+  type: "ProgressBar";
   uuid: string;
   visible: boolean;
   panel: ConstructProgressBarStatuses[];
