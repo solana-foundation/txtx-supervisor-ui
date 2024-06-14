@@ -23,13 +23,19 @@ import { createClient } from "graphql-ws";
 //   api_host: "https://us.i.posthog.com",
 // });
 
+const devMode = process.env.TXTX_DEV_MODE === "true";
+console.log("devMode? ", devMode);
+const protocol = window.location.protocol;
+const host = devMode ? "127.0.0.1:8488" : window.location.host;
+const wsProtocol = protocol === "https:" ? "wss:" : "ws:";
+
 const httpLink = new HttpLink({
-  uri: "http://localhost:8488/graphql",
+  uri: `${protocol}//${host}/graphql`,
 });
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "ws://localhost:8488/subscriptions",
+    url: `${wsProtocol}//${host}/subscriptions`,
   }),
 );
 
