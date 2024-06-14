@@ -316,5 +316,6 @@ export const {
   selectRunbook,
   selectVisibleProgressBlock,
   selectPanelValidationReady,
+  selectModalValidationReady,
   selectIsSomeProgressBlockVisible,
 } = runbooksSlice.selectors;

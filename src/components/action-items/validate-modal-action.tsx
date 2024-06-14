@@ -6,7 +6,7 @@ import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { classNames } from "../../utils/helpers";
 import { useAppDispatch } from "../../hooks";
 import {
-  selectPanelValidationReady,
+  selectModalValidationReady,
   setModalVisibility,
 } from "../../reducers/runbooks-slice";
 import { useSelector } from "react-redux";
@@ -24,7 +24,7 @@ export function ValidateModalAction({
   const { uuid, title, actionStatus } = actionItem;
   const { status } = actionStatus;
   const validationReady = useSelector((state: any) =>
-    selectPanelValidationReady(state, uuid),
+    selectModalValidationReady(state, uuid),
   );
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
   const dispatch = useAppDispatch();
