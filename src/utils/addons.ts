@@ -61,6 +61,16 @@ export class AddonManager {
     return await addon.getPublicKey(networkId, address, message);
   }
 
+  public async signMessage(
+    namespace: string,
+    networkId: string,
+    address: string,
+    message: string,
+  ): Promise<string | undefined> {
+    const addon = this.getAddon(namespace, networkId);
+    return await addon.signMessage(networkId, address, message);
+  }
+
   public async signTransaction(
     namespace: string,
     networkId: string,
@@ -85,6 +95,12 @@ export abstract class Addon {
   public abstract getAddress(networkId: string): string;
 
   public abstract getPublicKey(
+    networkId: string,
+    address: string,
+    message: string,
+  ): Promise<string | undefined>;
+
+  public abstract signMessage(
     networkId: string,
     address: string,
     message: string,

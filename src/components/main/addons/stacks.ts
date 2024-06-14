@@ -81,6 +81,35 @@ export class StacksAddon implements Addon {
     return userSession.isUserSignedIn();
   }
 
+  public async signMessage(
+    networkId: string,
+    address: string,
+    message: string,
+  ): Promise<string | undefined> {
+    let signedMessage;
+
+    await openSignatureRequestPopup({
+      message,
+      network:
+        networkId == "mainnet" ? new StacksMainnet() : new StacksTestnet(),
+      appDetails: appDetails,
+      onFinish(response) {
+        function moveLastByteToFront(str) {
+          if (str.length <= 2) {
+            return str;
+          }
+          var lastChar = str.substring(str.length - 2);
+          var stringWithoutLastChar = str.substring(0, str.length - 2);
+          return lastChar + stringWithoutLastChar;
+        }
+
+        signedMessage = moveLastByteToFront(response.signature);
+      },
+    });
+
+    return signedMessage;
+  }
+
   public async signTransaction(txHex: string): Promise<string | undefined> {
     // @ts-ignore
     const response = await LeatherProvider.request("stx_signTransaction", {
