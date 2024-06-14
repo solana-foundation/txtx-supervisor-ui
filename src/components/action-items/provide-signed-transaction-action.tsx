@@ -32,8 +32,9 @@ export function ProvideSignedTransactionAction({
   }
 
   const {
-    data: { payload, namespace, networkId },
+    data: { payload, namespace, networkId, signerUuid },
   } = actionType;
+  addonManager.addNetworkInstance(namespace, networkId);
 
   const transaction = formatValueForDisplay(payload);
   if (transaction == null || typeof transaction !== "string") {
@@ -59,6 +60,7 @@ export function ProvideSignedTransactionAction({
         type: "ProvideSignedTransaction",
         data: {
           signedTransactionBytes: signedTxHex,
+          signerUuid: signerUuid,
         },
       };
       updateActionItem({ variables: { event: JSON.stringify(event) } });

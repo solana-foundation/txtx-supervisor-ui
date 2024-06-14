@@ -271,6 +271,7 @@ export interface ProvidePublicKeyRequest {
 
 export interface ProvideSignedTransactionRequest {
   checkExpectationActionUuid: string | null;
+  signerUuid: string;
   payload: Value;
   namespace: string;
   networkId: string;
@@ -332,6 +333,7 @@ export interface ProvideSignedMessageResponse {
 
 export interface ProvideSignedTransactionResponse {
   signedTransactionBytes: string;
+  signerUuid: string;
 }
 
 export type Primitive = "Primitive";
