@@ -12,19 +12,16 @@ import { store } from "./store";
 import { Connect } from "@stacks/connect-react";
 import { authOptions } from "./components/main/addons/stacks";
 import "./utils/addons-initializer";
-import posthog from "posthog-js";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
+import initializePosthog from "./posthog";
 
-// posthog.init("phc_mTZO0r156hfsV6JBDN3YGg727kYHXc675NABuHGh6fg", {
-//   api_host: "https://us.i.posthog.com",
-// });
+initializePosthog();
 
 const devMode = process.env.TXTX_DEV_MODE === "true";
-console.log("devMode? ", devMode);
 const protocol = window.location.protocol;
 const host = devMode ? "127.0.0.1:8488" : window.location.host;
 const wsProtocol = protocol === "https:" ? "wss:" : "ws:";

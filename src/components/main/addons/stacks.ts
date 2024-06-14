@@ -1,4 +1,4 @@
-import { Addon } from "../../../utils/addons";
+import { Addon, AddonError } from "../../../utils/addons";
 import {
   AppConfig,
   UserSession,
@@ -10,7 +10,6 @@ import {
   getStorageKey,
   storePublicKeyInLocalStorage,
 } from "../../../utils/helpers";
-import posthog from "posthog-js";
 
 const appConfig = new AppConfig(["store_write", "publish_data"]);
 const userSession = new UserSession({ appConfig });
@@ -41,7 +40,7 @@ export class StacksAddon implements Addon {
     userSession.signUserOut();
   }
 
-  public getAddress(networkId: string): string {
+  public getAddress(networkId: string): string | AddonError {
     if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData();
       // todo, handle no address
@@ -49,7 +48,7 @@ export class StacksAddon implements Addon {
 
       return address;
     } else {
-      throw new Error("user must be signed in to wallet to call getAddress");
+      return { error: "user must be signed in to wallet to call getAddress" };
     }
   }
 
@@ -57,7 +56,7 @@ export class StacksAddon implements Addon {
     networkId: string,
     address: string,
     message: string,
-  ): Promise<string | undefined> {
+  ): Promise<string | AddonError> {
     let publicKey;
     await openSignatureRequestPopup({
       message,
@@ -67,9 +66,9 @@ export class StacksAddon implements Addon {
       onFinish(response) {
         publicKey = response.publicKey;
         if (publicKey === undefined) {
-          console.error(
-            `Address mismatch between user session and selected wallet address.`,
-          );
+          return {
+            error: `Address mismatch between user session and selected wallet address.`,
+          };
         }
       },
     });
@@ -85,7 +84,7 @@ export class StacksAddon implements Addon {
     networkId: string,
     address: string,
     message: string,
-  ): Promise<string | undefined> {
+  ): Promise<string | AddonError> {
     let signedMessage;
 
     await openSignatureRequestPopup({
@@ -110,31 +109,19 @@ export class StacksAddon implements Addon {
     return signedMessage;
   }
 
-  public async signTransaction(txHex: string): Promise<string | undefined> {
+  public async signTransaction(txHex: string): Promise<string | AddonError> {
     // @ts-ignore
     const response = await LeatherProvider.request("stx_signTransaction", {
       txHex,
     });
     if (response.result?.txHex) {
-      posthog.capture("onchain_success");
       return response.result.txHex;
     } else {
-      console.error(response.error);
-      posthog.capture("onchain_error", {
-        addon: "stacks",
-        action: "sign_transaction",
-        message: response.error.message,
-        code: response.error.code,
-        data: response.error.data,
-      });
+      const { message } = response.error;
+      return { error: message };
     }
   }
   catch(error) {
-    posthog.capture("onchain_failure", {
-      addon: "stacks",
-      action: "sign_transaction",
-      message: error,
-    });
-    console.error(error);
+    return { error: error };
   }
 }
