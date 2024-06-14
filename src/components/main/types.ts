@@ -196,6 +196,7 @@ export type ActionItemRequestType =
   | ProvideInputActionItemRequest
   | PickInputOptionActionItemRequest
   | ProvidePublicKeyActionItemRequest
+  | ProvideSignedMessageActionItemRequest
   | ProvideSignedTransactionActionItemRequest
   | DisplayOutputActionItemRequest
   | DisplayErrorLogActionItemRequest
@@ -218,6 +219,10 @@ export type PickInputOptionActionItemRequest = {
 export type ProvidePublicKeyActionItemRequest = {
   type: "ProvidePublicKey";
   data: ProvidePublicKeyRequest;
+};
+export type ProvideSignedMessageActionItemRequest = {
+  type: "ProvideSignedMessage";
+  data: ProvideSignedMessageRequest;
 };
 export type ProvideSignedTransactionActionItemRequest = {
   type: "ProvideSignedTransaction";
@@ -271,6 +276,14 @@ export interface ProvideSignedTransactionRequest {
   networkId: string;
 }
 
+export interface ProvideSignedMessageRequest {
+  checkExpectationActionUuid: string | null;
+  signerUuid: string;
+  message: Value;
+  namespace: string;
+  networkId: string;
+}
+
 export interface DisplayOutputRequest {
   name: string;
   description: string | null;
@@ -293,6 +306,7 @@ type ActionItemResponseType =
   | { type: "ProvideInput"; data: ProvidedInputResponse }
   | { type: "PickInputOption"; data: string }
   | { type: "ProvidePublicKey"; data: ProvidePublicKeyResponse }
+  | { type: "ProvideSignedMessage"; data: ProvideSignedMessageResponse }
   | { type: "ProvideSignedTransaction"; data: ProvideSignedTransactionResponse }
   | { type: "ValidateBlock" }
   | { type: "ValidateModal" };
@@ -309,6 +323,11 @@ export interface ProvidedInputResponse {
 
 export interface ProvidePublicKeyResponse {
   publicKey: string;
+}
+
+export interface ProvideSignedMessageResponse {
+  signedMessageBytes: string;
+  signerUuid: string;
 }
 
 export interface ProvideSignedTransactionResponse {

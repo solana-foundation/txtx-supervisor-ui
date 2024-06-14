@@ -15,6 +15,7 @@ import { ProvidePublicKeyAction } from "../action-items/provide-public-key-actio
 import { PickInputOptionAction } from "../action-items/pick-input-option-action";
 import { DisplayOutputAction } from "../action-items/display-output-action";
 import { OpenModalAction } from "../action-items/open-modal-action";
+import { ProvideSignedMessageAction } from "../action-items/provide-signed-message-action";
 
 function useFirstRender() {
   const ref = useRef(true);
@@ -146,6 +147,15 @@ function SubGroup({ subGroup }: SubGroup) {
     } else if (type === "ProvidePublicKey") {
       accumulator.push(
         <ProvidePublicKeyAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={uuid}
+        />,
+      );
+    } else if (type === "ProvideSignedMessage") {
+      accumulator.push(
+        <ProvideSignedMessageAction
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
