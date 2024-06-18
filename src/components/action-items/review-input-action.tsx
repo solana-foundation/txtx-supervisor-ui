@@ -19,7 +19,7 @@ export function ReviewInputAction({
   isFirst,
   isLast,
 }: ReviewInputAction) {
-  const { uuid, actionStatus, actionType } = actionItem;
+  const { id, actionStatus, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
 
   if (actionType.type !== "ReviewInput") {
@@ -30,7 +30,7 @@ export function ReviewInputAction({
 
   const onClick = () => {
     const event: ActionItemResponse = {
-      actionItemUuid: uuid,
+      actionItemId: id,
       type: "ReviewInput",
       data: {
         inputName: actionType.data.inputName,

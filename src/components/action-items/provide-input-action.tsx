@@ -20,7 +20,7 @@ export function ProvideInputAction({
   isFirst,
   isLast,
 }: ProvideInputAction) {
-  const { uuid, actionType, actionStatus } = actionItem;
+  const { id, actionType, actionStatus } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
 
   if (actionType.type !== "ProvideInput") {
@@ -33,7 +33,7 @@ export function ProvideInputAction({
     // don't send review input events if the user was clicking on the input field
     if (e.target instanceof HTMLInputElement) return;
     const event: ActionItemResponse = {
-      actionItemUuid: uuid,
+      actionItemId: id,
       type: "ReviewInput",
       data: {
         inputName: actionType.data.inputName,
@@ -45,7 +45,7 @@ export function ProvideInputAction({
   const onChange = (e: any) => {
     const { inputName, typing } = actionType.data;
     const event: ActionItemResponse = {
-      actionItemUuid: uuid,
+      actionItemId: id,
       type: "ProvideInput",
       data: {
         inputName,

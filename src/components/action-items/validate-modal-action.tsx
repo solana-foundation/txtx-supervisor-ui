@@ -21,17 +21,17 @@ export function ValidateModalAction({
   index,
   modalUuid,
 }: ValidateModalAction) {
-  const { uuid, title, actionStatus } = actionItem;
+  const { id, title, actionStatus } = actionItem;
   const { status } = actionStatus;
   const validationReady = useSelector((state: any) =>
-    selectModalValidationReady(state, uuid),
+    selectModalValidationReady(state, id),
   );
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
   const dispatch = useAppDispatch();
 
   const onClick = () => {
     const event: ActionItemResponse = {
-      actionItemUuid: uuid,
+      actionItemId: id,
       type: "ValidateModal",
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });

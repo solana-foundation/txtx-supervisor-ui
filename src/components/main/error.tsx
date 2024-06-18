@@ -112,7 +112,7 @@ function SubGroup({ subGroup }: SubGroup) {
   const { actionItems, allowBatchCompletion } = subGroup;
 
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
-    const { actionType, uuid } = actionItem;
+    const { actionType, id } = actionItem;
     const { type } = actionType;
     const isFirst = i === 0;
     const isLast = i === actionItems.length - 1;
@@ -123,7 +123,7 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
-          key={uuid}
+          key={id}
         />,
       );
     } else if (type === "ProvideInput") {
@@ -132,7 +132,7 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
-          key={uuid}
+          key={id}
         />,
       );
     } else if (type === "PickInputOption") {
@@ -141,7 +141,7 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
-          key={uuid}
+          key={id}
         />,
       );
     } else if (type === "ProvidePublicKey") {
@@ -150,7 +150,7 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
-          key={uuid}
+          key={id}
         />,
       );
     } else if (type === "ProvideSignedTransaction") {
@@ -159,7 +159,7 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
-          key={uuid}
+          key={id}
         />,
       );
     } else if (type === "DisplayOutput") {
@@ -168,12 +168,12 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
-          key={uuid}
+          key={id}
         />,
       );
     } else if (type === "DisplayErrorLog") {
       accumulator.push(
-        <DisplayErrorLogAction actionItem={actionItem} key={uuid} />,
+        <DisplayErrorLogAction actionItem={actionItem} key={id} />,
       );
     } else if (type === "OpenModal") {
       accumulator.push(
@@ -181,7 +181,7 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
-          key={uuid}
+          key={id}
         />,
       );
     }
@@ -205,11 +205,11 @@ function ButtonSubGroup({ subGroup }: ButtonSubGroup) {
     throw new Error(`ButtonSubGroups should have a maximum of 3 action items`);
   }
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
-    const { actionType, uuid } = actionItem;
+    const { actionType, id } = actionItem;
     const { type } = actionType;
     if (type === "ValidateBlock") {
       accumulator.push(
-        <ValidateBlockAction actionItem={actionItem} key={uuid} index={i} />,
+        <ValidateBlockAction actionItem={actionItem} key={id} index={i} />,
       );
     } else {
       throw new Error(

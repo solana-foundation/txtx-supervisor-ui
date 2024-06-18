@@ -22,7 +22,7 @@ export function ProvideSignedMessageAction({
   isFirst,
   isLast,
 }: ProvideSignedMessageAction) {
-  const { uuid, actionStatus, title, description, actionType } = actionItem;
+  const { id, actionStatus, title, description, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
 
   if (actionType.type !== "ProvideSignedMessage") {

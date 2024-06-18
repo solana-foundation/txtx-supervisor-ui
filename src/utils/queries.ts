@@ -28,7 +28,7 @@ export const GET_ACTION_BLOCKS = gql`
           subGroups {
             allowBatchCompletion
             actionItems {
-              uuid
+              id
               index
               title
               description
@@ -55,7 +55,7 @@ export const GET_MODAL_BLOCKS = gql`
           subGroups {
             allowBatchCompletion
             actionItems {
-              uuid
+              id
               index
               title
               description
@@ -82,7 +82,7 @@ export const GET_ERROR_BLOCKS = gql`
           subGroups {
             allowBatchCompletion
             actionItems {
-              uuid
+              id
               index
               title
               description
@@ -142,7 +142,7 @@ export const ACTION_BLOCK_EVENT_SUBSCRIPTION = gql`
           subGroups {
             allowBatchCompletion
             actionItems {
-              uuid
+              id
               index
               title
               description
@@ -169,7 +169,7 @@ export const MODAL_BLOCK_EVENT_SUBSCRIPTION = gql`
           subGroups {
             allowBatchCompletion
             actionItems {
-              uuid
+              id
               index
               title
               description
@@ -196,7 +196,7 @@ export const ERROR_BLOCK_EVENT_SUBSCRIPTION = gql`
           subGroups {
             allowBatchCompletion
             actionItems {
-              uuid
+              id
               index
               title
               description
@@ -236,9 +236,7 @@ export const CLEAR_BLOCKS_EVENT_SUBSCRIPTION = gql`
 export const UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION = gql`
   subscription OnUpdateActionItems {
     updateActionItemsEvent {
-      uuid
-      title
-      description
+      id
       actionStatus
       actionType
     }

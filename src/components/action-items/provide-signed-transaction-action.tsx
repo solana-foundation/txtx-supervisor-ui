@@ -22,7 +22,7 @@ export function ProvideSignedTransactionAction({
   isFirst,
   isLast,
 }: ProvideSignedTransactionAction) {
-  const { uuid, actionStatus, title, description, actionType } = actionItem;
+  const { id, actionStatus, title, description, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
 
   if (actionType.type !== "ProvideSignedTransaction") {
@@ -56,7 +56,7 @@ export function ProvideSignedTransactionAction({
     );
     if (signedTxHex !== undefined) {
       const event: ActionItemResponse = {
-        actionItemUuid: uuid,
+        actionItemId: id,
         type: "ProvideSignedTransaction",
         data: {
           signedTransactionBytes: signedTxHex,

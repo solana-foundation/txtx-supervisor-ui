@@ -9,7 +9,7 @@ export interface RunbookMetadata {
 }
 
 export interface UpdateActionItemEvent<Deserialized = true> {
-  uuid: string;
+  id: string;
   title?: string;
   description?: string;
   actionStatus?: Deserialized extends true ? ActionItemStatus : string;
@@ -160,7 +160,7 @@ export interface ActionSubGroup<Deserialized = true> {
 }
 
 export interface ActionItemRequest<Deserialized = true> {
-  uuid: string;
+  id: string;
   constructUuid: string | null;
   index: number;
   title: string;
@@ -299,7 +299,7 @@ export interface OpenModalRequest {
 }
 
 export type ActionItemResponse = {
-  actionItemUuid: string;
+  actionItemId: string;
 } & ActionItemResponseType;
 
 type ActionItemResponseType =
