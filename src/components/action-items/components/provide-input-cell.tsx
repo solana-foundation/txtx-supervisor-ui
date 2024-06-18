@@ -42,6 +42,7 @@ export function ProvideInputCell({
               inputClass,
             )}
             defaultValue={defaultInputValue}
+            key={defaultInputValue}
             onChange={debouncedOnChange}
           />
         </div>
