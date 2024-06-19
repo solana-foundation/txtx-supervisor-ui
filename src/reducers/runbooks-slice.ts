@@ -169,7 +169,7 @@ export const runbooksSlice = createSlice({
                 ...subGroup,
                 actionItems: subGroup.actionItems.map((actionItem) => {
                   const matchingUpdate = actionItemEvents.find(
-                    (update) => update.uuid === actionItem.uuid,
+                    (update) => update.id === actionItem.id,
                   );
                   if (matchingUpdate) {
                     return {
@@ -200,7 +200,7 @@ export const runbooksSlice = createSlice({
                 ...subGroup,
                 actionItems: subGroup.actionItems.map((actionItem) => {
                   const matchingUpdate = actionItemEvents.find(
-                    (update) => update.uuid === actionItem.uuid,
+                    (update) => update.id === actionItem.id,
                   );
                   if (matchingUpdate) {
                     return {
@@ -275,14 +275,12 @@ export const runbooksSlice = createSlice({
 
 function checkValidationReady(
   blocks: ModalBlock[] | ActionBlock[],
-  buttonUuid: string,
+  buttonId: string,
 ): boolean {
   const block = blocks.find((block) =>
     block.panel.groups.some((group) =>
       group.subGroups.some((subGroup) =>
-        subGroup.actionItems.some(
-          (actionItem) => actionItem.uuid == buttonUuid,
-        ),
+        subGroup.actionItems.some((actionItem) => actionItem.id == buttonId),
       ),
     ),
   );
@@ -292,7 +290,7 @@ function checkValidationReady(
       subGroup.actionItems.some(
         (actionItem) =>
           actionItem.actionStatus.status !== "Success" &&
-          actionItem.uuid !== buttonUuid,
+          actionItem.id !== buttonId,
       ),
     ),
   );
@@ -316,5 +314,6 @@ export const {
   selectRunbook,
   selectVisibleProgressBlock,
   selectPanelValidationReady,
+  selectModalValidationReady,
   selectIsSomeProgressBlockVisible,
 } = runbooksSlice.selectors;

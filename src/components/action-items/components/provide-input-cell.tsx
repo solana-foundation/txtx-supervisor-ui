@@ -13,7 +13,7 @@ export function ProvideInputCell({
   onChange,
   defaultValue,
 }: ProvideInputCell) {
-  const { uuid, actionStatus } = actionItem;
+  const { id, actionStatus } = actionItem;
   const { status } = actionStatus;
 
   // todo: handle other statuses
@@ -34,7 +34,7 @@ export function ProvideInputCell({
       <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
         <div className="grow shrink basis-0 self-stretch flex-col justify-end items-start gap-2.5 inline-flex">
           <input
-            id={uuid}
+            id={id}
             className={classNames(
               "self-stretch text-sm font-normal font-gt leading-[18.20px] text-right",
               "border-gray-800  rounded-sm",
@@ -42,6 +42,7 @@ export function ProvideInputCell({
               inputClass,
             )}
             defaultValue={defaultInputValue}
+            key={defaultInputValue}
             onChange={debouncedOnChange}
           />
         </div>

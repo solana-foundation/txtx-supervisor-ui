@@ -15,21 +15,20 @@ export function ValidateBlockAction({
   actionItem,
   index,
 }: ValidateBlockAction) {
-  const { uuid, title, actionStatus } = actionItem;
+  const { id, title, actionStatus } = actionItem;
   const { status } = actionStatus;
   const validationReady = useSelector((state: any) =>
-    selectPanelValidationReady(state, uuid),
+    selectPanelValidationReady(state, id),
   );
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
 
   const onClick = () => {
     const event: ActionItemResponse = {
-      actionItemUuid: uuid,
+      actionItemId: id,
       type: "ValidateBlock",
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });
   };
-
   let isDisabled = !validationReady;
   if (status === "Success") {
     isDisabled = true;

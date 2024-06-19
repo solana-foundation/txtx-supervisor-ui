@@ -21,7 +21,7 @@ export function ProvidePublicKeyAction({
   isFirst,
   isLast,
 }: ProvidePublicKeyAction) {
-  const { uuid, actionStatus, actionType } = actionItem;
+  const { id, actionStatus, actionType } = actionItem;
 
   if (actionType.type !== "ProvidePublicKey") {
     throw new Error(
@@ -85,7 +85,7 @@ export function ProvidePublicKeyAction({
             throw new Error("failed to fetch public key");
           }
           const event: ActionItemResponse = {
-            actionItemUuid: uuid,
+            actionItemId: id,
             type: "ProvidePublicKey",
             data: {
               publicKey,
@@ -118,7 +118,7 @@ export function ProvidePublicKeyAction({
       } else {
         const onClick = () => {
           const event: ActionItemResponse = {
-            actionItemUuid: uuid,
+            actionItemId: id,
             type: "ProvidePublicKey",
             data: {
               publicKey: publicKeyFromStorage,

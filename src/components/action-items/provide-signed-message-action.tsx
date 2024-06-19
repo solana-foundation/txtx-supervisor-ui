@@ -12,59 +12,61 @@ import addonManager from "../../utils/addons-initializer";
 import { ReviewInputCell } from "./components/review-input-cell";
 import { classNames } from "../../utils/helpers";
 
-export interface ProvideSignedTransactionAction {
+export interface ProvideSignedMessageAction {
   actionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
 }
-export function ProvideSignedTransactionAction({
+export function ProvideSignedMessageAction({
   actionItem,
   isFirst,
   isLast,
-}: ProvideSignedTransactionAction) {
+}: ProvideSignedMessageAction) {
   const { id, actionStatus, title, description, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
 
-  if (actionType.type !== "ProvideSignedTransaction") {
+  if (actionType.type !== "ProvideSignedMessage") {
     throw new Error(
-      "ProvideSignedTransactionAction component requires ProvideSignedTransaction action type.",
+      "ProvideSignedMessageAction component requires ProvideSignedMessage action type.",
     );
   }
 
   const {
-    data: { payload, namespace, networkId, signerUuid },
+    data: { message, namespace, networkId, signerUuid },
   } = actionType;
   addonManager.addNetworkInstance(namespace, networkId);
 
-  const transaction = formatValueForDisplay(payload);
-  if (transaction == null || typeof transaction !== "string") {
+  const msgStr = formatValueForDisplay(message);
+  if (msgStr == null || typeof msgStr !== "string") {
     throw new Error(
-      `ProvideSignedTransactionAction component requires string payload, received ${actionType.data.payload}`,
+      `ProvideSignedMessageAction component requires string payload, received ${actionType.data.message}`,
     );
   }
 
   // insert a zero-width space every other character to allow the text to break as needed
-  const displayedValue = transaction.match(/(.{1})/g)?.join("​") || transaction;
+  const displayedValue = msgStr.match(/(.{1})/g)?.join("​") || msgStr;
 
   const address = addonManager.getAddress(namespace, networkId);
   const onClick = async () => {
-    const signedTxHex = await addonManager.signTransaction(
+    const signedMessage = await addonManager.signMessage(
       namespace,
       networkId,
       address,
-      transaction,
+      msgStr,
     );
-    if (signedTxHex !== undefined) {
-      const event: ActionItemResponse = {
-        actionItemId: id,
-        type: "ProvideSignedTransaction",
-        data: {
-          signedTransactionBytes: signedTxHex,
-          signerUuid: signerUuid,
-        },
-      };
-      updateActionItem({ variables: { event: JSON.stringify(event) } });
-    }
+    console.log(signedMessage);
+    return;
+    // if (signedMessage !== undefined) {
+    //   const event: ActionItemResponse = {
+    //     actionItemUuid: uuid,
+    //     type: "ProvideSignedMessage",
+    //     data: {
+    //       signerUuid,
+    //       signedMessageBytes: signedMessage,
+    //     },
+    //   };
+    //   updateActionItem({ variables: { event: JSON.stringify(event) } });
+    // }
   };
 
   let isDisabled = false;

@@ -9,7 +9,7 @@ export interface RunbookMetadata {
 }
 
 export interface UpdateActionItemEvent<Deserialized = true> {
-  uuid: string;
+  id: string;
   title?: string;
   description?: string;
   actionStatus?: Deserialized extends true ? ActionItemStatus : string;
@@ -160,7 +160,7 @@ export interface ActionSubGroup<Deserialized = true> {
 }
 
 export interface ActionItemRequest<Deserialized = true> {
-  uuid: string;
+  id: string;
   constructUuid: string | null;
   index: number;
   title: string;
@@ -196,6 +196,7 @@ export type ActionItemRequestType =
   | ProvideInputActionItemRequest
   | PickInputOptionActionItemRequest
   | ProvidePublicKeyActionItemRequest
+  | ProvideSignedMessageActionItemRequest
   | ProvideSignedTransactionActionItemRequest
   | DisplayOutputActionItemRequest
   | DisplayErrorLogActionItemRequest
@@ -218,6 +219,10 @@ export type PickInputOptionActionItemRequest = {
 export type ProvidePublicKeyActionItemRequest = {
   type: "ProvidePublicKey";
   data: ProvidePublicKeyRequest;
+};
+export type ProvideSignedMessageActionItemRequest = {
+  type: "ProvideSignedMessage";
+  data: ProvideSignedMessageRequest;
 };
 export type ProvideSignedTransactionActionItemRequest = {
   type: "ProvideSignedTransaction";
@@ -266,7 +271,16 @@ export interface ProvidePublicKeyRequest {
 
 export interface ProvideSignedTransactionRequest {
   checkExpectationActionUuid: string | null;
+  signerUuid: string;
   payload: Value;
+  namespace: string;
+  networkId: string;
+}
+
+export interface ProvideSignedMessageRequest {
+  checkExpectationActionUuid: string | null;
+  signerUuid: string;
+  message: Value;
   namespace: string;
   networkId: string;
 }
@@ -285,7 +299,7 @@ export interface OpenModalRequest {
 }
 
 export type ActionItemResponse = {
-  actionItemUuid: string;
+  actionItemId: string;
 } & ActionItemResponseType;
 
 type ActionItemResponseType =
@@ -293,6 +307,7 @@ type ActionItemResponseType =
   | { type: "ProvideInput"; data: ProvidedInputResponse }
   | { type: "PickInputOption"; data: string }
   | { type: "ProvidePublicKey"; data: ProvidePublicKeyResponse }
+  | { type: "ProvideSignedMessage"; data: ProvideSignedMessageResponse }
   | { type: "ProvideSignedTransaction"; data: ProvideSignedTransactionResponse }
   | { type: "ValidateBlock" }
   | { type: "ValidateModal" };
@@ -311,8 +326,14 @@ export interface ProvidePublicKeyResponse {
   publicKey: string;
 }
 
+export interface ProvideSignedMessageResponse {
+  signedMessageBytes: string;
+  signerUuid: string;
+}
+
 export interface ProvideSignedTransactionResponse {
   signedTransactionBytes: string;
+  signerUuid: string;
 }
 
 export type Primitive = "Primitive";

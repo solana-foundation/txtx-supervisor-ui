@@ -19,13 +19,13 @@ export function PickInputOptionAction({
   isFirst,
   isLast,
 }: PickInputOptionAction) {
-  const { uuid } = actionItem;
+  const { id } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
 
   const onClick = () => {};
   const setSelected = (option: InputOption) => {
     const event: ActionItemResponse = {
-      actionItemUuid: uuid,
+      actionItemId: id,
       type: "PickInputOption",
       data: option.value,
     };

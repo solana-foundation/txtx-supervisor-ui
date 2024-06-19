@@ -172,7 +172,7 @@ function SubGroup({ subGroup }: SubGroup) {
   const { actionItems, allowBatchCompletion } = subGroup;
 
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
-    const { actionType, uuid } = actionItem;
+    const { actionType, id } = actionItem;
     const { type } = actionType;
     const isFirst = i === 0;
     const isLast = i === actionItems.length - 1;
@@ -183,7 +183,7 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
-          key={uuid}
+          key={id}
         />,
       );
     } else if (type === "ProvideInput") {
@@ -192,7 +192,7 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
-          key={uuid}
+          key={id}
         />,
       );
     } else if (type === "PickInputOption") {
@@ -201,7 +201,7 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
-          key={uuid}
+          key={id}
         />,
       );
     } else if (type === "ProvidePublicKey") {
@@ -210,7 +210,7 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
-          key={uuid}
+          key={id}
         />,
       );
     } else if (type === "ProvideSignedTransaction") {
@@ -219,7 +219,7 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
-          key={uuid}
+          key={id}
         />,
       );
     } else if (type === "DisplayOutput") {
@@ -228,7 +228,7 @@ function SubGroup({ subGroup }: SubGroup) {
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
-          key={uuid}
+          key={id}
         />,
       );
     }
@@ -253,18 +253,20 @@ function ButtonSubGroup({ subGroup, modalUuid }: ButtonSubGroup) {
     throw new Error(`ButtonSubGroups should have a maximum of 3 action items`);
   }
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
-    const { actionType, uuid } = actionItem;
+    const { actionType, id } = actionItem;
     const { type } = actionType;
     if (type === "ValidateModal") {
       accumulator.push(
         <ValidateModalAction
           actionItem={actionItem}
           modalUuid={modalUuid}
-          key={uuid}
+          key={id}
           index={i}
         />,
       );
-      accumulator.push(<CloseModalAction modalUuid={modalUuid} key={uuid} />);
+      accumulator.push(
+        <CloseModalAction modalUuid={modalUuid} key={`${id}-close`} />,
+      );
     } else {
       throw new Error(
         `ValidateModal actions must only be in a sub group with other ValidateModal actions`,

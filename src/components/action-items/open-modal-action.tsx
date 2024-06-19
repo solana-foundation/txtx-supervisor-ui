@@ -31,6 +31,7 @@ export function OpenModalAction({
   const onClick = () => {
     dispatch(setModalVisibility([modalUuid, true]));
   };
+
   let subRow;
   if (actionStatus.status !== "Success") {
     subRow = {

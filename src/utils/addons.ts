@@ -1,3 +1,9 @@
+import { phLogOnChainError, phLogOnChainSuccess } from "../posthog";
+
+const PH_GET_ADDRESS = "get_address";
+const PH_GET_PUBLIC_KEY = "get_public_key";
+const PH_SIGN_MESSAGE = "sign_message";
+const PH_SIGN_TRANSACTION = "sign_transaction";
 export class AddonManager {
   public addons: { [namespace: string]: { addon: Addon; networks: string[] } } =
     {};
@@ -48,7 +54,12 @@ export class AddonManager {
 
   public getAddress(namespace: string, networkId: string): string {
     const addon = this.getAddon(namespace, networkId);
-    return addon.getAddress(networkId);
+    const result = addon.getAddress(networkId);
+    if (typeof result === "object") {
+      throw new Error(result.error);
+    } else {
+      return result;
+    }
   }
 
   public async getPublicKey(
@@ -58,7 +69,33 @@ export class AddonManager {
     message: string,
   ): Promise<string | undefined> {
     const addon = this.getAddon(namespace, networkId);
-    return await addon.getPublicKey(networkId, address, message);
+    const result = await addon.getPublicKey(networkId, address, message);
+    if (typeof result === "object") {
+      console.error(result.error);
+      phLogOnChainError(namespace, PH_GET_PUBLIC_KEY, result.error);
+      return;
+    } else {
+      phLogOnChainSuccess(namespace, PH_GET_PUBLIC_KEY);
+      return result;
+    }
+  }
+
+  public async signMessage(
+    namespace: string,
+    networkId: string,
+    address: string,
+    message: string,
+  ): Promise<string | undefined> {
+    const addon = this.getAddon(namespace, networkId);
+    const result = await addon.signMessage(networkId, address, message);
+    if (typeof result === "object") {
+      console.error(result.error);
+      phLogOnChainError(namespace, PH_SIGN_MESSAGE, result.error);
+      return;
+    } else {
+      phLogOnChainSuccess(namespace, PH_SIGN_MESSAGE);
+      return result;
+    }
   }
 
   public async signTransaction(
@@ -68,13 +105,21 @@ export class AddonManager {
     txHex: string,
   ): Promise<string | undefined> {
     const addon = this.getAddon(namespace, networkId);
-    return await addon.signTransaction(txHex);
+    const result = await addon.signTransaction(txHex);
+    if (typeof result === "object") {
+      console.error(result.error);
+      phLogOnChainError(namespace, PH_SIGN_TRANSACTION, result.error);
+      return;
+    } else {
+      phLogOnChainSuccess(namespace, PH_SIGN_TRANSACTION);
+      return result;
+    }
   }
 }
 
 export type ConnectedWalletInfo = string;
 export type ConnectWalletFunction = () => void;
-
+export type AddonError = { error: string };
 export abstract class Addon {
   public abstract connectWallet();
 
@@ -82,13 +127,19 @@ export abstract class Addon {
 
   public abstract isWalletConnected(): boolean;
 
-  public abstract getAddress(networkId: string): string;
+  public abstract getAddress(networkId: string): string | AddonError;
 
   public abstract getPublicKey(
     networkId: string,
     address: string,
     message: string,
-  ): Promise<string | undefined>;
+  ): Promise<string | AddonError>;
 
-  public abstract signTransaction(txHex: string): Promise<string | undefined>;
+  public abstract signMessage(
+    networkId: string,
+    address: string,
+    message: string,
+  ): Promise<string | AddonError>;
+
+  public abstract signTransaction(txHex: string): Promise<string | AddonError>;
 }
