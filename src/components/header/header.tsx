@@ -4,6 +4,7 @@ import RunbookStatusBar from "./runbook-status-bar";
 import { useQuery } from "@apollo/client";
 import { GET_RUNBOOK_METADATA } from "../../utils/queries";
 import { selectRunbook, setMetadata } from "../../reducers/runbooks-slice";
+import MultiPartyToggle from "./multi-party-toggle";
 
 export interface HeaderProps {
   title: string;
@@ -51,6 +52,7 @@ export function Header({ title, panelScrollHandler }: HeaderProps) {
         </div>
         {/* <span className="font-bold dark:text-slate-500">Protocol Runbook</span> */}
       </div>
+      <MultiPartyToggle />
     </div>
   );
 }
