@@ -2,14 +2,16 @@ import { useEffect, useCallback, useMemo } from "react";
 import { register, Hanko } from "@teamhanko/hanko-elements";
 import React from "react";
 import { ModalWrapper } from "../main/modal-wrapper";
-import { useAppDispatch } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import { setMultiPartyAuth } from "../../reducers/multi-party-slice";
 import { BACKEND_URL } from "../..";
+import { selectRunbook } from "../../reducers/runbooks-slice";
 
 const HANKO_API_URL = process.env.HANKO_API_URL || "localhost:8000";
 
 export default function HankoAuth() {
   const dispatch = useAppDispatch();
+  const { metadata: runbookMetadata } = useAppSelector(selectRunbook);
   const hanko = useMemo(
     () => new Hanko(HANKO_API_URL, { cookieSameSite: "none" }),
     [],
@@ -24,13 +26,18 @@ export default function HankoAuth() {
       const auth = {
         userId: response.userID,
       };
+
       dispatch(setMultiPartyAuth(auth));
-      fetch(`${BACKEND_URL}/auth`, {
+
+      fetch(`${BACKEND_URL}/relayer/channels`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userId: response.userID }),
+        body: JSON.stringify({
+          name: runbookMetadata.name,
+          description: runbookMetadata.description,
+        }),
         credentials: "include",
       })
         .then((res) => {
