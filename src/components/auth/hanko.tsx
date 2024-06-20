@@ -1,0 +1,58 @@
+import { useEffect, useCallback, useMemo } from "react";
+import { register, Hanko } from "@teamhanko/hanko-elements";
+import React from "react";
+import { ModalWrapper } from "../main/modal-wrapper";
+import { useAppDispatch } from "../../hooks";
+import { setMultiPartyAuth } from "../../reducers/multi-party-slice";
+import { BACKEND_URL } from "../..";
+
+const REACT_APP_HANKO_API_URL = process.env.REACT_APP_HANKO_API_URL || "";
+
+export default function HankoAuth() {
+  const dispatch = useAppDispatch();
+  const hanko = useMemo(
+    () => new Hanko(REACT_APP_HANKO_API_URL, { cookieSameSite: "none" }),
+    [],
+  );
+
+  const redirectAfterLogin = useCallback(() => {
+    window.location.reload();
+  }, []);
+
+  useEffect(() => {
+    hanko.onAuthFlowCompleted((response) => {
+      const auth = {
+        userId: response.userID,
+      };
+      dispatch(setMultiPartyAuth(auth));
+      fetch(`${BACKEND_URL}/auth`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: response.userID }),
+        credentials: "include",
+      })
+        .then((res) => {
+          console.log("authenticated backend res", res);
+        })
+        .catch((err) => {
+          console.log("backend auth failed", err);
+        });
+    });
+  }, [hanko, redirectAfterLogin]);
+
+  useEffect(() => {
+    register(REACT_APP_HANKO_API_URL).catch((error) => {
+      console.error("hanko error", error);
+    });
+  }, []);
+
+  return (
+    <ModalWrapper visible={true}>
+      <div className="w-content mx-auto">
+        <hanko-auth class="hankoComponent" />
+      </div>
+    </ModalWrapper>
+  );
+}

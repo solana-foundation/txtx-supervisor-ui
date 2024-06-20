@@ -23,11 +23,12 @@ initializePosthog();
 
 const devMode = process.env.TXTX_DEV_MODE === "true";
 const protocol = window.location.protocol;
-const host = devMode ? "127.0.0.1:8488" : window.location.host;
+const host = devMode ? "localhost:8488" : window.location.host;
 const wsProtocol = protocol === "https:" ? "wss:" : "ws:";
+export const BACKEND_URL = `${protocol}//${host}`;
 
 const httpLink = new HttpLink({
-  uri: `${protocol}//${host}/graphql`,
+  uri: `${BACKEND_URL}/graphql`,
 });
 
 const wsLink = new GraphQLWsLink(
