@@ -6,12 +6,12 @@ import { useAppDispatch } from "../../hooks";
 import { setMultiPartyAuth } from "../../reducers/multi-party-slice";
 import { BACKEND_URL } from "../..";
 
-const REACT_APP_HANKO_API_URL = process.env.REACT_APP_HANKO_API_URL || "";
+const HANKO_API_URL = process.env.HANKO_API_URL || "localhost:8000";
 
 export default function HankoAuth() {
   const dispatch = useAppDispatch();
   const hanko = useMemo(
-    () => new Hanko(REACT_APP_HANKO_API_URL, { cookieSameSite: "none" }),
+    () => new Hanko(HANKO_API_URL, { cookieSameSite: "none" }),
     [],
   );
 
@@ -43,7 +43,7 @@ export default function HankoAuth() {
   }, [hanko, redirectAfterLogin]);
 
   useEffect(() => {
-    register(REACT_APP_HANKO_API_URL).catch((error) => {
+    register(HANKO_API_URL).catch((error) => {
       console.error("hanko error", error);
     });
   }, []);

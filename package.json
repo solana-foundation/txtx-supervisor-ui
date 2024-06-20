@@ -4,7 +4,7 @@
   "description": "",
   "source": "src/index.html",
   "scripts": {
-    "dev": "TXTX_DEV_MODE=true parcel",
+    "dev": "parcel",
     "build": "parcel build"
   },
   "keywords": [],
@@ -43,6 +43,7 @@
     "@types/debounce": "^1.2.4",
     "clsx": "^2.1.0",
     "debounce": "^2.0.0",
+    "dotenv": "^16.4.5",
     "ethers": "^5.7.2",
     "graphql": "^16.8.1",
     "graphql-ws": "^5.16.0",
