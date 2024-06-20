@@ -15,17 +15,19 @@ import {
 import storage from "redux-persist/lib/storage";
 import { runbookStepSlice } from "./reducers/runbook-step-slice";
 import { panelRowsSlice } from "./reducers/panel-rows-slice";
+import { multiPartySlice } from "./reducers/multi-party-slice";
 
 const persistConfig = {
   key: "runbooks",
   storage,
-  whitelist: ["activeStep", "panelRows"],
+  whitelist: ["multiPartyMode"],
 };
 
 const reducers = combineReducers({
   runbooks: runbooksSlice.reducer,
   activeStep: runbookStepSlice.reducer,
   panelRows: panelRowsSlice.reducer,
+  multiPartyMode: multiPartySlice.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);
