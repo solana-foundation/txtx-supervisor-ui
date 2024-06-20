@@ -39,6 +39,7 @@
     "@stacks/network": "^6.13.0",
     "@stacks/transactions": "^6.12.0",
     "@tailwindcss/forms": "^0.5.7",
+    "@teamhanko/hanko-elements": "^0.11.0",
     "@types/debounce": "^1.2.4",
     "clsx": "^2.1.0",
     "debounce": "^2.0.0",
@@ -60,5 +61,8 @@
   },
   "alias": {
     "preact/jsx-dev-runtime": "preact/jsx-runtime"
+  },
+  "@parcel/resolver-default": {
+    "packageExports": true
   }
 }
