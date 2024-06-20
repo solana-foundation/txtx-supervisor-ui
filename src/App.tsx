@@ -7,6 +7,11 @@ import { selectRunbook } from "./reducers/runbooks-slice";
 import useSubscriptions from "./hooks/useSubscriptions";
 import { Modal } from "./components/main/modal";
 import useQueries from "./hooks/useQueries";
+import {
+  isMultiPartyAuthenticated,
+  isMultiPartyEnabled,
+} from "./reducers/multi-party-slice";
+import HankoAuth from "./components/auth/hanko";
 
 enum PageNav {
   Runbook,
@@ -22,6 +27,8 @@ export default function App() {
   const dispatch = useAppDispatch();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { modalBlocks } = useAppSelector(selectRunbook);
+  const multiPartyEnabled = useAppSelector(isMultiPartyEnabled);
+  const authenticated = useAppSelector(isMultiPartyAuthenticated);
 
   const { loading } = useQueries();
   // subscribe to new block events, action item updates, etc
@@ -78,6 +85,13 @@ export default function App() {
             onClick={() => setModalVisible(!modalVisible)}
           >
             <div className="flex justify-center py-9">
+              {loading ? (
+                ""
+              ) : multiPartyEnabled && !authenticated ? (
+                <HankoAuth />
+              ) : (
+                ""
+              )}
               {loading
                 ? ""
                 : modalBlocks.map((block, i) => (
