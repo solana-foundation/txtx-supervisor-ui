@@ -36,7 +36,7 @@ export default function MultiPartySharing() {
   }, [enabled]);
 
   return (
-    <div className="max-w-64 flex flex-col gap-1">
+    <div className="max-w-64 mr-0 ml-auto flex flex-col gap-1">
       <div className="flex justify-between items-center w-full h-6 px-1 bg-zinc-900 rounded border border-neutral-800">
         <div
           onClick={() => {
@@ -59,9 +59,9 @@ interface TotpGenerator {
   secret: string;
 }
 
-const TOTP_PERIOD = 60;
-const getProgress = (timeLeft) =>
-  Math.round((timeLeft / (TOTP_PERIOD * 1000)) * 100);
+const TOTP_PERIOD = 30;
+const TOTP_PERIOD_MS = TOTP_PERIOD * 1000;
+const getProgress = (timeLeft) => Math.round((timeLeft / TOTP_PERIOD_MS) * 100);
 
 const getTimeLeft = (expiresAt) => Math.max(expiresAt - Date.now(), 0);
 

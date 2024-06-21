@@ -40,7 +40,8 @@ export function Header({ title, panelScrollHandler }: HeaderProps) {
   }
   return (
     <div className="backdrop-blur-md bg-opacity-50 sticky top-0 z-50 px-8 py-4 flex shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 bg-zinc-950 border-b dark:border-zinc-900">
-      <div className="w-full justify-center flex flex-col items-center">
+      <div className="flex-1"></div>
+      <div className="absolute left-1/2 w-full transform -translate-x-1/2 justify-center flex flex-col items-center">
         <div className="self-stretch px-8 flex-col gap-2 flex">
           <div className="self-stretch text-emerald-500 text-center font-bold font-inter uppercase">
             {metadata.name}
@@ -62,14 +63,14 @@ export function Header({ title, panelScrollHandler }: HeaderProps) {
         </div>
         {/* <span className="font-bold dark:text-slate-500">Protocol Runbook</span> */}
       </div>
-      <div className="flex flex-col gap-1 justify-end">
+      <div className="h-20 flex-1 flex justify-end flex-col gap-1 justify-end">
         <MultiPartyToggle />
         {loading ? (
           ""
         ) : multiPartyEnabled && authenticated && multiPartyInstantiated ? (
           <MultiPartySharing />
         ) : (
-          <div className="h-6"></div>
+          <div className="h-[45px]"></div>
         )}
       </div>
     </div>
