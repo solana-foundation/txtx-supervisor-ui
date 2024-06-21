@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { Switch } from "@headlessui/react";
 import Incognito from "../icons/incognito";
 import MultiParty from "../icons/multi-party";
-import HankoAuth from "../auth/hanko";
 import {
   isMultiPartyAuthenticated,
   isMultiPartyEnabled,
@@ -39,7 +38,7 @@ export default function MultiPartyToggle() {
       onChange={setEnabled}
       className={classNames(
         enabled ? "bg-emerald-500" : "bg-gray-950",
-        "relative inline-flex h-7 w-[75px] flex-flex  items-center shrink-0 cursor-pointer rounded-full border border-neutral-800 transition-colors duration-200 ease-in-out",
+        "relative inline-flex mr-0 ml-auto h-7 w-[75px] flex-flex  items-center shrink-0 cursor-pointer rounded-full border border-neutral-800 transition-colors duration-200 ease-in-out",
       )}
     >
       <span className="sr-only">Share Runbook</span>

@@ -5,6 +5,12 @@ import { useQuery } from "@apollo/client";
 import { GET_RUNBOOK_METADATA } from "../../utils/queries";
 import { selectRunbook, setMetadata } from "../../reducers/runbooks-slice";
 import MultiPartyToggle from "./multi-party-toggle";
+import {
+  isMultiPartyAuthenticated,
+  isMultiPartyEnabled,
+  isMultiPartyInstantiated,
+} from "../../reducers/multi-party-slice";
+import MultiPartySharing from "./multi-party-sharing";
 
 export interface HeaderProps {
   title: string;
@@ -12,6 +18,10 @@ export interface HeaderProps {
 }
 export function Header({ title, panelScrollHandler }: HeaderProps) {
   const dispatch = useAppDispatch();
+  const multiPartyEnabled = useAppSelector(isMultiPartyEnabled);
+  const authenticated = useAppSelector(isMultiPartyAuthenticated);
+  const multiPartyInstantiated = useAppSelector(isMultiPartyInstantiated);
+
   const { loading } = useQuery(GET_RUNBOOK_METADATA, {
     onCompleted: (result) => {
       const { name, description } = result.runbook;
@@ -52,7 +62,16 @@ export function Header({ title, panelScrollHandler }: HeaderProps) {
         </div>
         {/* <span className="font-bold dark:text-slate-500">Protocol Runbook</span> */}
       </div>
-      <MultiPartyToggle />
+      <div className="flex flex-col gap-1 justify-end">
+        <MultiPartyToggle />
+        {loading ? (
+          ""
+        ) : multiPartyEnabled && authenticated && multiPartyInstantiated ? (
+          <MultiPartySharing />
+        ) : (
+          <div className="h-6"></div>
+        )}
+      </div>
     </div>
   );
 }

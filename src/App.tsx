@@ -10,6 +10,7 @@ import useQueries from "./hooks/useQueries";
 import {
   isMultiPartyAuthenticated,
   isMultiPartyEnabled,
+  isMultiPartyInstantiated,
 } from "./reducers/multi-party-slice";
 import HankoAuth from "./components/auth/hanko";
 
