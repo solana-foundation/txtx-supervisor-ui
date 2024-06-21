@@ -5,7 +5,9 @@
   "source": "src/index.html",
   "scripts": {
     "dev": "parcel",
-    "build": "parcel build"
+    "clean": "rm -rf .parcel-cache & rm -rf dist",
+    "build": "parcel build --no-source-maps",
+    "rebuild": "npm run clean && npm run build"
   },
   "keywords": [],
   "author": "",
