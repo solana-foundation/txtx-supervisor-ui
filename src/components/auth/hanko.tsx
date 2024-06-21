@@ -3,9 +3,13 @@ import { register, Hanko } from "@teamhanko/hanko-elements";
 import React from "react";
 import { ModalWrapper } from "../main/modal-wrapper";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import { setMultiPartyAuth } from "../../reducers/multi-party-slice";
+import {
+  setMultiPartyAuth,
+  setMultiPartySharing,
+} from "../../reducers/multi-party-slice";
 import { BACKEND_URL } from "../..";
 import { selectRunbook } from "../../reducers/runbooks-slice";
+import { ChannelOpenResponse } from "../main/multi-player-types";
 
 const HANKO_API_URL = process.env.HANKO_API_URL || "localhost:8000";
 
@@ -41,6 +45,9 @@ export default function HankoAuth() {
         credentials: "include",
       })
         .then((res) => {
+          res.json().then((response: ChannelOpenResponse) => {
+            dispatch(setMultiPartySharing(response));
+          });
           console.log("authenticated backend res", res);
         })
         .catch((err) => {

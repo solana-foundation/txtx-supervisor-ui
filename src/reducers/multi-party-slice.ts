@@ -5,8 +5,10 @@ export interface MultiPartyAuth {
   userId: string;
 }
 export interface MultiPartySharing {
-  multiPartyUrl: string;
-  totpToken: string;
+  totp: string;
+  httpEndpointUrl: string;
+  wsEndpointUrl: string;
+  slug: string;
 }
 export interface MultiPartyMode {
   enabled: boolean;
@@ -47,6 +49,7 @@ export const multiPartySlice = createSlice({
     isMultiPartyEnabled: (state) => state.enabled,
     isMultiPartyAuthenticated: (state) => state.auth !== undefined,
     isMultiPartyInstantiated: (state) => state.sharing !== undefined,
+    selectMultiPartySharing: (state) => state.sharing,
   },
 });
 
@@ -62,4 +65,5 @@ export const {
   isMultiPartyEnabled,
   isMultiPartyAuthenticated,
   isMultiPartyInstantiated,
+  selectMultiPartySharing,
 } = multiPartySlice.selectors;
