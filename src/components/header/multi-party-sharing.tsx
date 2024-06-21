@@ -61,7 +61,7 @@ interface TotpGenerator {
 
 const TOTP_PERIOD = 60;
 const getProgress = (timeLeft) =>
-  Math.round((timeLeft / TOTP_PERIOD) * 1000 * 100);
+  Math.round((timeLeft / (TOTP_PERIOD * 1000)) * 100);
 
 const getTimeLeft = (expiresAt) => Math.max(expiresAt - Date.now(), 0);
 
