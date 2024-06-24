@@ -33,7 +33,7 @@ export default function HankoAuth() {
 
       dispatch(setMultiPartyAuth(auth));
 
-      fetch(`${BACKEND_URL}/relayer/channels`, {
+      fetch(`${BACKEND_URL}/api/v1/channels`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

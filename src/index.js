@@ -28,12 +28,12 @@ const wsProtocol = protocol === "https:" ? "wss:" : "ws:";
 export const BACKEND_URL = `${protocol}//${host}`;
 
 const httpLink = new HttpLink({
-  uri: `${BACKEND_URL}/graphql`,
+  uri: `${BACKEND_URL}/gql/v1/graphql`,
 });
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: `${wsProtocol}//${host}/subscriptions`,
+    url: `${wsProtocol}//${host}/gql/v1/subscriptions`,
   }),
 );
 
