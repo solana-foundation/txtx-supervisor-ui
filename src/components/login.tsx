@@ -46,7 +46,7 @@ export default function Login() {
             throw new Error(`Error: ${response.statusText}`);
           }
           const result = await response.json();
-          console.log(result);
+          console.log("totp login result", result);
           dispatch(setToken(result.authToken));
           const route = slug ? `/c/${slug}/` : "/";
           navigate(route);
@@ -70,7 +70,6 @@ export default function Login() {
       inputs.current[index + 1].focus();
     }
   };
-  addEventListener("copy", console.log);
 
   const onKeyDown = (event, index) => {
     if (event.key === "Backspace" && !digits[index] && index !== 0) {
@@ -98,12 +97,12 @@ export default function Login() {
 
     return () => {
       inputs.current.forEach((input) => {
-        input.removeEventListener("paste", handlePaste);
+        if (input) {
+          input.removeEventListener("paste", handlePaste);
+        }
       });
     };
   }, [DIGIT_COUNT]);
-
-  console.log("all set?", allDigitsSet, digits);
 
   if (loading) {
     return <div>Loading</div>;

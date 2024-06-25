@@ -47,11 +47,18 @@ export const multiPartySlice = createSlice({
   }),
   selectors: {
     isMultiPartyEnabled: (state) => state.enabled,
-    isMultiPartyAuthenticated: (state) => state.auth !== undefined,
+    isMultiPartyAuthenticated: (state) =>
+      state.auth !== undefined && getCookie("hanko") !== undefined,
     isMultiPartyInstantiated: (state) => state.sharing !== undefined,
     selectMultiPartySharing: (state) => state.sharing,
   },
 });
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts === undefined) return;
+  if (parts.length === 2) return parts.pop()?.split(";").shift();
+}
 
 export const {
   setMultiPartyEnabled,

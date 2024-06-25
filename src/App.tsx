@@ -26,6 +26,7 @@ import {
   split,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import useOpenChannel from "./hooks/useOpenChannel";
 
 enum PageNav {
   Runbook,
@@ -125,11 +126,13 @@ function AppInternal() {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { modalBlocks } = useAppSelector(selectRunbook);
   const multiPartyEnabled = useAppSelector(isMultiPartyEnabled);
-  const authenticated = useAppSelector(isMultiPartyAuthenticated);
+  const multiPartyAuthenticated = useAppSelector(isMultiPartyAuthenticated);
 
   const { loading } = useQueries();
   // subscribe to new block events, action item updates, etc
   useSubscriptions();
+  // open multiparty channel if it's enabled, authenticated, and hasn't been opened
+  useOpenChannel();
 
   const panelScrollHandler = (index) => {
     window.location.hash = panelRefs.current[index].current.id;
@@ -144,7 +147,6 @@ function AppInternal() {
       });
     }, 200);
   };
-
   return (
     <div className="bg-gradient-to-b from-gray-950 to-neutral-900 ">
       {/* Small sidebar */}
@@ -183,7 +185,7 @@ function AppInternal() {
           <div className="flex justify-center py-9">
             {loading ? (
               ""
-            ) : multiPartyEnabled && !authenticated ? (
+            ) : multiPartyEnabled && !multiPartyAuthenticated ? (
               <HankoAuth />
             ) : (
               ""
