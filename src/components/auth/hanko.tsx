@@ -7,7 +7,7 @@ import {
   setMultiPartyAuth,
   setMultiPartySharing,
 } from "../../reducers/multi-party-slice";
-import { BACKEND_URL } from "../..";
+import { BACKEND_URL } from "../../App";
 import { selectRunbook } from "../../reducers/runbooks-slice";
 import { ChannelOpenResponse } from "../main/multi-player-types";
 
