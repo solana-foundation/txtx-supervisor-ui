@@ -63,7 +63,7 @@ export function Header({ title, panelScrollHandler }: HeaderProps) {
         </div>
         {/* <span className="font-bold dark:text-slate-500">Protocol Runbook</span> */}
       </div>
-      <div className="h-20 flex-1 flex justify-end flex-col gap-1 justify-end">
+      <div className="z-50 h-20 flex-1 flex justify-end flex-col gap-1 justify-end">
         <MultiPartyToggle />
         {loading ? (
           ""
