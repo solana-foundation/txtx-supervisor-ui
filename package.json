@@ -4,9 +4,9 @@
   "description": "",
   "source": "src/index.html",
   "scripts": {
-    "dev": "parcel",
+    "dev": "TXTX_DEV_MODE=true parcel",
     "clean": "rm -rf .parcel-cache & rm -rf dist",
-    "build": "parcel build --no-source-maps",
+    "build": "parcel build",
     "rebuild": "npm run clean && npm run build"
   },
   "keywords": [],
