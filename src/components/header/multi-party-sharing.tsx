@@ -59,24 +59,25 @@ interface TotpGenerator {
   secret: string;
 }
 
-const TOTP_PERIOD = 30;
+const TOTP_PERIOD = 60;
 const TOTP_PERIOD_MS = TOTP_PERIOD * 1000;
 const getProgress = (timeLeft) => Math.round((timeLeft / TOTP_PERIOD_MS) * 100);
 
 const getTimeLeft = (expiresAt) => Math.max(expiresAt - Date.now(), 0);
-
-function TotpGenerator({ secret }: TotpGenerator) {
-  const base32Totp = base32.encode(Buffer.from(secret, "hex"));
-  const { otp: token, expires } = TOTP.generate(base32Totp, {
+const generateOTP = (base32Totp) =>
+  TOTP.generate(base32Totp, {
     period: TOTP_PERIOD,
+    algorithm: "SHA-256",
   });
+function TotpGenerator({ secret }: TotpGenerator) {
+  const { otp: token, expires } = generateOTP(secret);
   const [otp, setOtp] = useState(token);
   const [expiresAt, setExpiresAt] = useState(expires);
   const [progress, setProgress] = useState(getProgress(getTimeLeft(expires)));
 
   useEffect(() => {
     const updateOtp = () => {
-      const { otp: token, expires } = TOTP.generate(base32Totp);
+      const { otp: token, expires } = generateOTP(secret);
       setExpiresAt(expires);
       setOtp(token);
     };
