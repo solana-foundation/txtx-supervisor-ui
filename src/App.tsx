@@ -15,18 +15,16 @@ import HankoAuth from "./components/auth/hanko";
 import { Navigate, Route, Routes, useParams } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
 import Login from "./components/login";
-import { getMainDefinition } from "@apollo/client/utilities";
-import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
-import { createClient } from "graphql-ws";
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  HttpLink,
-  split,
-} from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
+import { ApolloProvider } from "@apollo/client";
 import useOpenChannel from "./hooks/useOpenChannel";
+import useApolloClient from "./hooks/useApolloClient";
+
+const devMode = process.env.TXTX_DEV_MODE === "true";
+const protocol = window.location.protocol;
+const host = devMode ? "localhost:8488" : window.location.host;
+const wsProtocol = protocol === "https:" ? "wss:" : "ws:";
+export const BACKEND_URL = `${protocol}//${host}`;
+export const BACKEND_WS_URL = `${wsProtocol}//${host}`;
 
 enum PageNav {
   Runbook,
@@ -61,6 +59,8 @@ export const ProtectedRoute = ({ children }) => {
   const { tokenNeeded, token } = useAuth();
   const { slug } = useParams();
   console.log("protected route slug", slug);
+  console.log("token needed", tokenNeeded);
+  console.log("token", token);
   if (tokenNeeded === undefined) {
     return <div>Loading...</div>;
   }
@@ -69,52 +69,12 @@ export const ProtectedRoute = ({ children }) => {
     console.log("rerouting to", route);
     return <Navigate to={route} />;
   }
-
-  // if we're authenticated, use that auth for apollo requests
-  const httpLink = new HttpLink({
-    uri: `${BACKEND_URL}/gql/v1/graphql`,
-  });
-
-  const wsLink = new GraphQLWsLink(
-    createClient({
-      url: `${wsProtocol}//${host}/gql/v1/subscriptions`,
-    }),
-  );
-
-  const splitLink = split(
-    ({ query }) => {
-      const definition = getMainDefinition(query);
-      return (
-        definition.kind === "OperationDefinition" &&
-        definition.operation === "subscription"
-      );
-    },
-    wsLink,
-    httpLink,
-  );
-
-  const authLink = setContext((_, { headers }) => {
-    // return the headers to the context so httpLink can read them
-    return {
-      headers: {
-        ...headers,
-        authorization: tokenNeeded && token ? `Bearer ${token}` : "",
-      },
-    };
-  });
-
-  const apolloClient = new ApolloClient({
-    link: authLink.concat(splitLink),
-    cache: new InMemoryCache(),
-  });
+  const apolloClient = useApolloClient(slug || "", tokenNeeded, token);
+  if (apolloClient === undefined) {
+    throw new Error("failed to initialize apollo client.");
+  }
   return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
 };
-
-const devMode = process.env.TXTX_DEV_MODE === "true";
-const protocol = window.location.protocol;
-const host = devMode ? "localhost:8488" : window.location.host;
-const wsProtocol = protocol === "https:" ? "wss:" : "ws:";
-export const BACKEND_URL = `${protocol}//${host}`;
 
 function AppInternal() {
   // todo: we should probably introduce a router to actually have this on a separate page
