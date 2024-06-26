@@ -100,9 +100,10 @@ export const runbooksSlice = createSlice({
               },
             ],
           });
+          return;
         }
         const progressBar = state.progressBlocks[progressBarIdx];
-        const constructStatusesIdx = progressBar?.panel.findIndex(
+        const constructStatusesIdx = progressBar.panel.findIndex(
           (p) => p.constructUuid === constructUuid,
         );
         if (constructStatusesIdx === -1) {
