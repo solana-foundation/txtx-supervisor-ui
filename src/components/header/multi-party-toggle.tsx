@@ -1,36 +1,24 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Switch } from "@headlessui/react";
 import Incognito from "../icons/incognito";
 import MultiParty from "../icons/multi-party";
 import {
-  isMultiPartyAuthenticated,
   isMultiPartyEnabled,
-  isMultiPartyInstantiated,
   setMultiPartyEnabled,
 } from "../../reducers/multi-party-slice";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { classNames } from "../../utils/helpers";
+import useDeleteChannel from "../../hooks/useDeleteChannel";
 
 export default function MultiPartyToggle() {
   const enabled = useAppSelector(isMultiPartyEnabled);
-  const authenticated = useAppSelector(isMultiPartyAuthenticated);
-  const instantiated = useAppSelector(isMultiPartyInstantiated);
   const dispatch = useAppDispatch();
   const setEnabled = (isEnabled) => {
     dispatch(setMultiPartyEnabled(isEnabled));
-  };
-  useEffect(() => {
-    if (enabled) {
-      if (authenticated) {
-        if (!instantiated) {
-        }
-      } else {
-      }
-    } else {
-      if (authenticated) {
-      }
+    if (!isEnabled) {
+      useDeleteChannel();
     }
-  }, [enabled]);
+  };
 
   return (
     <Switch
