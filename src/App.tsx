@@ -18,6 +18,7 @@ import Login from "./components/login";
 import { ApolloProvider } from "@apollo/client";
 import useOpenChannel from "./hooks/useOpenChannel";
 import useApolloClient from "./hooks/useApolloClient";
+import { SuspensePage } from "./components/pages/suspense";
 
 const devMode = process.env.TXTX_DEV_MODE === "true";
 const protocol = window.location.protocol;
@@ -59,7 +60,7 @@ export const ProtectedRoute = ({ children }) => {
   const { tokenNeeded, token } = useParticipantAuth();
   const { slug } = useParams();
   if (tokenNeeded === undefined) {
-    return <div>Loading...</div>;
+    return <SuspensePage />;
   }
   if (tokenNeeded && !token) {
     const route = slug ? `/c/${slug}/login` : "/login";

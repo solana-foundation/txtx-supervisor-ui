@@ -14,6 +14,9 @@ export default function useOpenChannel() {
   const authenticated = useAppSelector(isMultiPartyAuthenticated);
   const instantiated = useAppSelector(isMultiPartyInstantiated);
 
+  console.log(
+    `use open channel. enabled: ${enabled}. authenticated: ${authenticated}. instantiated: ${instantiated}`,
+  );
   if (!enabled || !authenticated || instantiated) return;
 
   fetch(`${BACKEND_URL}/api/v1/channels`, {

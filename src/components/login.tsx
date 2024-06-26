@@ -3,6 +3,8 @@ import { BACKEND_URL } from "../App";
 import { useAppDispatch } from "../hooks";
 import { useNavigate, useParams } from "react-router-dom";
 import { setParticipantToken } from "../reducers/participant-auth-slice";
+import { SuspensePage } from "./pages/suspense";
+import { ErrorPage } from "./pages/error";
 
 const DIGIT_COUNT = 6;
 export default function Login() {
@@ -103,10 +105,10 @@ export default function Login() {
   }, [DIGIT_COUNT]);
 
   if (loading) {
-    return <div>Loading</div>;
+    return <SuspensePage />;
   }
   if (error) {
-    return <div>{error}</div>;
+    return <ErrorPage error={error} />;
   }
   return (
     <div className="bg-gradient-to-b from-gray-950 to-neutral-900 ">
