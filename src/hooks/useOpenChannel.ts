@@ -27,9 +27,9 @@ export default function useOpenChannel() {
       res.json().then((response: ChannelOpenResponse) => {
         dispatch(setMultiPartySharing(response));
       });
-      console.log("authenticated backend res", res);
+      console.log("create channel res", res);
     })
     .catch((err) => {
-      console.log("backend auth failed", err);
+      console.log("create channel failed", err);
     });
 }
