@@ -2,7 +2,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface ParticipantAuth {
-  participantOpenNeeded?: boolean;
+  participantTokenNeeded?: boolean;
   participantToken?: string;
 }
 const initialState: ParticipantAuth = {};
@@ -13,7 +13,7 @@ export const participantAuthSlice = createSlice({
   reducers: (create) => ({
     setParticipantTokenNeeded: create.reducer(
       (state, action: PayloadAction<boolean>) => {
-        state.participantOpenNeeded = action.payload;
+        state.participantTokenNeeded = action.payload;
       },
     ),
     setParticipantToken: create.reducer(
@@ -26,7 +26,7 @@ export const participantAuthSlice = createSlice({
     }),
   }),
   selectors: {
-    selectParticipantTokenNeeded: (state) => state.participantOpenNeeded,
+    selectParticipantTokenNeeded: (state) => state.participantTokenNeeded,
     selectParticipantToken: (state) => state.participantToken,
   },
 });
