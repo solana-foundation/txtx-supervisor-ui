@@ -69,7 +69,7 @@ export const ProtectedRoute = ({ children }) => {
     console.log("rerouting to", route);
     return <Navigate to={route} />;
   }
-  const apolloClient = useApolloClient(slug || "", tokenNeeded, token);
+  const apolloClient = useApolloClient(tokenNeeded, token);
   if (apolloClient === undefined) {
     throw new Error("failed to initialize apollo client.");
   }
