@@ -1,6 +1,6 @@
 import { Header } from "./components/header/header";
 import { NavGroup } from "./components/sidebar/nav";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Runbook from "./components/main/runbook";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { selectRunbook } from "./reducers/runbooks-slice";
@@ -13,7 +13,7 @@ import {
 } from "./reducers/multi-party-slice";
 import HankoAuth from "./components/auth/hanko";
 import { Navigate, Route, Routes, useParams } from "react-router-dom";
-import { useAuth } from "./hooks/useAuth";
+import { useParticipantAuth } from "./hooks/useParticipantAuth";
 import Login from "./components/login";
 import { ApolloProvider } from "@apollo/client";
 import useOpenChannel from "./hooks/useOpenChannel";
@@ -56,11 +56,8 @@ export default function App() {
   );
 }
 export const ProtectedRoute = ({ children }) => {
-  const { tokenNeeded, token } = useAuth();
+  const { tokenNeeded, token } = useParticipantAuth();
   const { slug } = useParams();
-  console.log("protected route slug", slug);
-  console.log("token needed", tokenNeeded);
-  console.log("token", token);
   if (tokenNeeded === undefined) {
     return <div>Loading...</div>;
   }

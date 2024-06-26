@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { classNames } from "../utils/helpers";
 import { BACKEND_URL } from "../App";
 import { useAppDispatch } from "../hooks";
 import { useNavigate, useParams } from "react-router-dom";
-import { setToken } from "../reducers/auth-slice";
+import { setParticipantToken } from "../reducers/participant-auth-slice";
 
 const DIGIT_COUNT = 6;
 export default function Login() {
@@ -46,8 +45,7 @@ export default function Login() {
             throw new Error(`Error: ${response.statusText}`);
           }
           const result = await response.json();
-          console.log("totp login result", result);
-          dispatch(setToken(result.authToken));
+          dispatch(setParticipantToken(result.authToken));
           const route = slug ? `/c/${slug}/` : "/";
           navigate(route);
         } catch (error) {
@@ -146,27 +144,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-interface OtpField {
-  index: number;
-  digit: number;
-  setDigit: any;
-}
-function OtpField({ index, digit, setDigit }: OtpField) {
-  return (
-    <div className="w-16 px-3 py-4 bg-gray-950 rounded border border-zinc-600 flex-col justify-center items-center inline-flex">
-      <input
-        className="text-center w-full max-w-full p-0 bg-gray-950 text-4xl text-white font-normal font-gt border-none focus:outline-none focus:ring-0 ring-0 "
-        defaultValue={digit}
-        onChange={(e) => {
-          setDigit(index, e.target.value);
-        }}
-        datatype="number"
-        maxLength={1}
-      />
     </div>
   );
 }

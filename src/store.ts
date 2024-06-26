@@ -16,7 +16,7 @@ import storage from "redux-persist/lib/storage";
 import { runbookStepSlice } from "./reducers/runbook-step-slice";
 import { panelRowsSlice } from "./reducers/panel-rows-slice";
 import { multiPartySlice } from "./reducers/multi-party-slice";
-import { authSlice } from "./reducers/auth-slice";
+import { participantAuthSlice } from "./reducers/participant-auth-slice";
 
 const configureReducer = () => {
   // we want some reducers persisted at a slug-specific level
@@ -26,7 +26,6 @@ const configureReducer = () => {
   const slugPersistConfig = {
     key: `${slug}`,
     storage,
-    // whitelist: ["auth"],
   };
 
   // and some persisted across the whole app state
@@ -41,7 +40,10 @@ const configureReducer = () => {
     activeStep: runbookStepSlice.reducer,
     panelRows: panelRowsSlice.reducer,
     multiPartyMode: multiPartySlice.reducer,
-    auth: persistReducer(slugPersistConfig, authSlice.reducer),
+    participantAuth: persistReducer(
+      slugPersistConfig,
+      participantAuthSlice.reducer,
+    ),
   });
 
   const persistedReducer = persistReducer(generalPersistConfig, rootReducer);
