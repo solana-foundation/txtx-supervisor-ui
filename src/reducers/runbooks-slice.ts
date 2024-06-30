@@ -227,13 +227,11 @@ export const runbooksSlice = createSlice({
     setModalVisibility: create.reducer(
       (state, action: PayloadAction<[uuid: string, visibility: boolean]>) => {
         const [uuid, visibility] = action.payload;
-        console.log("setting visibility", uuid, visibility);
         const modalIdx = state.modalBlocks.findIndex(
           (modal) => modal.uuid === uuid,
         );
         if (modalIdx === undefined) return;
         state.modalBlocks[modalIdx].visible = visibility;
-        console.log(state.modalBlocks[modalIdx]);
       },
     ),
     setMetadata: create.reducer(

@@ -160,7 +160,6 @@ export function ProvidePublicKeyAction({
       const onClick = () => {
         addonManager.disconnectWallet(namespace, networkId);
       };
-      console.log(actionStatus);
       return (
         <ActionItemRow
           actionItem={actionItem}

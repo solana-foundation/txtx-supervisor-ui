@@ -46,7 +46,6 @@ export function ProvideSignedMessageAction({
   // insert a zero-width space every other character to allow the text to break as needed
   const displayedValue = msgStr.match(/(.{1})/g)?.join("​") || msgStr;
 
-
   const isWalletConnected = addonManager.isWalletConnected(
     namespace,
     networkId,
@@ -86,7 +85,6 @@ export function ProvideSignedMessageAction({
       address,
       msgStr,
     );
-    console.log(signedMessage);
     return;
     // if (signedMessage !== undefined) {
     //   const event: ActionItemResponse = {

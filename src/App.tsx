@@ -64,7 +64,6 @@ export const ProtectedRoute = ({ children }) => {
   }
   if (tokenNeeded && !token) {
     const route = slug ? `/c/${slug}/login` : "/login";
-    console.log("rerouting to", route);
     return <Navigate to={route} />;
   }
   const apolloClient = useApolloClient(tokenNeeded, token);
