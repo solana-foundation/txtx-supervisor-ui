@@ -53,9 +53,17 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/c/:slug/*" element={<RedirectComponent />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
+
+const RedirectComponent = () => {
+  const { slug } = useParams();
+  return <Navigate to={`/c/${slug}`} replace />;
+};
+
 export const ProtectedRoute = ({ children }) => {
   const { tokenNeeded, token } = useParticipantAuth();
   const { slug } = useParams();
