@@ -3,7 +3,10 @@ import { Switch } from "@headlessui/react";
 import Incognito from "../icons/incognito";
 import MultiParty from "../icons/multi-party";
 import {
+  isMultiPartyAuthenticated,
   isMultiPartyEnabled,
+  isMultiPartyInstantiated,
+  selectMultiPartySharing,
   setMultiPartyEnabled,
 } from "../../reducers/multi-party-slice";
 import { useAppDispatch, useAppSelector } from "../../hooks";
@@ -12,13 +15,16 @@ import useDeleteChannel from "../../hooks/useDeleteChannel";
 
 export default function MultiPartyToggle() {
   const enabled = useAppSelector(isMultiPartyEnabled);
+  const authenticated = useAppSelector(isMultiPartyAuthenticated);
+  const instantiated = useAppSelector(isMultiPartyInstantiated);
+  const sharing = useAppSelector(selectMultiPartySharing);
   const dispatch = useAppDispatch();
   const setEnabled = (isEnabled) => {
     dispatch(setMultiPartyEnabled(isEnabled));
-    if (!isEnabled) {
-      useDeleteChannel();
-    }
   };
+
+  const doDeleteChannel = !enabled && authenticated && instantiated;
+  useDeleteChannel(doDeleteChannel, sharing?.slug || "");
 
   return (
     <Switch
