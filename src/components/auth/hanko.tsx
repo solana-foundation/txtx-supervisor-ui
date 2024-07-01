@@ -8,7 +8,9 @@ import {
   setMultiPartyEnabled,
 } from "../../reducers/multi-party-slice";
 
-const HANKO_API_URL = process.env.HANKO_API_URL || "localhost:8000";
+const HANKO_API_URL =
+  process.env.HANKO_API_URL ||
+  "https://592c32e8-1943-4030-972d-b3bc5f9d3089.hanko.io";
 
 export default function HankoAuth() {
   const dispatch = useAppDispatch();
