@@ -3,13 +3,12 @@ import { BACKEND_URL } from "../App";
 import { useAppDispatch } from "../hooks";
 import { useNavigate, useParams } from "react-router-dom";
 import { setParticipantToken } from "../reducers/participant-auth-slice";
-import { SuspensePage } from "./pages/suspense";
-import { ErrorPage } from "./pages/error";
 
 const DIGIT_COUNT = 6;
 export default function Login() {
   const [allDigitsSet, setAllDigitsSet] = useState(false);
   const [digits, setDigits] = useState<any[]>(Array(DIGIT_COUNT).fill(""));
+  // todo: create loading animation
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const inputs = useRef<any>([]);
@@ -104,12 +103,6 @@ export default function Login() {
     };
   }, [DIGIT_COUNT]);
 
-  if (loading) {
-    return <SuspensePage />;
-  }
-  if (error) {
-    return <ErrorPage error={error} />;
-  }
   return (
     <div className="bg-gradient-to-b from-gray-950 to-neutral-900 ">
       <div className="min-h-screen w-full pt-0 mt-0 grow shrink basis-0 px-6 pt-6 flex-col justify-start items-center gap-8 inline-flex">
@@ -144,6 +137,7 @@ export default function Login() {
                 ))}
             </div>
           </div>
+          <div className="self-stretch text-sm text-rose-400">{error}</div>
         </div>
       </div>
     </div>
