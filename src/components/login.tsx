@@ -5,6 +5,21 @@ import { useNavigate, useParams } from "react-router-dom";
 import { setParticipantToken } from "../reducers/participant-auth-slice";
 
 const DIGIT_COUNT = 6;
+
+function isValidDigit(value) {
+  return (
+    value === "0" ||
+    value === "1" ||
+    value === "2" ||
+    value === "3" ||
+    value === "4" ||
+    value === "5" ||
+    value === "6" ||
+    value === "7" ||
+    value === "8" ||
+    value === "9"
+  );
+}
 export default function Login() {
   const [allDigitsSet, setAllDigitsSet] = useState(false);
   const [digits, setDigits] = useState<any[]>(Array(DIGIT_COUNT).fill(""));
@@ -19,7 +34,7 @@ export default function Login() {
   useEffect(() => {
     let allSet = true;
     for (let i = 0; i < DIGIT_COUNT; i++) {
-      if (digits[i] === "" || isNaN(digits[i])) {
+      if (!isValidDigit(digits[i])) {
         allSet = false;
         break;
       }
@@ -60,7 +75,10 @@ export default function Login() {
   }, [allDigitsSet]);
 
   const setDigit = (index: number, element: any) => {
-    if (isNaN(element.value)) return;
+    if (!isValidDigit(element.value)) {
+      inputs.current[index].value = "";
+      return;
+    }
     const newDigits = [...digits];
     newDigits[index] = element.value;
     setDigits(newDigits);
@@ -71,15 +89,19 @@ export default function Login() {
   };
 
   const onKeyDown = (event, index) => {
-    if (event.key === "Backspace" && !digits[index] && index !== 0) {
+    if (event.key === "Backspace" && index !== 0) {
+      inputs.current[index].value = "";
       inputs.current[index - 1].focus();
+      inputs.current[index - 1].value = "";
+      event.preventDefault();
     }
   };
 
   useEffect(() => {
     const handlePaste = (event) => {
-      const paste = event.clipboardData.getData("text").trim();
-      if (paste.length === DIGIT_COUNT && !isNaN(paste)) {
+      const paste = event.clipboardData.getData("text").trim().replace("-", "");
+
+      if (paste.length === DIGIT_COUNT && paste.split("").every(isValidDigit)) {
         const newDigits = paste.split("").slice(0, DIGIT_COUNT);
         setDigits(newDigits);
         newDigits.forEach((value, index) => {
@@ -130,7 +152,7 @@ export default function Login() {
                       }}
                       datatype="text"
                       maxLength={1}
-                      onKeyDown={(e) => onKeyDown(i, e)}
+                      onKeyDown={(e) => onKeyDown(e, i)}
                       ref={(el) => (inputs.current[i] = el)}
                     />
                   </div>
