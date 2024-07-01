@@ -1,9 +1,3 @@
-import {
-  Dialog,
-  Transition,
-  TransitionChild,
-  DialogPanel,
-} from "@headlessui/react";
 import React, { forwardRef } from "react";
 import { ActionGroup, ActionSubGroup, ModalBlock } from "./types";
 import { classNames } from "../../utils/helpers";
@@ -29,9 +23,15 @@ export interface Modal {
   index: number;
 }
 export function Modal({ block, index }: Modal) {
+  const dispatch = useAppDispatch();
   const isVisible = block.visible;
   return (
-    <ModalWrapper visible={isVisible}>
+    <ModalWrapper
+      visible={isVisible}
+      onClick={() => {
+        dispatch(setModalVisibility([block.uuid, false]));
+      }}
+    >
       <Panel
         key={block.uuid}
         block={block}

@@ -3,7 +3,10 @@ import { register, Hanko } from "@teamhanko/hanko-elements";
 import React from "react";
 import { ModalWrapper } from "../main/modal-wrapper";
 import { useAppDispatch } from "../../hooks";
-import { setMultiPartyAuth } from "../../reducers/multi-party-slice";
+import {
+  setMultiPartyAuth,
+  setMultiPartyEnabled,
+} from "../../reducers/multi-party-slice";
 
 const HANKO_API_URL = process.env.HANKO_API_URL || "localhost:8000";
 
@@ -34,8 +37,11 @@ export default function HankoAuth() {
     });
   }, []);
 
+  const onModalClick = () => {
+    dispatch(setMultiPartyEnabled(false));
+  };
   return (
-    <ModalWrapper visible={true}>
+    <ModalWrapper visible={true} onClick={onModalClick}>
       <div className="w-content mx-auto">
         <hanko-auth class="hankoComponent" />
       </div>
