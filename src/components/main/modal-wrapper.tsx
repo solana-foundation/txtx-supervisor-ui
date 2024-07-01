@@ -50,7 +50,7 @@ export function ModalWrapper({ children, visible, onClick }: ModalWrapper) {
               <div className="modal-close-click-target w-full justify-center flex flex-col items-center">
                 <div
                   onClick={modalCloseOnClick}
-                  className="modal-close-click-target w-[1024px] max-w-full min-h-full px-6 pt-6 justify-center flex flex-col inline-flex gap-8"
+                  className="modal-close-click-target w-[1024px] max-w-full min-h-full px-6 pt-16 justify-center flex flex-col inline-flex gap-8"
                 >
                   {children}
                 </div>
