@@ -11,6 +11,7 @@ import {
   isMultiPartyInstantiated,
 } from "../../reducers/multi-party-slice";
 import MultiPartySharing from "./multi-party-sharing";
+import { selectIsOperator } from "../../reducers/participant-auth-slice";
 
 export interface HeaderProps {
   title: string;
@@ -21,6 +22,7 @@ export function Header({ title, panelScrollHandler }: HeaderProps) {
   const multiPartyEnabled = useAppSelector(isMultiPartyEnabled);
   const authenticated = useAppSelector(isMultiPartyAuthenticated);
   const multiPartyInstantiated = useAppSelector(isMultiPartyInstantiated);
+  const clientIsOperator = useAppSelector(selectIsOperator);
 
   const { loading } = useQuery(GET_RUNBOOK_METADATA, {
     onCompleted: (result) => {
@@ -64,7 +66,7 @@ export function Header({ title, panelScrollHandler }: HeaderProps) {
         {/* <span className="font-bold dark:text-slate-500">Protocol Runbook</span> */}
       </div>
       <div className="z-50 h-20 flex-1 flex justify-end flex-col gap-1 justify-end">
-        <MultiPartyToggle />
+        {clientIsOperator ? <MultiPartyToggle /> : <div></div>}
         {loading ? (
           ""
         ) : multiPartyEnabled && authenticated && multiPartyInstantiated ? (
