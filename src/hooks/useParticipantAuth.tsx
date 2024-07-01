@@ -7,7 +7,7 @@ import {
   selectParticipantToken,
   selectParticipantTokenNeeded,
   setParticipantToken,
-  setParticipantTokenNeeded,
+  initializeClient,
 } from "../reducers/participant-auth-slice";
 
 let fetching = false;
@@ -25,7 +25,7 @@ export const useParticipantAuth = () => {
         try {
           const res = await fetch(`${BACKEND_URL}/api/v1/discovery`);
           const data = await res.json();
-          dispatch(setParticipantTokenNeeded(data.needsCredentials));
+          dispatch(initializeClient(data));
           fetching = false;
         } catch (error) {
           console.error(error);

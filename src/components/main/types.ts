@@ -1,3 +1,8 @@
+export interface ClientDiscoveryResponse {
+  clientType: "Participant" | "Operator";
+  needsCredentials: boolean;
+}
+
 export interface Protocol {
   name: string;
   runbooks: Array<RunbookMetadata>;
