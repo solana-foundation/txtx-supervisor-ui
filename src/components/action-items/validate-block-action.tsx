@@ -4,8 +4,9 @@ import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
 import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { classNames } from "../../utils/helpers";
-import { useSelector } from "react-redux";
 import { selectPanelValidationReady } from "../../reducers/runbooks-slice";
+import { selectIsOperator } from "../../reducers/participant-auth-slice";
+import { useAppSelector } from "../../hooks";
 
 export interface ValidateBlockAction {
   actionItem: ActionItemRequest;
@@ -17,7 +18,8 @@ export function ValidateBlockAction({
 }: ValidateBlockAction) {
   const { id, title, actionStatus } = actionItem;
   const { status } = actionStatus;
-  const validationReady = useSelector((state: any) =>
+  const clientIsOperator = useAppSelector(selectIsOperator);
+  const validationReady = useAppSelector((state: any) =>
     selectPanelValidationReady(state, id),
   );
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
@@ -31,6 +33,9 @@ export function ValidateBlockAction({
   };
   let isDisabled = !validationReady;
   if (status === "Success") {
+    isDisabled = true;
+  }
+  if (!clientIsOperator) {
     isDisabled = true;
   }
 

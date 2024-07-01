@@ -46,6 +46,36 @@ export function ProvideSignedTransactionAction({
   // insert a zero-width space every other character to allow the text to break as needed
   const displayedValue = transaction.match(/(.{1})/g)?.join("​") || transaction;
 
+  const isWalletConnected = addonManager.isWalletConnected(
+    namespace,
+    networkId,
+  );
+  if (!isWalletConnected) {
+    const onClick = async () => {
+      await addonManager.connectWallet(namespace, networkId);
+    };
+    return (
+      <SignTransactionRow
+        actionItem={actionItem}
+        isFirst={isFirst}
+        isLast={isLast}
+        onClick={() => {}}
+        subRow={{
+          text: displayedValue,
+          children: (
+            <PanelButton
+              title="Connect Wallet"
+              onClick={onClick}
+              isDisabled={false}
+              size={ElementSize.S}
+            />
+          ),
+        }}
+      >
+        <div></div>
+      </SignTransactionRow>
+    );
+  }
   const address = addonManager.getAddress(namespace, networkId);
   const onClick = async () => {
     const signedTxHex = await addonManager.signTransaction(

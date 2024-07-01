@@ -15,21 +15,43 @@ import {
 import storage from "redux-persist/lib/storage";
 import { runbookStepSlice } from "./reducers/runbook-step-slice";
 import { panelRowsSlice } from "./reducers/panel-rows-slice";
+import { multiPartySlice } from "./reducers/multi-party-slice";
+import { participantAuthSlice } from "./reducers/participant-auth-slice";
 
-const persistConfig = {
-  key: "runbooks",
-  storage,
-  whitelist: ["activeStep", "panelRows"],
+const configureReducer = () => {
+  // we want some reducers persisted at a slug-specific level
+  const path = window.location.pathname;
+  const match = path.match(/^\/c\/([^/]+)/);
+  const slug = match ? match[1] : "default";
+  const slugPersistConfig = {
+    key: `${slug}`,
+    storage,
+  };
+
+  // and some persisted across the whole app state
+  const generalPersistConfig = {
+    key: "runbooks",
+    storage,
+    whitelist: ["multiPartyMode"],
+  };
+
+  const rootReducer = combineReducers({
+    runbooks: runbooksSlice.reducer,
+    activeStep: runbookStepSlice.reducer,
+    panelRows: panelRowsSlice.reducer,
+    multiPartyMode: multiPartySlice.reducer,
+    participantAuth: persistReducer(
+      slugPersistConfig,
+      participantAuthSlice.reducer,
+    ),
+  });
+
+  const persistedReducer = persistReducer(generalPersistConfig, rootReducer);
+
+  return persistedReducer;
 };
 
-const reducers = combineReducers({
-  runbooks: runbooksSlice.reducer,
-  activeStep: runbookStepSlice.reducer,
-  panelRows: panelRowsSlice.reducer,
-});
-
-const persistedReducer = persistReducer(persistConfig, reducers);
-
+const persistedReducer = configureReducer();
 export type RootState = ReturnType<typeof persistedReducer>;
 
 export const makeStore = (preloadedState?: Partial<RootState>) => {

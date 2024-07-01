@@ -76,6 +76,9 @@ module.exports = {
         inter: ["Inter var"],
         gt: ['"GT America Mono"'],
       },
+      transitionProperty: {
+        width: "width",
+      },
     },
   },
   plugins: [
