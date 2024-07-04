@@ -11,11 +11,12 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
+  createTransform,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { runbookStepSlice } from "./reducers/runbook-step-slice";
 import { panelRowsSlice } from "./reducers/panel-rows-slice";
-import { multiPartySlice } from "./reducers/multi-party-slice";
+import { MultiPartyMode, multiPartySlice } from "./reducers/multi-party-slice";
 import { participantAuthSlice } from "./reducers/participant-auth-slice";
 
 const configureReducer = () => {
@@ -28,11 +29,25 @@ const configureReducer = () => {
     storage,
   };
 
-  // and some persisted across the whole app state
+  const multiPartyModeTransform: any = createTransform(
+    // Transform state on its way to being serialized and persisted.
+    (inboundState: MultiPartyMode, key) => {
+      const { auth } = inboundState;
+      return { auth };
+    },
+    // Transform state being rehydrated.
+    (outboundState: any, key) => {
+      return outboundState as any;
+    },
+    // Define which slice this transform gets applied to.
+    { whitelist: ["multiPartyMode"] },
+  );
+
   const generalPersistConfig = {
     key: "runbooks",
     storage,
     whitelist: ["multiPartyMode"],
+    transforms: [multiPartyModeTransform],
   };
 
   const rootReducer = combineReducers({
