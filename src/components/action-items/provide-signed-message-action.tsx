@@ -1,5 +1,5 @@
 import React from "react";
-import { ActionItemSubRow } from "./components/action-item-row";
+import { ActionItemRow, ActionItemSubRow } from "./components/action-item-row";
 import {
   ActionItemRequest,
   ActionItemResponse,
@@ -34,8 +34,8 @@ export function ProvideSignedMessageAction({
   const {
     data: { message, namespace, networkId, signerUuid },
   } = actionType;
-  addonManager.addNetworkInstance(namespace, networkId);
 
+  addonManager.addNetworkInstance(namespace, networkId);
   const msgStr = formatValueForDisplay(message);
   if (msgStr == null || typeof msgStr !== "string") {
     throw new Error(
@@ -46,6 +46,37 @@ export function ProvideSignedMessageAction({
   // insert a zero-width space every other character to allow the text to break as needed
   const displayedValue = msgStr.match(/(.{1})/g)?.join("​") || msgStr;
 
+  const isWalletConnected = addonManager.isWalletConnected(
+    namespace,
+    networkId,
+  );
+  if (!isWalletConnected) {
+    const onClick = async () => {
+      await addonManager.connectWallet(namespace, networkId);
+    };
+    return (
+      <SignTransactionRow
+        actionItem={actionItem}
+        isFirst={isFirst}
+        isLast={isLast}
+        onClick={() => {}}
+        subRow={{
+          text: displayedValue,
+          children: (
+            <PanelButton
+              title="Connect Wallet"
+              onClick={onClick}
+              isDisabled={false}
+              size={ElementSize.S}
+            />
+          ),
+        }}
+      >
+        <div></div>
+      </SignTransactionRow>
+    );
+  }
+
   const address = addonManager.getAddress(namespace, networkId);
   const onClick = async () => {
     const signedMessage = await addonManager.signMessage(
@@ -54,7 +85,6 @@ export function ProvideSignedMessageAction({
       address,
       msgStr,
     );
-    console.log(signedMessage);
     return;
     // if (signedMessage !== undefined) {
     //   const event: ActionItemResponse = {

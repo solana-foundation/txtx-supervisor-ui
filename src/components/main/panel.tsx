@@ -47,7 +47,7 @@ export const Panel = forwardRef(function Panel(
   const panelId =
     title.toLocaleLowerCase().split(" ").join("-") + "-" + panelIndex;
 
-  if (firstRender && isLast) {
+  if (firstRender && isLast && panelIndex !== 0) {
     setTimeout(() => {
       document
         .getElementById(uuid)
