@@ -105,6 +105,7 @@ export const GET_PROGRESS_BLOCKS = gql`
         constructUuid
         statuses {
           status
+          statusColor
           message
           diagnostic
         }
@@ -219,6 +220,7 @@ export const PROGRESS_BLOCK_EVENT_SUBSCRIPTION = gql`
         constructUuid
         statuses {
           status
+          statusColor
           message
           diagnostic
         }
@@ -250,6 +252,7 @@ export const UPDATE_PROGRESS_BAR_STATUS_SUBSCRIPTION = gql`
       constructUuid
       newStatus {
         status
+        statusColor
         message
         diagnostic
       }

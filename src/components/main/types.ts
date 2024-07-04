@@ -96,10 +96,11 @@ export interface ProgressBarVisibilityUpdate {
 
 export interface ProgressBarStatus {
   status: string;
+  statusColor: ProgressBarStatusColor;
   message: string;
   diagnostic?: Diagnostic;
 }
-
+export type ProgressBarStatusColor = "Green" | "Yellow" | "Red";
 export function deserializeBlock<
   T extends ModalBlock<false> | ActionBlock<false> | ErrorBlock<false>,
 >(

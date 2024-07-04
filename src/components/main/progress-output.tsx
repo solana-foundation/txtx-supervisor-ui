@@ -62,7 +62,7 @@ function StatusUpdates({ statuses }: StatusUpdates) {
     <div className="absolute w-full h-full mt-6">
       <div
         className={classNames(
-          "transition-opacity ease-in-out w-[434px] bg-black bg-opacity-50 rounded-lg p-4 float-right mr-6",
+          "transition-opacity ease-in-out w-[370px] bg-black bg-opacity-50 rounded-lg p-4 float-right mr-6",
           statuses.length ? "opacity-100" : "opacity-0",
         )}
       >
@@ -76,28 +76,25 @@ interface StatusUpdate {
   status: ProgressBarStatus;
 }
 function StatusUpdate({ status }: StatusUpdate) {
-  const { status: statusStr, message } = status;
+  const { status: statusStr, message, statusColor } = status;
   const color =
-    statusStr === "Pending"
+    statusColor === "Yellow"
       ? "text-amber-400"
-      : statusStr === "Failed"
+      : statusColor === "Red"
         ? "text-rose-400"
         : "text-emerald-400";
 
-  const msg = truncateMessage(message);
-
   return (
     <div className="w-full self-stretch justify-between items-start inline-flex">
-      <div className="self-stretch flex-col justify-between items-start inline-flex">
-        <a
-          className="text-white text-xs font-gt uppercase"
-          target="_blank"
-          href={`https://explorer.hiro.so/txid/${message}?chain=testnet`}
-        >
-          transaction {msg} /
-        </a>
+      <div className="w-4/5 self-stretch flex-col justify-between items-start inline-flex">
+        <div className="max-w-full flex flex-row justify-between text-white text-xs font-gt uppercase whitespace-nowrap">
+          <div
+            className="max-w-full overflow-hidden text-ellipsis"
+            dangerouslySetInnerHTML={{ __html: message }}
+          ></div>
+        </div>
       </div>
-      <div className="self-stretch flex-col justify-between items-start inline-flex">
+      <div className="w-1/5 self-stretch flex-col justify-between items-start inline-flex">
         <div
           className={classNames("text-right text-xs font-gt uppercase", color)}
         >
@@ -108,10 +105,3 @@ function StatusUpdate({ status }: StatusUpdate) {
   );
 }
 
-function truncateMessage(msg: string) {
-  if (msg.length <= 30) return msg;
-  return `${msg.substring(0, 30 - 7)}...${msg.substring(
-    msg.length - 5,
-    msg.length - 1,
-  )}`;
-}
