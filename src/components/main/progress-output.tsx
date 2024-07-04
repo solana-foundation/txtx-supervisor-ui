@@ -92,7 +92,6 @@ function StatusUpdate({ status }: StatusUpdate) {
             className="max-w-full overflow-hidden text-ellipsis"
             dangerouslySetInnerHTML={{ __html: message }}
           ></div>
-          <LoadingSpinner />
         </div>
       </div>
       <div className="w-1/5 self-stretch flex-col justify-between items-start inline-flex">
@@ -106,17 +105,3 @@ function StatusUpdate({ status }: StatusUpdate) {
   );
 }
 
-const LoadingSpinner = () => {
-  const [currentCharIndex, setCurrentCharIndex] = useState(0);
-  const chars = ["|", "/", "-", "\\"];
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentCharIndex((prevIndex) => (prevIndex + 1) % chars.length);
-    }, 2000);
-
-    return () => clearInterval(intervalId);
-  }, []); // empty dependency array to run effect only once
-
-  return <div className="mx-2">{chars[currentCharIndex]}</div>;
-};
