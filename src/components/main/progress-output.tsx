@@ -62,7 +62,7 @@ function StatusUpdates({ statuses }: StatusUpdates) {
     <div className="absolute w-full h-full mt-6">
       <div
         className={classNames(
-          "transition-opacity ease-in-out w-[434px] bg-black bg-opacity-50 rounded-lg p-4 float-right mr-6",
+          "transition-opacity ease-in-out w-[370px] bg-black bg-opacity-50 rounded-lg p-4 float-right mr-6",
           statuses.length ? "opacity-100" : "opacity-0",
         )}
       >
