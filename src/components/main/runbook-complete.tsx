@@ -17,7 +17,7 @@ export default function RunbookCopmlete() {
     setTimeout(function () {
       // @ts-ignore
       confetti.stop();
-    }, 5000);
+    }, 2500);
   }
   return (
     <div className="overflow-auto scrollbar-thin self-stretch flex-col justify-start items-start flex">
