@@ -21,6 +21,7 @@ export interface Runbook {
   errorBlocks: ErrorBlock[];
   progressBlocks: ProgressBlock[];
   namespacedNetworks: { [key: string]: string[] };
+  runbookComplete: boolean;
 }
 const initialState: Runbook = {
   metadata: {
@@ -33,6 +34,7 @@ const initialState: Runbook = {
   errorBlocks: [],
   progressBlocks: [],
   namespacedNetworks: {},
+  runbookComplete: false,
 };
 
 export const runbooksSlice = createSlice({
@@ -244,6 +246,11 @@ export const runbooksSlice = createSlice({
         return state;
       },
     ),
+    setRunbookComplete: create.reducer(
+      (state, action: PayloadAction<boolean>) => {
+        state.runbookComplete = action.payload;
+      },
+    ),
   }),
   selectors: {
     selectRunbook: (state) => state,
@@ -269,6 +276,7 @@ export const runbooksSlice = createSlice({
         return checkValidationReady(modalBlocks, buttonUuid);
       },
     ),
+    selectRunbookComplete: (state) => state.runbookComplete,
   },
 });
 
@@ -307,6 +315,7 @@ export const {
   setModalVisibility,
   pushProgressBlockStatus,
   setProgressBlockVisibility,
+  setRunbookComplete,
 } = runbooksSlice.actions;
 
 export const {
@@ -315,4 +324,5 @@ export const {
   selectPanelValidationReady,
   selectModalValidationReady,
   selectIsSomeProgressBlockVisible,
+  selectRunbookComplete,
 } = runbooksSlice.selectors;

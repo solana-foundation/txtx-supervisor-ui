@@ -268,3 +268,9 @@ export const UPDATE_PROGRESS_BAR_VISIBILITY_SUBSCRIPTION = gql`
     }
   }
 `;
+
+export const RUNBOOK_COMPLETED_EVENT_SUBSCRIPTION = gql`
+  subscription OnRunbookCompleted {
+    runbookCompleteEvent
+  }
+`;

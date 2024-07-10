@@ -5,6 +5,7 @@ import {
   ERROR_BLOCK_EVENT_SUBSCRIPTION,
   MODAL_BLOCK_EVENT_SUBSCRIPTION,
   PROGRESS_BLOCK_EVENT_SUBSCRIPTION,
+  RUNBOOK_COMPLETED_EVENT_SUBSCRIPTION,
   UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION,
   UPDATE_PROGRESS_BAR_STATUS_SUBSCRIPTION,
   UPDATE_PROGRESS_BAR_VISIBILITY_SUBSCRIPTION,
@@ -27,6 +28,7 @@ import {
   setModalBlocks,
   setProgressBlockVisibility,
   setProgressBlocks,
+  setRunbookComplete,
   updateActionItems,
 } from "../reducers/runbooks-slice";
 import { useAppDispatch } from "../hooks";
@@ -63,6 +65,10 @@ export default function useSubscriptions() {
   );
   const { data: updateProgressBarVisibilityEvent } = useSubscription(
     UPDATE_PROGRESS_BAR_VISIBILITY_SUBSCRIPTION,
+    {},
+  );
+  const { data: runbookCompletedEvent } = useSubscription(
+    RUNBOOK_COMPLETED_EVENT_SUBSCRIPTION,
     {},
   );
 
@@ -123,4 +129,10 @@ export default function useSubscriptions() {
       dispatch(setProgressBlockVisibility(update));
     }
   }, [updateProgressBarVisibilityEvent]);
+
+  useEffect(() => {
+    if (runbookCompletedEvent !== undefined) {
+      dispatch(setRunbookComplete(runbookCompletedEvent));
+    }
+  }, [runbookCompletedEvent]);
 }
