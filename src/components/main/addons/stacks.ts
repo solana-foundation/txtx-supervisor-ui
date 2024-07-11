@@ -41,10 +41,12 @@ export class StacksAddon implements Addon {
   }
 
   public getAddress(networkId: string): string | AddonError {
+    const stacksNetworkId =
+      networkId.toLocaleLowerCase() === "mainnet" ? "mainnet" : "testnet";
     if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData();
       // todo, handle no address
-      const address = userData.profile.stxAddress[networkId];
+      const address = userData.profile.stxAddress[stacksNetworkId];
 
       return address;
     } else {
@@ -57,11 +59,15 @@ export class StacksAddon implements Addon {
     address: string,
     message: string,
   ): Promise<string | AddonError> {
+    const stacksNetworkId =
+      networkId.toLocaleLowerCase() === "mainnet" ? "mainnet" : "testnet";
     let publicKey;
     await openSignatureRequestPopup({
       message,
       network:
-        networkId == "mainnet" ? new StacksMainnet() : new StacksTestnet(),
+        stacksNetworkId == "mainnet"
+          ? new StacksMainnet()
+          : new StacksTestnet(),
       appDetails: appDetails,
       onFinish(response) {
         publicKey = response.publicKey;
@@ -85,12 +91,16 @@ export class StacksAddon implements Addon {
     address: string,
     message: string,
   ): Promise<string | AddonError> {
+    const stacksNetworkId =
+      networkId.toLocaleLowerCase() === "mainnet" ? "mainnet" : "testnet";
     let signedMessage;
 
     await openSignatureRequestPopup({
       message,
       network:
-        networkId == "mainnet" ? new StacksMainnet() : new StacksTestnet(),
+        stacksNetworkId == "mainnet"
+          ? new StacksMainnet()
+          : new StacksTestnet(),
       appDetails: appDetails,
       onFinish(response) {
         function moveLastByteToFront(str) {
