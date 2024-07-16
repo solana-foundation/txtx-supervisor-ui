@@ -8,7 +8,7 @@ curl -sL https://install.txtx.sh/ | bash
 Start a runbook
 ```console
 # Clone BNS repo
-git@github.com:txtx/BNS-V2.git
+git clone git@github.com:txtx/BNS-V2.git
 
 # Change directory
 cd BNS-V2
@@ -25,7 +25,7 @@ txtx run register-bns-name
 
 Clone this repo:
 ```console
-git@github.com:txtx/txtx-web-ui.git
+git clone git@github.com:txtx/txtx-web-ui.git
 
 cd txtx-web-ui
 
