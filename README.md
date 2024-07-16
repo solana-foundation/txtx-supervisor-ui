@@ -19,7 +19,7 @@ git checkout feat/txtx-runbooks
 # List all the runbooks
 txtx ls
 
-# List all the runbooks
+# Execute a runbook
 txtx run register-bns-name
 ```
 
