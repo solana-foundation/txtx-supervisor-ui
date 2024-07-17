@@ -1,6 +1,7 @@
 import React from "react";
 import { classNames } from "../../../utils/helpers";
 import { ActionItemRequest } from "../../main/types";
+import { CheckIcon } from "@heroicons/react/20/solid";
 
 export interface ActionItemRow {
   actionItem: ActionItemRequest;
@@ -31,33 +32,36 @@ export function ActionItemRow({
     subRow = subRow ? subRow : { text: diag.message };
   }
 
+  const isStatusSuccess = status === "Success";
+  const isOddRow = index % 2 === 1;
+
   return (
     <div className="w-full">
       <div
         onClick={onClick}
         className={classNames(
           "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer border-gray-800",
-          isFirst ? "rounded-t border-b" : isLast ? "rounded-b" : "border-b",
+          isOddRow ? "bg-neutral-900" : "bg-gray-950",
+          !isLast ? "border-b" : "",
         )}
       >
-        <div
-          className={classNames(
-            "w-8 self-stretch bg-gray-950 border-r border-gray-800 flex-col justify-between items-start inline-flex",
-            isFirst ? "rounded-tl" : isLast ? "rounded-bl" : "",
-          )}
-        >
-          <div className="self-stretch py-2.5 justify-center items-center inline-flex">
-            <div className="text-stone-500 text-sm font-normal font-inter leading-[18.20px]">
-              #
-            </div>
-            <div className="text-white text-sm font-normal font-inter leading-[18.20px]">
-              {index + 1}
-            </div>
+        <div className="w-[46px] flex items-center justify-center self-stretch">
+          <div
+            className={classNames(
+              "w-[20px] aspect-square border border-emerald-500 rounded-full flex items-center justify-center",
+              isStatusSuccess
+                ? "border-emerald-500 bg-emerald-500"
+                : "bg-[#192423]",
+            )}
+          >
+            {isStatusSuccess && (
+              <CheckIcon className="w-[16px] aspect-square" />
+            )}
           </div>
         </div>
 
-        <div className="grow shrink basis-0 self-stretch bg-gray-950 border-gray-800 flex-col justify-center items-start inline-flex">
-          <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
+        <div className="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
+          <div className="self-stretch py-[18px] justify-start items-start inline-flex">
             <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-inter leading-[18.20px]">
               {description ? `${description} (${title})` : title}
             </div>
@@ -65,24 +69,6 @@ export function ActionItemRow({
         </div>
 
         {children}
-
-        <div
-          className={classNames(
-            "w-8 self-stretch bg-gray-950 border-l border-gray-800 flex-col justify-center items-start inline-flex",
-            isFirst ? "rounded-tr" : isLast ? "rounded-br" : "",
-          )}
-        >
-          <div className="self-stretch py-2.5 justify-center items-start inline-flex">
-            <div
-              className={classNames(
-                "text-xs font-normal font-inter leading-none",
-                checkClass,
-              )}
-            >
-              ✓
-            </div>
-          </div>
-        </div>
       </div>
       {subRow ? <ActionItemSubRow {...subRow} /> : undefined}
     </div>
