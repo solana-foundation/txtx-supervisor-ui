@@ -29,7 +29,7 @@ export function ReviewInputCell({ value, actionStatus }: ReviewInputCell) {
       value
     );
   return (
-    <div className="self-stretch bg-gray-950 flex-col justify-center items-start inline-flex">
+    <div className="self-stretch flex-col justify-center items-start inline-flex">
       <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
         <div
           className={classNames(
