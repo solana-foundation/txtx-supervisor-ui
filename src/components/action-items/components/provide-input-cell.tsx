@@ -30,7 +30,7 @@ export function ProvideInputCell({
   let defaultInputValue =
     typeof defaultValue === "boolean" ? defaultValue.toString() : defaultValue;
   return (
-    <div className="grow shrink basis-0 self-stretch bg-gray-950 flex-col justify-center items-start inline-flex">
+    <div className="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
       <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
         <div className="grow shrink basis-0 self-stretch flex-col justify-end items-start gap-2.5 inline-flex">
           <input
