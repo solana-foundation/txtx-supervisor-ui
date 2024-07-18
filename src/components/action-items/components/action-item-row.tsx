@@ -40,29 +40,40 @@ export function ActionItemRow({
       <div
         onClick={onClick}
         className={classNames(
-          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer border-gray-800",
-          isOddRow ? "bg-neutral-900" : "bg-gray-950",
-          !isLast ? "border-b" : "",
+          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer",
+          isStatusSuccess
+            ? "bg-emerald-950"
+            : isOddRow
+              ? "bg-neutral-900"
+              : "bg-gray-950",
         )}
       >
         <div className="w-[46px] flex items-center justify-center self-stretch">
           <div
             className={classNames(
-              "w-[20px] aspect-square border border-emerald-500 rounded-full flex items-center justify-center",
+              "w-[20px] aspect-square border border-emerald-500 rounded-full flex items-center justify-center transition-colors hover:border-emerald-500",
               isStatusSuccess
                 ? "border-emerald-500 bg-emerald-500"
-                : "bg-[#192423]",
+                : "border-zinc-600 bg-slate-800",
             )}
           >
-            {isStatusSuccess && (
-              <CheckIcon className="w-[16px] aspect-square" />
-            )}
+            <CheckIcon
+              className={classNames(
+                "w-[16px] aspect-square transition-opacity",
+                !isStatusSuccess ? "opacity-0" : "",
+              )}
+            />
           </div>
         </div>
 
         <div className="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
           <div className="self-stretch py-[18px] justify-start items-start inline-flex">
-            <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-inter leading-[18.20px]">
+            <div
+              className={classNames(
+                "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
+                isStatusSuccess ? "text-[#31715A]" : "text-stone-500",
+              )}
+            >
               {description ? `${description} (${title})` : title}
             </div>
           </div>
@@ -70,7 +81,10 @@ export function ActionItemRow({
 
         {children}
       </div>
+
       {subRow ? <ActionItemSubRow {...subRow} /> : undefined}
+
+      {!isLast && <div className="border-b border-gray-800" />}
     </div>
   );
 }
