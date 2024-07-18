@@ -12,10 +12,10 @@ export function ReviewInputCell({ value, actionStatus }: ReviewInputCell) {
   let descriptionContainerClass, descriptionClass;
   if (status === "Todo") {
     descriptionContainerClass = "bg-neutral-800";
-    descriptionClass = "text-gray-400";
+    descriptionClass = "text-stone-500";
   } else if (status === "Success") {
-    descriptionContainerClass = "bg-neutral-800";
-    descriptionClass = "text-emerald-500";
+    descriptionContainerClass = "bg-emerald-500";
+    descriptionClass = "";
   } else if (status === "Error") {
     descriptionContainerClass = "bg-stone-900";
     descriptionClass = "text-rose-400";
