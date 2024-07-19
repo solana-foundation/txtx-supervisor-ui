@@ -56,7 +56,7 @@ export function ProvidePublicKeyAction({
               title="Connect Wallet"
               onClick={onClick}
               isDisabled={false}
-              size={ElementSize.S}
+              size={ElementSize.L}
             />
           ),
         }}
@@ -107,7 +107,7 @@ export function ProvidePublicKeyAction({
                   title="Provide Public Key"
                   onClick={onClick}
                   isDisabled={false}
-                  size={ElementSize.S}
+                  size={ElementSize.L}
                 />
               ),
             }}
@@ -173,7 +173,7 @@ export function ProvidePublicKeyAction({
                 title="Disconnect Wallet"
                 onClick={onClick}
                 isDisabled={false}
-                size={ElementSize.S}
+                size={ElementSize.L}
               />
             ),
           }}
