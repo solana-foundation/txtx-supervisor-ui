@@ -41,7 +41,7 @@ export function ActionItemRow({
       <div
         onClick={onClick}
         className={classNames(
-          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer",
+          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap",
           isHighlighted ? "bg-emerald-950" : "bg-gray-950",
         )}
       >

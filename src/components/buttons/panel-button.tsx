@@ -39,16 +39,16 @@ export function PanelButton({
         : "bg-stone-850 text-amber-400 border-stone-700 border";
   let sizeClass =
     size === ElementSize.XXXL
-      ? "w-96 h-24"
+      ? "w-full md:w-96 h-24"
       : size === ElementSize.XXL
-        ? "w-80 h-20"
+        ? "w-full md:w-80 h-20"
         : size === ElementSize.XL
-          ? "w-52 h-16"
+          ? "w-full md:w-52 h-16"
           : size === ElementSize.L
-            ? "h-12"
+            ? "w-full md:w-auto h-12"
             : size === ElementSize.M
-              ? "w-36 h-10"
-              : "w-36 h-8";
+              ? "w-full md:w-36 h-10"
+              : "w-full md:w-36 h-8";
   return (
     <button
       disabled={isDisabled}

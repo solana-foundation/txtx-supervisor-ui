@@ -29,7 +29,7 @@ export function ReviewInputCell({ value, actionStatus }: ReviewInputCell) {
       value
     );
   return (
-    <div className="self-stretch flex-col justify-center items-start inline-flex">
+    <div className="self-stretch flex-col justify-center items-start inline-flex basis-full md:basis-auto">
       <div className="self-stretch px-2 py-2.5 justify-end items-start inline-flex">
         <div
           className={classNames(
@@ -39,7 +39,7 @@ export function ReviewInputCell({ value, actionStatus }: ReviewInputCell) {
         >
           <div
             className={classNames(
-              "text-sm font-normal font-gt uppercase leading-[18.20px]",
+              "text-sm font-normal font-gt uppercase leading-[18.20px] break-all",
               descriptionClass,
             )}
           >
