@@ -126,7 +126,7 @@ export const runbooksSlice = createSlice({
         const { progressBarUuid, visible } = action.payload;
 
         const progressBarIdx = state.progressBlocks.findIndex(
-          (bar) => (bar.uuid = progressBarUuid),
+          (bar) => bar.uuid === progressBarUuid,
         );
         if (progressBarIdx === undefined) return;
         state.progressBlocks[progressBarIdx].visible = visible;
