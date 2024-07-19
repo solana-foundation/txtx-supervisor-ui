@@ -33,7 +33,8 @@ export function ActionItemRow({
   }
 
   const isStatusSuccess = status === "Success";
-  const isOddRow = index % 2 === 1;
+  const isHighlighted = false; // Need to implement https://tppr.me/xkN4je
+  const isStateDefault = !isStatusSuccess && !isHighlighted;
 
   return (
     <div className="w-full">
@@ -41,20 +42,16 @@ export function ActionItemRow({
         onClick={onClick}
         className={classNames(
           "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer",
-          isStatusSuccess
-            ? "bg-emerald-950"
-            : isOddRow
-              ? "bg-neutral-900"
-              : "bg-gray-950",
+          isHighlighted ? "bg-emerald-950" : "bg-gray-950",
         )}
       >
         <div className="w-[46px] flex items-center justify-center self-stretch">
           <div
             className={classNames(
               "w-[20px] aspect-square border border-emerald-500 rounded-full flex items-center justify-center transition-colors hover:border-emerald-500",
-              isStatusSuccess
-                ? "border-emerald-500 bg-emerald-500"
-                : "border-zinc-600 bg-slate-800",
+              isStatusSuccess ? "border-emerald-500 bg-emerald-500" : "",
+              isHighlighted ? "border-emerald-500" : "",
+              isStateDefault ? "border-zinc-600" : "",
             )}
           >
             <CheckIcon
@@ -71,7 +68,9 @@ export function ActionItemRow({
             <div
               className={classNames(
                 "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
-                isStatusSuccess ? "text-[#31715A]" : "text-stone-500",
+                isStatusSuccess ? "text-[#31715A]" : "",
+                isHighlighted ? "text-emerald-500" : "",
+                isStateDefault ? "text-stone-500" : "",
               )}
             >
               {description ? `${description} (${title})` : title}
