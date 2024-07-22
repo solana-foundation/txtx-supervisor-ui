@@ -68,7 +68,7 @@ export function ActionItemRow({
             <div
               className={classNames(
                 "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
-                isStatusSuccess ? "text-[#31715A]" : "",
+                isStatusSuccess ? "text-emerald-620" : "",
                 isHighlighted ? "text-emerald-500" : "",
                 isStateDefault ? "text-stone-500" : "",
               )}
@@ -110,7 +110,7 @@ export function ActionItemSubRow({ text, children }: ActionItemSubRow) {
   return (
     <div
       className={classNames(
-        "overflow-auto w-full px-3 py-2.5 justify-start items-start inline-flex bg-black",
+        "overflow-auto w-full p-3 justify-start items-start inline-flex bg-black",
         children ? "min-h-20" : "",
         // todo, investigate why scrollbar styling isn't working
         // "scrollbar-thin scrollbar-h-1",

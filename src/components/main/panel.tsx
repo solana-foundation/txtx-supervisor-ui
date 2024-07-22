@@ -194,7 +194,7 @@ function SubGroup({ subGroup }: SubGroup) {
   }, [] as JSX.Element[]);
 
   return (
-    <div className="self-stretch flex-col justify-start items-start inline-flex border border-[#0D4938] rounded overflow-hidden">
+    <div className="self-stretch flex-col justify-start items-start inline-flex border border-emerald-650 rounded overflow-hidden">
       {uiActionItems}
     </div>
   );
