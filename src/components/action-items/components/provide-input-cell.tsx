@@ -99,7 +99,7 @@ export function ProvideInputCell({
             inputClass,
           )}
         />
-        <button className="transition duration-200 px-4 py-2 rounded flex-col justify-center items-center gap-2.5 inline-flex text-center text-xs font-normal font-gt uppercase leading-none tracking-wide h-[42px] w-full bg-[#04B179] text-black hover:bg-emerald-500">
+        <button className="transition duration-200 px-4 py-2 rounded flex-col justify-center items-center gap-2.5 inline-flex text-center text-xs font-normal font-gt uppercase leading-none tracking-wide h-[42px] w-full bg-emerald-550 text-black hover:bg-emerald-500">
           Confirm
         </button>
         <XMarkIcon className="absolute top-[10px] right-[10px] w-[20px]" />
