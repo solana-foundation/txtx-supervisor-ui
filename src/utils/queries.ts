@@ -102,7 +102,7 @@ export const GET_PROGRESS_BLOCKS = gql`
       uuid
       visible
       panel {
-        constructUuid
+        constructDid
         statuses {
           status
           statusColor
@@ -217,7 +217,7 @@ export const PROGRESS_BLOCK_EVENT_SUBSCRIPTION = gql`
       uuid
       visible
       panel {
-        constructUuid
+        constructDid
         statuses {
           status
           statusColor
@@ -249,7 +249,7 @@ export const UPDATE_PROGRESS_BAR_STATUS_SUBSCRIPTION = gql`
   subscription OnProgressBarUpdateEvent {
     updateProgressBarStatusEvent {
       progressBarUuid
-      constructUuid
+      constructDid
       newStatus {
         status
         statusColor

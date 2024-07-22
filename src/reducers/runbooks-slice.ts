@@ -85,7 +85,7 @@ export const runbooksSlice = createSlice({
     ),
     pushProgressBlockStatus: create.reducer(
       (state, action: PayloadAction<ProgressBarStatusUpdate>) => {
-        const { progressBarUuid, constructUuid, newStatus } = action.payload;
+        const { progressBarUuid, constructDid, newStatus } = action.payload;
 
         const progressBarIdx = state.progressBlocks.findIndex(
           (bar) => bar.uuid === progressBarUuid,
@@ -97,7 +97,7 @@ export const runbooksSlice = createSlice({
             visible: false,
             panel: [
               {
-                constructUuid: constructUuid,
+                constructDid,
                 statuses: [newStatus],
               },
             ],
@@ -106,11 +106,11 @@ export const runbooksSlice = createSlice({
         }
         const progressBar = state.progressBlocks[progressBarIdx];
         const constructStatusesIdx = progressBar.panel.findIndex(
-          (p) => p.constructUuid === constructUuid,
+          (p) => p.constructDid === constructDid,
         );
         if (constructStatusesIdx === -1) {
           state.progressBlocks[progressBarIdx].panel.push({
-            constructUuid: constructUuid,
+            constructDid: constructDid,
             statuses: [newStatus],
           });
         } else {
@@ -126,7 +126,7 @@ export const runbooksSlice = createSlice({
         const { progressBarUuid, visible } = action.payload;
 
         const progressBarIdx = state.progressBlocks.findIndex(
-          (bar) => (bar.uuid = progressBarUuid),
+          (bar) => bar.uuid === progressBarUuid,
         );
         if (progressBarIdx === undefined) return;
         state.progressBlocks[progressBarIdx].visible = visible;

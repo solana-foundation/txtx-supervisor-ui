@@ -79,13 +79,13 @@ export interface ErrorPanelData<Deserialized = true> {
 }
 
 export interface ConstructProgressBarStatuses {
-  constructUuid: string;
+  constructDid: string;
   statuses: ProgressBarStatus[];
 }
 
 export interface ProgressBarStatusUpdate {
   progressBarUuid: string;
-  constructUuid: string;
+  constructDid: string;
   newStatus: ProgressBarStatus;
 }
 
