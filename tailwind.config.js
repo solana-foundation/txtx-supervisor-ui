@@ -42,7 +42,7 @@ module.exports = {
       pink: { 500: "pink" },
       purple: { 400: "#9f74d7", 500: "#9747FF" },
       red: { 600: "#FB7185" },
-      rose: { 400: "#FB6D88" },
+      rose: { 350: "#fe889f", 400: "#FB6D88" },
       sky: { 500: "sky" },
       slate: {
         500: "#6c7375",
