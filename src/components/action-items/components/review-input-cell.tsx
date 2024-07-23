@@ -14,13 +14,13 @@ export function ReviewInputCell({ value, actionStatus }: ReviewInputCell) {
     descriptionContainerClass = "bg-neutral-800";
     descriptionClass = "text-gray-400";
   } else if (status === "Success") {
-    descriptionContainerClass = "bg-emerald-500";
-    descriptionClass = "";
+    descriptionContainerClass = "bg-teal-950";
+    descriptionClass = "text-emerald-500";
   } else if (status === "Error") {
     descriptionContainerClass = "bg-stone-900";
     descriptionClass = "text-rose-400";
   }
-  // descriptionContainerClass = "text-emerald-500 bg-teal-950"; // To-do state version https://tppr.me/xkN4je
+  // descriptionContainerClass = "bg-emerald-500"; // To-do state version https://tppr.me/xkN4je
 
   let el =
     typeof value === "string" && value.includes("https://") ? (
