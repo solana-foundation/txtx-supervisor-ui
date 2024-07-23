@@ -10,7 +10,7 @@ function FormSignUp() {
   return (
     <div
       className={
-        "relative w-[410px] h-[345px] border border-zinc-700 bg-zinc-200 text-gray-400 rounded-[16px] text-center p-8"
+        "relative w-[410px] border border-zinc-700 bg-zinc-200 text-gray-400 rounded-[16px] text-center p-8"
       }
     >
       <XMarkIcon className="absolute top-[12px] right-[12px] w-[20px] cursor-pointer" />
