@@ -5,7 +5,7 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 
 export default function Plans() {
   return (
-    <div className="relative w-[730px] border border-zinc-700 bg-zinc-200 text-gray-400 rounded-[16px] text-center p-8">
+    <div className="relative w-full max-w-[730px] border border-zinc-700 bg-zinc-200 text-gray-400 rounded-[16px] text-center p-8">
       <XMarkIcon className="absolute top-[12px] right-[12px] w-[20px] cursor-pointer" />
       <div className="text-emerald-500 text-base font-normal font-gt uppercase mb-8">
         Choose your plan
