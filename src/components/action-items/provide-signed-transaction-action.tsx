@@ -5,11 +5,10 @@ import {
   ActionItemResponse,
   formatValueForDisplay,
 } from "../main/types";
-import { ElementSize, PanelButton } from "../buttons/panel-button";
+import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import addonManager from "../../utils/addons-initializer";
-import { ReviewInputCell } from "./components/review-input-cell";
 import { classNames } from "../../utils/helpers";
 
 export interface ProvideSignedTransactionAction {
@@ -32,7 +31,14 @@ export function ProvideSignedTransactionAction({
   }
 
   const {
-    data: { payload, namespace, networkId, signerUuid },
+    data: {
+      payload,
+      namespace,
+      networkId,
+      signerUuid,
+      skippable,
+      expectedSignerAddress,
+    },
   } = actionType;
   addonManager.addNetworkInstance(namespace, networkId);
 
@@ -45,6 +51,21 @@ export function ProvideSignedTransactionAction({
 
   // insert a zero-width space every other character to allow the text to break as needed
   const displayedValue = transaction.match(/(.{1})/g)?.join("​") || transaction;
+
+  const isNotSignable =
+    actionStatus.status === "Success" || actionStatus.status === "Blocked";
+
+  const onSkipSignature = () => {
+    const event: ActionItemResponse = {
+      actionItemId: id,
+      type: "ProvideSignedTransaction",
+      data: {
+        signedTransactionBytes: null,
+        signerUuid: signerUuid,
+      },
+    };
+    updateActionItem({ variables: { event: JSON.stringify(event) } });
+  };
 
   const isWalletConnected = addonManager.isWalletConnected(
     namespace,
@@ -63,12 +84,23 @@ export function ProvideSignedTransactionAction({
         subRow={{
           text: displayedValue,
           children: (
-            <PanelButton
-              title="Connect Wallet"
-              onClick={onClick}
-              isDisabled={false}
-              size={ElementSize.S}
-            />
+            <div className="self-stretch justify-end items-end gap-2.5 inline-flex">
+              {skippable ? (
+                <PanelButton
+                  title="Skip Signature"
+                  onClick={onSkipSignature}
+                  isDisabled={isNotSignable}
+                  size={ElementSize.S}
+                  color={ButtonColor.Black}
+                />
+              ) : undefined}
+              <PanelButton
+                title="Connect Wallet"
+                onClick={onClick}
+                isDisabled={false}
+                size={ElementSize.S}
+              />
+            </div>
           ),
         }}
       >
@@ -78,6 +110,7 @@ export function ProvideSignedTransactionAction({
   }
   const address = addonManager.getAddress(namespace, networkId);
   const onClick = async () => {
+    console.log(transaction);
     const signedTxHex = await addonManager.signTransaction(
       namespace,
       networkId,
@@ -98,7 +131,10 @@ export function ProvideSignedTransactionAction({
   };
 
   let isDisabled = false;
-  if (actionStatus.status === "Success") {
+  console.log("expected", expectedSignerAddress, "actual", address);
+  const isIncorrectSigner =
+    expectedSignerAddress && address != expectedSignerAddress;
+  if (isNotSignable || isIncorrectSigner) {
     isDisabled = true;
   }
   return (
@@ -110,12 +146,23 @@ export function ProvideSignedTransactionAction({
       subRow={{
         text: displayedValue,
         children: (
-          <PanelButton
-            title="Sign Transaction"
-            onClick={onClick}
-            isDisabled={isDisabled}
-            size={ElementSize.S}
-          />
+          <div className="self-stretch justify-end items-end gap-2.5 inline-flex">
+            {skippable ? (
+              <PanelButton
+                title="Skip Signature"
+                onClick={onSkipSignature}
+                isDisabled={isNotSignable}
+                size={ElementSize.S}
+                color={ButtonColor.Black}
+              />
+            ) : undefined}
+            <PanelButton
+              title="Sign Transaction"
+              onClick={onClick}
+              isDisabled={isDisabled}
+              size={ElementSize.S}
+            />
+          </div>
         ),
       }}
     >

@@ -177,6 +177,7 @@ export interface ActionItemRequest<Deserialized = true> {
 
 export type ActionItemStatus =
   | { status: "Todo" }
+  | { status: "Blocked" }
   | { status: "Success"; data: string }
   | { status: "InProgress"; data: string }
   | { status: "Error"; data: Diagnostic }
@@ -277,6 +278,8 @@ export interface ProvidePublicKeyRequest {
 
 export interface ProvideSignedTransactionRequest {
   checkExpectationActionUuid: string | null;
+  expectedSignerAddress: string | null;
+  skippable: boolean;
   signerUuid: string;
   payload: Value;
   namespace: string;
@@ -338,7 +341,7 @@ export interface ProvideSignedMessageResponse {
 }
 
 export interface ProvideSignedTransactionResponse {
-  signedTransactionBytes: string;
+  signedTransactionBytes: string | null;
   signerUuid: string;
 }
 
