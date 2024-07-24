@@ -58,7 +58,7 @@ export const Panel = forwardRef(function Panel(
   return (
     <div
       className={classNames(
-        "w-full p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex",
+        "w-full p-4 md:p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex",
         contentVisibility,
       )}
       id={uuid}
@@ -194,7 +194,7 @@ function SubGroup({ subGroup }: SubGroup) {
   }, [] as JSX.Element[]);
 
   return (
-    <div className="self-stretch flex-col justify-start items-start inline-flex border border-zinc-600 rounded">
+    <div className="self-stretch flex-col justify-start items-start inline-flex border border-emerald-650 rounded overflow-hidden">
       {uiActionItems}
     </div>
   );

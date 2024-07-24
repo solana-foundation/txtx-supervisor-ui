@@ -41,14 +41,14 @@ export function ValidateBlockAction({
 
   const color =
     index === 0
-      ? ButtonColor.Emerald
+      ? ButtonColor.EmeraldSecondary
       : index === 1
         ? ButtonColor.Black
         : ButtonColor.Amber;
 
   const orderClass =
     index === 0
-      ? "order-last ml-8 "
+      ? "order-last ml-8 grow md:grow-0 only:ml-0"
       : index === 1
         ? ""
         : "grow clear-left float-left order-first";

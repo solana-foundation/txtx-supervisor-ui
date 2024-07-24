@@ -126,18 +126,18 @@ export default function Login() {
   }, [DIGIT_COUNT]);
 
   return (
-    <div className="bg-gradient-to-b from-gray-950 to-neutral-900 ">
-      <div className="min-h-screen w-full pt-0 mt-0 grow shrink basis-0 px-6 pt-6 flex-col justify-start items-center gap-8 inline-flex">
-        <div className="mx-auto w-[575px] max-w-full h-[231px] px-6 pt-6 pb-16 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-start items-start gap-8 flex">
+    <div className="bg-gradient-to-b from-gray-950 to-neutral-900 text-center">
+      <div className="min-h-screen w-full mt-0 grow shrink basis-0 px-6 pt-6 flex-col justify-start items-center gap-8 inline-flex">
+        <div className="mx-auto sm:my-auto  w-full max-w-[524px] p-6 sm:p-10 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-start items-start gap-8 flex">
           <div className="self-stretch justify-start items-start inline-flex">
             <div className="grow shrink basis-0 text-emerald-500 text-base font-normal font-gt">
               RUNBOOK COLLABORATIVE EXECUTION
             </div>
           </div>
-          <div className="self-stretch h-[92px] flex-col justify-start items-start gap-3 flex">
+          <div className="self-stretch flex-col justify-start items-start gap-3 flex">
             <div
               // onPaste={handlePaste}
-              className="self-stretch justify-center items-center gap-4 inline-flex"
+              className="self-stretch justify-center items-center gap-1 sm:gap-4 inline-flex"
             >
               {Array(DIGIT_COUNT)
                 .fill(undefined)
@@ -145,12 +145,13 @@ export default function Login() {
                   <div className="w-16 px-3 py-4 bg-gray-950 rounded border border-zinc-600 flex-col justify-center items-center inline-flex">
                     <input
                       key={`${i}-${digits[i]}`}
-                      className="text-center w-full max-w-full p-0 bg-gray-950 text-4xl text-white font-normal font-gt border-none focus:outline-none focus:ring-0 ring-0 "
+                      className="text-center w-full max-w-full p-0 bg-gray-950 text-2xl sm:text-4xl text-white font-normal font-gt border-none focus:outline-none focus:ring-0 ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       defaultValue={digits[i]}
                       onChange={(e) => {
                         setDigit(i, e.target);
                       }}
                       datatype="text"
+                      type="number"
                       maxLength={1}
                       onKeyDown={(e) => onKeyDown(e, i)}
                       ref={(el) => (inputs.current[i] = el)}
@@ -159,7 +160,9 @@ export default function Login() {
                 ))}
             </div>
           </div>
-          <div className="self-stretch text-sm text-rose-400">{error}</div>
+          <div className="self-stretch text-sm text-rose-400 empty:hidden">
+            {error}
+          </div>
         </div>
       </div>
     </div>
