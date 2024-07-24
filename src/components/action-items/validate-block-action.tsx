@@ -41,7 +41,7 @@ export function ValidateBlockAction({
 
   const color =
     index === 0
-      ? ButtonColor.Emerald
+      ? ButtonColor.EmeraldSecondary
       : index === 1
         ? ButtonColor.Black
         : ButtonColor.Amber;
