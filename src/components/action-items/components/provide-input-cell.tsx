@@ -33,7 +33,7 @@ export function ProvideInputCell({
     typeof defaultValue === "boolean" ? defaultValue.toString() : defaultValue;
   return (
     <div className="grow shrink self-stretch flex-col justify-center items-start inline-flex basis-full md:basis-0">
-      <div className="self-stretch p-2.5 justify-end items-start inline-flex">
+      <div className="self-stretch pr-3 pb-3 pl-3 md:pt-3 justify-end items-start inline-flex">
         <div className="grow flex">
           <input
             id={id}

@@ -64,7 +64,7 @@ export function ActionItemRow({
         </div>
 
         <div className="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
-          <div className="self-stretch py-[18px] justify-start items-start inline-flex">
+          <div className="self-stretch py-3.5 md:py-[18px] justify-start items-start inline-flex">
             <div
               className={classNames(
                 "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",

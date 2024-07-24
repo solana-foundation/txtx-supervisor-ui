@@ -48,7 +48,7 @@ export function ValidateBlockAction({
 
   const orderClass =
     index === 0
-      ? "order-last ml-8 "
+      ? "order-last ml-8 grow md:grow-0 only:ml-0"
       : index === 1
         ? ""
         : "grow clear-left float-left order-first";
