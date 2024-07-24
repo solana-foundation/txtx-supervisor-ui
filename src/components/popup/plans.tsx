@@ -10,14 +10,14 @@ export default function Plans() {
       <div className="text-emerald-500 text-base font-normal font-gt uppercase mb-8">
         Choose your plan
       </div>
-      <div className="flex gap-2">
-        <div className="flex-1 border border-zinc-700 rounded-2xl p-6">
+      <div className="flex flex-wrap gap-2">
+        <div className="border border-zinc-700 rounded-2xl p-6 grow shrink basis-full md:basis-0">
           <div className="text-emerald-500 text-sm font-normal font-gt uppercase mb-2.5">
             Anon
           </div>
           <div className="text-[22px] text-white uppercase mb-4">Free</div>
           <div className="h-[1px] bg-gray-800 mb-4" />
-          <div className="h-[75px] mb-8">
+          <div className="md:h-[75px] mb-8">
             <div className="text-sm leading-[17px]">
               Free, private and forever open source
             </div>
@@ -26,7 +26,7 @@ export default function Plans() {
             Add github star
           </button>
         </div>
-        <div className="flex-1 border border-zinc-700 rounded-2xl p-6">
+        <div className="border border-zinc-700 rounded-2xl p-6 grow shrink basis-full md:basis-0">
           <div className="text-emerald-500 text-sm font-normal font-gt uppercase mb-2.5">
             Cloud services
           </div>
@@ -35,24 +35,24 @@ export default function Plans() {
             <span className="text-sm leading-[17px]">/seat/month</span>
           </div>
           <div className="h-[1px] bg-gray-800 mb-4" />
-          <div className="h-[75px] mb-8">
+          <div className="md:h-[75px] mb-8">
             <ul className="text-sm leading-[17px] flex flex-col gap-3 whitespace-nowrap">
               <li>✓ Colaborative execution</li>
               <li>✓ Multi chain auto-faucets</li>
               <li>✓ Multi chain faucets</li>
             </ul>
           </div>
-          <button className="transition duration-200 rounded text-xs font-gt uppercase tracking-wide bg-emerald-800 hover:bg-teal-950 text-emerald-500 py-[13px] px-4 w-full border border-emerald-950">
+          <button className="transition duration-200 rounded text-xs font-gt uppercase tracking-wide bg-emerald-800 hover:bg-teal-950 text-emerald-500 py-[12px] px-4 w-full border border-emerald-950">
             Sign-up
           </button>
         </div>
-        <div className="flex-1 border border-zinc-700 rounded-2xl p-6">
+        <div className="border border-zinc-700 rounded-2xl p-6 grow shrink basis-full md:basis-0">
           <div className="text-emerald-500 text-sm font-normal font-gt uppercase mb-2.5">
             Enterprise
           </div>
           <div className="text-[22px] text-white uppercase mb-4">Custom</div>
           <div className="h-[1px] bg-gray-800 mb-4" />
-          <div className="h-[75px] mb-8">
+          <div className="md:h-[75px] mb-8">
             <div className="text-sm leading-[17px]">Taylored features</div>
           </div>
           <a
