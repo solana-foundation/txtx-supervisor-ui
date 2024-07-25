@@ -14,23 +14,23 @@ export default function CopyLinkIcon({ className }) {
         <path
           d="M3.84171 6.63741L1.72919 8.74994C0.756938 9.72219 0.756938 11.2985 1.72919 12.2708C2.70146 13.2431 4.2778 13.2431 5.25005 12.2708L7.36257 10.1583"
           stroke="#B7BBBC"
-          stroke-miterlimit="10"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeMiterlimit="10"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           d="M10.1586 7.36328L12.2711 5.25076C13.2433 4.27851 13.2433 2.70215 12.2711 1.7299C11.2988 0.757624 9.72247 0.757624 8.75022 1.7299L6.6377 3.84242"
           stroke="#B7BBBC"
-          stroke-miterlimit="10"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeMiterlimit="10"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           d="M4.51074 9.49023L9.49 4.51098"
           stroke="#B7BBBC"
-          stroke-miterlimit="10"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeMiterlimit="10"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </g>
       <defs>
