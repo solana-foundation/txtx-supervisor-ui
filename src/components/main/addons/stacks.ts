@@ -10,6 +10,7 @@ import {
   getStorageKey,
   storePublicKeyInLocalStorage,
 } from "../../../utils/helpers";
+import Wallet from "sats-connect";
 
 const appConfig = new AppConfig(["store_write", "publish_data"]);
 const userSession = new UserSession({ appConfig });
@@ -120,18 +121,28 @@ export class StacksAddon implements Addon {
   }
 
   public async signTransaction(txHex: string): Promise<string | AddonError> {
-    // @ts-ignore
-    const response = await LeatherProvider.request("stx_signTransaction", {
-      txHex,
-    });
-    if (response.result?.txHex) {
-      return response.result.txHex;
+    if ("LeatherProvider" in window) {
+      // @ts-ignore
+      const response = await LeatherProvider.request("stx_signTransaction", {
+        txHex,
+      });
+      if (response.result?.txHex) {
+        return response.result.txHex;
+      } else {
+        const { message } = response.error;
+        return { error: message };
+      }
     } else {
-      const { message } = response.error;
-      return { error: message };
+      const response = await Wallet.request("stx_signTransaction", {
+        transaction: txHex,
+        broadcast: false,
+      });
+      if (response.status === "success") {
+        return response.result.transaction;
+      } else {
+        const { message } = response.error;
+        return { error: message };
+      }
     }
-  }
-  catch(error) {
-    return { error: error };
   }
 }
