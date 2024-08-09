@@ -1,12 +1,5 @@
-import {
-  ActionItemRequest,
-  Diagnostic,
-  formatDiagnosticForDisplay,
-  formatValueForDisplay as valueToPrimitive,
-} from "../main/types";
-import { ActionItemRow } from "./components/action-item-row";
+import { ActionItemRequest, formatDiagnosticForDisplay } from "../main/types";
 import { OutputRow } from "./components/output-row";
-import { ReviewInputCell } from "./components/review-input-cell";
 import React from "react";
 
 export interface DisplayErrorLogAction {
