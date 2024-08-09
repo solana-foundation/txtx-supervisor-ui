@@ -356,30 +356,31 @@ export type Type =
   | "array"
   | "object"
   | "buffer"
-  | String;
+  | string;
 
 export type Value =
-  | { type: "string"; value: String }
-  | { type: "integer"; value: number }
+  | { type: "string"; value: string }
+  | { type: "integer"; value: string }
   | { type: "float"; value: number }
   | { type: "bool"; value: boolean }
   | { type: "null"; value: null }
   | { type: "array"; value: Array<Value> }
   | { type: "object"; value: ObjectType }
-  | { type: "buffer"; value: String }
-  | { type: String; value: String };
+  | { type: "buffer"; value: string }
+  | { type: string; value: string };
 
 export type ObjectType = { [key: string]: Value };
 
 export function toValue(input: any, type: Type): Value {
   if (type === "string") {
-    return { type, value: input.toString() };
+    return { type, value: input };
   } else if (type === "integer") {
-    return { type: "integer", value: parseInt(input) };
+    return { type, value: input.toString() };
   } else if (type === "bool") {
-    return { type: "bool", value: !!input };
+    let val = input === "false" || input === 0 ? false : true;
+    return { type, value: val };
   } else if (type === "null") {
-    return { type: "null", value: null };
+    return { type, value: null };
   } else if (type === "array" && Array.isArray(input)) {
     throw new Error("object toValue not implemented");
     let values = input.map(({ input, type }) => toValue(input, type));
@@ -387,7 +388,7 @@ export function toValue(input: any, type: Type): Value {
   } else if (type === "object") {
     throw new Error("object toValue not implemented");
   } else if (type === "buffer") {
-    return { type: "buffer", value: input.toString() };
+    return { type, value: input.toString() };
   } else {
     if (type.includes("::")) {
       return { type, value: input.toString() };
@@ -397,20 +398,18 @@ export function toValue(input: any, type: Type): Value {
   }
 }
 
-export type DisplayableValue = String | number | boolean;
+export type DisplayableValue = string | number | boolean;
 export function formatValueForDisplay(input: Value): DisplayableValue {
   const { type, value } = input;
   if (value == null) {
     return "";
   }
-  if (type === "buffer") {
-    return value as String;
-  } else if (type === "string") {
-    return value as String;
+  if (type === "buffer" || type === "string") {
+    return value;
   } else if (type === "bool") {
-    return value as boolean;
+    return value.toString();
   } else if (type === "integer") {
-    return value as number;
+    return parseInt(value);
   } else if (type === "null") {
     return "";
   } else if (type === "array" && Array.isArray(value)) {
