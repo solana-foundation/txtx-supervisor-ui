@@ -255,7 +255,7 @@ export interface ReviewInputRequest {
 }
 export interface ProvideInputRequest {
   inputName: string;
-  typing: PrimitiveType;
+  typing: Type;
   defaultValue?: Value;
 }
 
@@ -346,118 +346,87 @@ export type Primitive = "Primitive";
 export type ArrayType = "Array";
 export type Object = "Object";
 export type Addon = "Addon";
-export type Type = Primitive | ArrayType | Object | Addon;
 
-export type PrimitiveType =
-  | "String"
-  | "UInt"
-  | "Int"
-  | "Boolean"
-  | "Null"
-  | "Buffer";
+export type Type =
+  | "string"
+  | "integer"
+  | "float"
+  | "bool"
+  | "null"
+  | "array"
+  | "object"
+  | "buffer"
+  | String;
 
 export type Value =
-  | {
-      type: Primitive;
-      value: PrimitiveValue;
-    }
-  | {
-      type: ArrayType;
-      value: Value[];
-    }
-  | {
-      type: Object;
-      value: { [key: string]: { Err: Diagnostic } | { Ok: Value } };
-    };
+  | { type: "string"; value: String }
+  | { type: "integer"; value: number }
+  | { type: "float"; value: number }
+  | { type: "bool"; value: boolean }
+  | { type: "null"; value: null }
+  | { type: "array"; value: Array<Value> }
+  | { type: "object"; value: ObjectType }
+  | { type: "buffer"; value: String }
+  | { type: String; value: String };
 
-export type PrimitiveValue =
-  | { type: "String"; value: string }
-  | { type: "UInt"; value: number }
-  | { type: "Int"; value: number }
-  | { type: "Boolean"; value: boolean }
-  | { type: "Null"; value: null }
-  | { type: "Buffer"; value: BufferData };
+export type ObjectType = { [key: string]: Value };
 
-export interface BufferData {
-  bytes: Uint8Array;
-  typing: { id: string; documentation: string };
-}
-export function toValue(input: any, typing: PrimitiveType): Value {
-  if (
-    typeof input === "object" ||
-    typeof input === "function" ||
-    Array.isArray(input)
-  ) {
-    throw new Error(`toValue not yet supported for ${typeof input}: ${input}`);
-  }
-  let primitiveValue: PrimitiveValue;
-  if (typing === "Boolean") {
-    primitiveValue = { type: "Boolean", value: !!input };
-  } else if (typing === "Buffer") {
-    primitiveValue = {
-      type: "Buffer",
-      value: {
-        bytes: Uint8Array.from(input),
-        typing: { id: "unknown", documentation: "unknown" },
-      },
-    };
-  } else if (typing === "Int") {
-    primitiveValue = {
-      type: "Int",
-      value: parseInt(input),
-    };
-  } else if (typing === "UInt") {
-    primitiveValue = {
-      type: "UInt",
-      value: Math.max(0, parseInt(input)),
-    };
-  } else if (typing === "Null") {
-    primitiveValue = {
-      type: "Null",
-      value: null,
-    };
+export function toValue(input: any, type: Type): Value {
+  if (type === "string") {
+    return { type, value: input.toString() };
+  } else if (type === "integer") {
+    return { type: "integer", value: parseInt(input) };
+  } else if (type === "bool") {
+    return { type: "bool", value: !!input };
+  } else if (type === "null") {
+    return { type: "null", value: null };
+  } else if (type === "array" && Array.isArray(input)) {
+    throw new Error("object toValue not implemented");
+    let values = input.map(({ input, type }) => toValue(input, type));
+    return { type: "array", value: values };
+  } else if (type === "object") {
+    throw new Error("object toValue not implemented");
+  } else if (type === "buffer") {
+    return { type: "buffer", value: input.toString() };
   } else {
-    primitiveValue = {
-      type: "String",
-      value: input.toString(),
-    };
+    if (type.includes("::")) {
+      return { type, value: input.toString() };
+    } else {
+      throw new Error(`invalid type ${type} cannot be casted to value`);
+    }
   }
-  return {
-    type: "Primitive",
-    value: primitiveValue,
-  };
 }
 
-export type DisplayableValue = string | number | boolean;
+export type DisplayableValue = String | number | boolean;
 export function formatValueForDisplay(input: Value): DisplayableValue {
   const { type, value } = input;
-  if (type === "Primitive") {
-    if (value.type === "Buffer") {
-      const bufferData = value.value;
-      return "0x" + toHexString(bufferData.bytes);
-    } else if (value.type === "Null") {
-      return "N/A";
-    } else {
-      return value.value;
-    }
-  } else if (type === "Array") {
+  if (value == null) {
+    return "";
+  }
+  if (type === "buffer") {
+    return value as String;
+  } else if (type === "string") {
+    return value as String;
+  } else if (type === "bool") {
+    return value as boolean;
+  } else if (type === "integer") {
+    return value as number;
+  } else if (type === "null") {
+    return "";
+  } else if (type === "array" && Array.isArray(value)) {
     return JSON.stringify(value.map((v) => formatValueForDisplay(v)));
-  } else if (type === "Object") {
-    const keys = Object.keys(value);
+  } else if (type === "object" && typeof value === "object") {
+    let obj = value as ObjectType;
+    const keys = Object.keys(obj);
     return JSON.stringify(
       keys.map((k) => {
-        let val = value[k];
-        if ("Err" in val) {
-          return { k: JSON.stringify(val.Err) };
-        } else {
-          return { k: formatValueForDisplay(val.Ok) };
-        }
+        let val = obj[k];
+        return formatValueForDisplay(val);
       }),
     );
+  } else {
+    return value.toString();
   }
-  throw new Error(
-    `Unable to format value for display: ${JSON.stringify(value)}`,
-  );
 }
 
 function toHexString(byteArray) {
