@@ -1,7 +1,4 @@
-import {
-  ActionItemRequest,
-  formatValueForDisplay as valueToPrimitive,
-} from "../main/types";
+import { ActionItemRequest, formatValueForDisplay } from "../main/types";
 import { ActionItemRow } from "./components/action-item-row";
 import { ReviewInputCell } from "./components/review-input-cell";
 import React from "react";
@@ -25,7 +22,7 @@ export function DisplayOutputAction({
   }
 
   const onClick = () => {};
-  const displayValue = valueToPrimitive(actionType.data.value);
+  const displayValue = formatValueForDisplay(actionType.data.value);
   if (displayValue === undefined) {
     throw new Error(
       `DisplayOutputAction component only supports displaying Primitive values, got ${actionType.data.value}`,

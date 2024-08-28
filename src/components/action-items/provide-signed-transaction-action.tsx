@@ -10,6 +10,7 @@ import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import addonManager from "../../utils/addons-initializer";
 import { classNames } from "../../utils/helpers";
+import { CheckIcon } from "@heroicons/react/20/solid";
 
 export interface ProvideSignedTransactionAction {
   actionItem: ActionItemRequest;
@@ -90,7 +91,7 @@ export function ProvideSignedTransactionAction({
                   title="Skip Signature"
                   onClick={onSkipSignature}
                   isDisabled={isNotSignable}
-                  size={ElementSize.S}
+                  size={ElementSize.L}
                   color={ButtonColor.Black}
                 />
               ) : undefined}
@@ -98,7 +99,7 @@ export function ProvideSignedTransactionAction({
                 title="Connect Wallet"
                 onClick={onClick}
                 isDisabled={false}
-                size={ElementSize.S}
+                size={ElementSize.L}
               />
             </div>
           ),
@@ -152,7 +153,7 @@ export function ProvideSignedTransactionAction({
                 title="Skip Signature"
                 onClick={onSkipSignature}
                 isDisabled={isNotSignable}
-                size={ElementSize.S}
+                size={ElementSize.L}
                 color={ButtonColor.Black}
               />
             ) : undefined}
@@ -160,7 +161,7 @@ export function ProvideSignedTransactionAction({
               title="Sign Transaction"
               onClick={onClick}
               isDisabled={isDisabled}
-              size={ElementSize.S}
+              size={ElementSize.L}
             />
           </div>
         ),
@@ -200,34 +201,47 @@ function SignTransactionRow({
     subRow = { text: diag.message };
   }
 
+  const isStatusSuccess = status === "Success";
+  const isHighlighted = false; // Need to implement https://tppr.me/xkN4je
+  const isStateDefault = !isStatusSuccess && !isHighlighted;
+
   return (
     <div className="w-full">
       <div
         onClick={onClick}
         className={classNames(
-          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer border-gray-800",
-          isFirst ? "rounded-t border-b" : isLast ? "rounded-b" : "border-b",
+          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap",
+          isHighlighted ? "bg-emerald-950" : "bg-gray-950",
         )}
       >
-        <div
-          className={classNames(
-            "w-8 self-stretch bg-gray-950 border-r border-gray-800 flex-col justify-between items-start inline-flex",
-            isFirst ? "rounded-tl" : isLast ? "rounded-bl" : "",
-          )}
-        >
-          <div className="self-stretch py-2.5 justify-center items-center inline-flex">
-            <div className="text-stone-500 text-sm font-normal font-inter leading-[18.20px]">
-              #
-            </div>
-            <div className="text-white text-sm font-normal font-inter leading-[18.20px]">
-              {index + 1}
-            </div>
+        <div className="w-[46px] flex items-center justify-center self-stretch">
+          <div
+            className={classNames(
+              "w-[20px] aspect-square border border-emerald-500 rounded-full flex items-center justify-center transition-colors hover:border-emerald-500",
+              isStatusSuccess ? "border-emerald-500 bg-emerald-500" : "",
+              isHighlighted ? "border-emerald-500" : "",
+              isStateDefault ? "border-zinc-600" : "",
+            )}
+          >
+            <CheckIcon
+              className={classNames(
+                "w-[16px] aspect-square transition-opacity",
+                !isStatusSuccess ? "opacity-0" : "",
+              )}
+            />
           </div>
         </div>
 
-        <div className="test grow shrink basis-0 self-stretch bg-gray-950 border-l border-gray-800 flex-col justify-center items-start inline-flex">
-          <div className="self-stretch px-3 py-2.5 justify-start items-start inline-flex">
-            <div className="grow shrink basis-0 text-gray-400 text-sm font-normal font-inter leading-[18.20px]">
+        <div className="test grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
+          <div className="self-stretch py-3.5 md:py-[18px] justify-start items-start inline-flex">
+            <div
+              className={classNames(
+                "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
+                isStatusSuccess ? "text-emerald-620" : "",
+                isHighlighted ? "text-emerald-500" : "",
+                isStateDefault ? "text-stone-500" : "",
+              )}
+            >
               {description ? `${description} (${title})` : title}
             </div>
           </div>
@@ -236,14 +250,17 @@ function SignTransactionRow({
         {children}
 
         {/* The below gives us the rounded top right corner of the row*/}
-        <div
+        {/*<div
           className={classNames(
             "w-1 self-stretch bg-gray-950  flex-col justify-center items-start inline-flex",
             isFirst ? "rounded-tr" : isLast ? "rounded-br" : "",
           )}
-        ></div>
+        ></div>*/}
       </div>
+
       {subRow ? <ActionItemSubRow {...subRow} /> : undefined}
+
+      {!isLast && <div className="border-b border-gray-800" />}
     </div>
   );
 }
