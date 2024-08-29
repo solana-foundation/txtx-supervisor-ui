@@ -90,7 +90,7 @@ export function ProvideSignedTransactionAction({
                 <PanelButton
                   title="Skip Signature"
                   onClick={onSkipSignature}
-                  isDisabled={isNotSignable}
+                  isDisabled={skippableButtonIsDisabled}
                   size={ElementSize.L}
                   color={ButtonColor.Black}
                 />
@@ -131,13 +131,11 @@ export function ProvideSignedTransactionAction({
     }
   };
 
-  let isDisabled = false;
-  console.log("expected", expectedSignerAddress, "actual", address);
   const isIncorrectSigner =
-    expectedSignerAddress && address != expectedSignerAddress;
-  if (isNotSignable || isIncorrectSigner) {
-    isDisabled = true;
-  }
+    expectedSignerAddress != null && address != expectedSignerAddress;
+  const signatureButtonIsDisabled =
+    alreadySigned || signatureBlocked || isIncorrectSigner;
+
   return (
     <SignTransactionRow
       actionItem={actionItem}
@@ -152,7 +150,7 @@ export function ProvideSignedTransactionAction({
               <PanelButton
                 title="Skip Signature"
                 onClick={onSkipSignature}
-                isDisabled={isNotSignable}
+                isDisabled={skippableButtonIsDisabled}
                 size={ElementSize.L}
                 color={ButtonColor.Black}
               />
@@ -160,7 +158,7 @@ export function ProvideSignedTransactionAction({
             <PanelButton
               title="Sign Transaction"
               onClick={onClick}
-              isDisabled={isDisabled}
+              isDisabled={signatureButtonIsDisabled}
               size={ElementSize.L}
             />
           </div>
