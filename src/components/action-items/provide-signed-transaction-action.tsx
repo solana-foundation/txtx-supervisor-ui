@@ -39,22 +39,23 @@ export function ProvideSignedTransactionAction({
       signerUuid,
       skippable,
       expectedSignerAddress,
+      onlyApprovalNeeded,
     },
   } = actionType;
-  addonManager.addNetworkInstance(namespace, networkId);
 
   const transaction = formatValueForDisplay(payload);
+
   if (transaction == null || typeof transaction !== "string") {
     throw new Error(
       `ProvideSignedTransactionAction component requires string payload, received ${actionType.data.payload}`,
     );
   }
-
   // insert a zero-width space every other character to allow the text to break as needed
   const displayedValue = transaction.match(/(.{1})/g)?.join("​") || transaction;
 
-  const isNotSignable =
-    actionStatus.status === "Success" || actionStatus.status === "Blocked";
+  const alreadySigned = actionStatus.status === "Success";
+  const signatureBlocked = actionStatus.status === "Blocked";
+  let skippableButtonIsDisabled = !skippable || alreadySigned;
 
   const onSkipSignature = () => {
     const event: ActionItemResponse = {
@@ -63,10 +64,61 @@ export function ProvideSignedTransactionAction({
       data: {
         signedTransactionBytes: null,
         signerUuid: signerUuid,
+        signatureApproved: null,
       },
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });
   };
+
+  // if only approving the signature, and not the actual signing, is needed in the browser, we can just return that row/button
+  if (onlyApprovalNeeded) {
+    const onClick = () => {
+      const event: ActionItemResponse = {
+        actionItemId: id,
+        type: "ProvideSignedTransaction",
+        data: {
+          signedTransactionBytes: null,
+          signerUuid: signerUuid,
+          signatureApproved: true,
+        },
+      };
+      updateActionItem({ variables: { event: JSON.stringify(event) } });
+    };
+    return (
+      <SignTransactionRow
+        actionItem={actionItem}
+        isFirst={isFirst}
+        isLast={isLast}
+        onClick={() => {}}
+        subRow={{
+          text: displayedValue,
+          children: (
+            <div className="self-stretch justify-end items-end gap-2.5 inline-flex">
+              {skippable ? (
+                <PanelButton
+                  title="Skip Signature"
+                  onClick={onSkipSignature}
+                  isDisabled={skippableButtonIsDisabled}
+                  size={ElementSize.L}
+                  color={ButtonColor.Black}
+                />
+              ) : undefined}
+              <PanelButton
+                title="Approve Transaction"
+                onClick={onClick}
+                isDisabled={alreadySigned || signatureBlocked}
+                size={ElementSize.L}
+              />
+            </div>
+          ),
+        }}
+      >
+        <div></div>
+      </SignTransactionRow>
+    );
+  }
+
+  addonManager.addNetworkInstance(namespace, networkId);
 
   const isWalletConnected = addonManager.isWalletConnected(
     namespace,
@@ -125,6 +177,7 @@ export function ProvideSignedTransactionAction({
         data: {
           signedTransactionBytes: signedTxHex,
           signerUuid: signerUuid,
+          signatureApproved: null,
         },
       };
       updateActionItem({ variables: { event: JSON.stringify(event) } });

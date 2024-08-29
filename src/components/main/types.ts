@@ -280,6 +280,7 @@ export interface ProvideSignedTransactionRequest {
   checkExpectationActionUuid: string | null;
   expectedSignerAddress: string | null;
   skippable: boolean;
+  onlyApprovalNeeded: boolean;
   signerUuid: string;
   payload: Value;
   namespace: string;
@@ -343,6 +344,7 @@ export interface ProvideSignedMessageResponse {
 export interface ProvideSignedTransactionResponse {
   signedTransactionBytes: string | null;
   signerUuid: string;
+  signatureApproved: boolean | null;
 }
 
 export type Primitive = "Primitive";
