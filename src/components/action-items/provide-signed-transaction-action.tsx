@@ -34,6 +34,7 @@ export function ProvideSignedTransactionAction({
   const {
     data: {
       payload,
+      displayPayload,
       namespace,
       networkId,
       signerUuid,
@@ -51,7 +52,8 @@ export function ProvideSignedTransactionAction({
     );
   }
   // insert a zero-width space every other character to allow the text to break as needed
-  const displayedValue = transaction.match(/(.{1})/g)?.join("​") || transaction;
+  const displayedValue =
+    displayPayload || transaction.match(/(.{1})/g)?.join("​") || transaction;
 
   const alreadySigned = actionStatus.status === "Success";
   const signatureBlocked = actionStatus.status === "Blocked";
@@ -70,9 +72,11 @@ export function ProvideSignedTransactionAction({
     updateActionItem({ variables: { event: JSON.stringify(event) } });
   };
 
-  // if only approving the signature, and not the actual signing, is needed in the browser, we can just return that row/button
+  let onClick;
+  let primaryButtonTitle;
+  let primaryButtonIsDisabled;
   if (onlyApprovalNeeded) {
-    const onClick = () => {
+    onClick = () => {
       const event: ActionItemResponse = {
         actionItemId: id,
         type: "ProvideSignedTransaction",
@@ -84,110 +88,59 @@ export function ProvideSignedTransactionAction({
       };
       updateActionItem({ variables: { event: JSON.stringify(event) } });
     };
-    return (
-      <SignTransactionRow
-        actionItem={actionItem}
-        isFirst={isFirst}
-        isLast={isLast}
-        onClick={() => {}}
-        subRow={{
-          text: displayedValue,
-          children: (
-            <div className="self-stretch justify-end items-end gap-2.5 inline-flex">
-              {skippable ? (
-                <PanelButton
-                  title="Skip Signature"
-                  onClick={onSkipSignature}
-                  isDisabled={skippableButtonIsDisabled}
-                  size={ElementSize.L}
-                  color={ButtonColor.Black}
-                />
-              ) : undefined}
-              <PanelButton
-                title="Approve Transaction"
-                onClick={onClick}
-                isDisabled={alreadySigned || signatureBlocked}
-                size={ElementSize.L}
-              />
-            </div>
-          ),
-        }}
-      >
-        <div></div>
-      </SignTransactionRow>
-    );
-  }
+    primaryButtonTitle = "Approve Transaction";
+    primaryButtonIsDisabled = alreadySigned || signatureBlocked;
+  } else {
+    addonManager.addNetworkInstance(namespace, networkId);
 
-  addonManager.addNetworkInstance(namespace, networkId);
-
-  const isWalletConnected = addonManager.isWalletConnected(
-    namespace,
-    networkId,
-  );
-  if (!isWalletConnected) {
-    const onClick = async () => {
-      await addonManager.connectWallet(namespace, networkId);
-    };
-    return (
-      <SignTransactionRow
-        actionItem={actionItem}
-        isFirst={isFirst}
-        isLast={isLast}
-        onClick={() => {}}
-        subRow={{
-          text: displayedValue,
-          children: (
-            <div className="self-stretch justify-end items-end gap-2.5 inline-flex">
-              {skippable ? (
-                <PanelButton
-                  title="Skip Signature"
-                  onClick={onSkipSignature}
-                  isDisabled={skippableButtonIsDisabled}
-                  size={ElementSize.L}
-                  color={ButtonColor.Black}
-                />
-              ) : undefined}
-              <PanelButton
-                title="Connect Wallet"
-                onClick={onClick}
-                isDisabled={false}
-                size={ElementSize.L}
-              />
-            </div>
-          ),
-        }}
-      >
-        <div></div>
-      </SignTransactionRow>
-    );
-  }
-  const address = addonManager.getAddress(namespace, networkId);
-  const onClick = async () => {
-    console.log(transaction);
-    const signedTxHex = await addonManager.signTransaction(
+    const isWalletConnected = addonManager.isWalletConnected(
       namespace,
       networkId,
-      address,
-      transaction,
     );
-    if (signedTxHex !== undefined) {
-      const event: ActionItemResponse = {
-        actionItemId: id,
-        type: "ProvideSignedTransaction",
-        data: {
-          signedTransactionBytes: signedTxHex,
-          signerUuid: signerUuid,
-          signatureApproved: null,
-        },
-      };
-      updateActionItem({ variables: { event: JSON.stringify(event) } });
-    }
-  };
 
-  const isIncorrectSigner =
-    expectedSignerAddress != null && address != expectedSignerAddress;
-  const signatureButtonIsDisabled =
-    alreadySigned || signatureBlocked || isIncorrectSigner;
+    if (!isWalletConnected) {
+      onClick = async () => {
+        await addonManager.connectWallet(namespace, networkId);
+      };
+      primaryButtonTitle = "Connect Wallet";
+      primaryButtonIsDisabled = false;
+    } else {
+      const address = addonManager.getAddress(namespace, networkId);
+      onClick = async () => {
+        console.log(transaction);
+        const signedTxHex = await addonManager.signTransaction(
+          namespace,
+          networkId,
+          address,
+          transaction,
+        );
+        if (signedTxHex !== undefined) {
+          const event: ActionItemResponse = {
+            actionItemId: id,
+            type: "ProvideSignedTransaction",
+            data: {
+              signedTransactionBytes: signedTxHex,
+              signerUuid: signerUuid,
+              signatureApproved: null,
+            },
+          };
+          updateActionItem({ variables: { event: JSON.stringify(event) } });
+        }
+      };
+      primaryButtonTitle = "Sign Transaction";
+      const isIncorrectSigner =
+        expectedSignerAddress != null && address != expectedSignerAddress;
+      primaryButtonIsDisabled =
+        alreadySigned || signatureBlocked || isIncorrectSigner;
+    }
+  }
+  console.log(
+    primaryButtonTitle,
+    primaryButtonIsDisabled,
+    skippableButtonIsDisabled,
+    skippable,
+    alreadySigned,
+  );
 
   return (
     <SignTransactionRow
@@ -198,7 +151,7 @@ export function ProvideSignedTransactionAction({
       subRow={{
         text: displayedValue,
         children: (
-          <div className="self-stretch justify-end items-end gap-2.5 inline-flex">
+          <div className="justify-end items-end gap-2.5 inline-flex">
             {skippable ? (
               <PanelButton
                 title="Skip Signature"
@@ -209,9 +162,9 @@ export function ProvideSignedTransactionAction({
               />
             ) : undefined}
             <PanelButton
-              title="Sign Transaction"
+              title={primaryButtonTitle}
               onClick={onClick}
-              isDisabled={signatureButtonIsDisabled}
+              isDisabled={primaryButtonIsDisabled}
               size={ElementSize.L}
             />
           </div>
@@ -257,7 +210,8 @@ function SignTransactionRow({
   const isStateDefault = !isStatusSuccess && !isHighlighted;
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
+      {/* Header Row */}
       <div
         onClick={onClick}
         className={classNames(
@@ -283,7 +237,7 @@ function SignTransactionRow({
           </div>
         </div>
 
-        <div className="test grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
+        <div className="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
           <div className="self-stretch py-3.5 md:py-[18px] justify-start items-start inline-flex">
             <div
               className={classNames(
@@ -297,20 +251,11 @@ function SignTransactionRow({
             </div>
           </div>
         </div>
-
-        {children}
-
-        {/* The below gives us the rounded top right corner of the row*/}
-        {/*<div
-          className={classNames(
-            "w-1 self-stretch bg-gray-950  flex-col justify-center items-start inline-flex",
-            isFirst ? "rounded-tr" : isLast ? "rounded-br" : "",
-          )}
-        ></div>*/}
       </div>
 
+      {/* Sub Row */}
       {subRow ? <ActionItemSubRow {...subRow} /> : undefined}
-
+      {/* Border */}
       {!isLast && <div className="border-b border-gray-800" />}
     </div>
   );

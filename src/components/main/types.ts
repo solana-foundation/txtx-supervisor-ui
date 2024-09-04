@@ -283,6 +283,7 @@ export interface ProvideSignedTransactionRequest {
   onlyApprovalNeeded: boolean;
   signerUuid: string;
   payload: Value;
+  displayPayload: string | null;
   namespace: string;
   networkId: string;
 }

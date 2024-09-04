@@ -37,7 +37,7 @@ export function ActionItemRow({
   const isStateDefault = !isStatusSuccess && !isHighlighted;
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
       <div
         onClick={onClick}
         className={classNames(
@@ -93,7 +93,7 @@ export interface ActionItemSubRow {
 }
 export function ActionItemSubRow({ text, children }: ActionItemSubRow) {
   let el = children ? (
-    <div className="self-stretch justify-end items-end gap-2.5 inline-flex">
+    <div className="absolute bottom-4 right-4 self-stretch justify-end items-end gap-2.5 inline-flex">
       {children}
     </div>
   ) : null;
@@ -105,15 +105,16 @@ export function ActionItemSubRow({ text, children }: ActionItemSubRow) {
       {text}
     </a>
   ) : (
-    text
+    <pre className="mb-12">{text}</pre>
   );
+
   return (
     <div
       className={classNames(
-        "overflow-auto w-full p-3 justify-start items-start inline-flex bg-black",
+        "max-h-60 overflow-auto w-full p-3 justify-start items-start inline-flex bg-black",
         children ? "min-h-20" : "",
         // todo, investigate why scrollbar styling isn't working
-        // "scrollbar-thin scrollbar-h-1",
+        "scrollbar-thin scrollbar-h-1",
       )}
     >
       <div
@@ -128,8 +129,8 @@ export function ActionItemSubRow({ text, children }: ActionItemSubRow) {
         */}
           {textEl}
         </div>
-        {el}
       </div>
+      {el}
     </div>
   );
 }
