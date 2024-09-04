@@ -41,7 +41,7 @@ export function OpenModalAction({
           title={title}
           onClick={onClick}
           isDisabled={false}
-          size={ElementSize.S}
+          size={ElementSize.M}
         />
       ),
     };
