@@ -22,6 +22,7 @@ export function ProvideSignedMessageAction({
   isFirst,
   isLast,
 }: ProvideSignedMessageAction) {
+  throw new Error("Signed message action not supported");
   const { id, actionStatus, title, description, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
 
@@ -156,7 +157,7 @@ function SignTransactionRow({
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
       <div
         onClick={onClick}
         className={classNames(
