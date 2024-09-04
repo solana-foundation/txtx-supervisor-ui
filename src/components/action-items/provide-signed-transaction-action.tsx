@@ -34,7 +34,7 @@ export function ProvideSignedTransactionAction({
   const {
     data: {
       payload,
-      displayPayload,
+      formattedPayload,
       namespace,
       networkId,
       signerUuid,
@@ -53,7 +53,7 @@ export function ProvideSignedTransactionAction({
   }
   // insert a zero-width space every other character to allow the text to break as needed
   const displayedValue =
-    displayPayload || transaction.match(/(.{1})/g)?.join("​") || transaction;
+    formattedPayload || transaction.match(/(.{1})/g)?.join("​") || transaction;
 
   const alreadySigned = actionStatus.status === "Success";
   const signatureBlocked = actionStatus.status === "Blocked";
@@ -134,13 +134,6 @@ export function ProvideSignedTransactionAction({
         alreadySigned || signatureBlocked || isIncorrectSigner;
     }
   }
-  console.log(
-    primaryButtonTitle,
-    primaryButtonIsDisabled,
-    skippableButtonIsDisabled,
-    skippable,
-    alreadySigned,
-  );
 
   return (
     <SignTransactionRow
