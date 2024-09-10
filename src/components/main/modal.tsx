@@ -1,4 +1,5 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect } from "react";
+
 import { ActionGroup, ActionSubGroup, ModalBlock } from "./types";
 import { classNames } from "../../utils/helpers";
 import { ReviewInputAction } from "../action-items/review-input-action";
@@ -25,6 +26,17 @@ export interface Modal {
 export function Modal({ block, index }: Modal) {
   const dispatch = useAppDispatch();
   const isVisible = block.visible;
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isVisible) {
+        dispatch(setModalVisibility([block.uuid, false]));
+      }
+    };
+    document.addEventListener("keydown", handleEscapeKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [dispatch, false, block.uuid]);
   return (
     <ModalWrapper
       visible={isVisible}

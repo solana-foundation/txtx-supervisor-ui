@@ -37,6 +37,18 @@ export default function HankoAuth() {
       console.error("hanko error", error);
     });
   }, []);
+  
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        dispatch(setMultiPartyEnabled(false));
+      }
+    };
+    document.addEventListener("keydown", handleEscapeKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [dispatch]);
 
   const onModalClick = () => {
     dispatch(setMultiPartyEnabled(false));

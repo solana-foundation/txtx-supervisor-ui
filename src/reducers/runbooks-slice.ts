@@ -232,7 +232,7 @@ export const runbooksSlice = createSlice({
         const modalIdx = state.modalBlocks.findIndex(
           (modal) => modal.uuid === uuid,
         );
-        if (modalIdx === undefined) return;
+        if (modalIdx === undefined || modalIdx === -1) return;
         state.modalBlocks[modalIdx].visible = visibility;
       },
     ),
