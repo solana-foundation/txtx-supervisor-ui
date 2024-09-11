@@ -20,6 +20,7 @@ import useOpenChannel from "./hooks/useOpenChannel";
 import useApolloClient from "./hooks/useApolloClient";
 import { SuspensePage } from "./components/pages/suspense";
 import confetti from "./components/animations/confetti";
+import TaskNotification from "./components/popup/task-notification";
 
 const devMode = process.env.TXTX_DEV_MODE === "true";
 const protocol = window.location.protocol;
@@ -144,6 +145,7 @@ function AppInternal() {
           {...{ title: protocolName }}
           panelScrollHandler={panelScrollHandler}
         ></Header>
+        <TaskNotification/>
         <main
           className="min-h-screen pt-0 mt-0" //pl-16 when we reinsatate sidebar
           onClick={() => setModalVisible(!modalVisible)}
