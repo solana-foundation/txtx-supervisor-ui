@@ -20,6 +20,8 @@ import useOpenChannel from "./hooks/useOpenChannel";
 import useApolloClient from "./hooks/useApolloClient";
 import { SuspensePage } from "./components/pages/suspense";
 import confetti from "./components/animations/confetti";
+import usePageVisibility from "./hooks/usePageVisibility";
+import TaskComponent from "./components/popup/task-notification";
 
 const devMode = process.env.TXTX_DEV_MODE === "true";
 const protocol = window.location.protocol;
@@ -99,6 +101,7 @@ function AppInternal() {
   useSubscriptions();
   // open multiparty channel if it's enabled, authenticated, and hasn't been opened
   useOpenChannel();
+  const isVisible = usePageVisibility();
 
   const panelScrollHandler = (index) => {
     window.location.hash = panelRefs.current[index].current.id;
@@ -144,6 +147,7 @@ function AppInternal() {
           {...{ title: protocolName }}
           panelScrollHandler={panelScrollHandler}
         ></Header>
+        <TaskComponent/>
         <main
           className="min-h-screen pt-0 mt-0" //pl-16 when we reinsatate sidebar
           onClick={() => setModalVisible(!modalVisible)}
