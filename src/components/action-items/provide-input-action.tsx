@@ -14,11 +14,13 @@ export interface ProvideInputAction {
   actionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
+  isCurrent: boolean;
 }
 export function ProvideInputAction({
   actionItem,
   isFirst,
   isLast,
+  isCurrent
 }: ProvideInputAction) {
   const { id, actionType, actionStatus } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
@@ -61,6 +63,7 @@ export function ProvideInputAction({
       isFirst={isFirst}
       isLast={isLast}
       onClick={onClick}
+      isCurrent={isCurrent}
     >
       <ProvideInputCell
         actionItem={actionItem}

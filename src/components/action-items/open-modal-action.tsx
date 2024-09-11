@@ -61,6 +61,7 @@ export function OpenModalAction({
       isLast={isLast}
       onClick={() => {}}
       subRow={subRow}
+      isCurrent={false}
     >
       {el}
     </ActionItemRow>

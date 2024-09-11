@@ -19,11 +19,13 @@ export interface ProvideSignedTransactionAction {
   actionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
+  isCurrent: boolean;
 }
 export function ProvideSignedTransactionAction({
   actionItem,
   isFirst,
   isLast,
+  isCurrent,
 }: ProvideSignedTransactionAction) {
   const { id, actionStatus, title, description, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
@@ -192,6 +194,7 @@ export function ProvideSignedTransactionAction({
           </div>
         ),
       }}
+      isCurrent={isCurrent}
     >
       <div></div>
     </SignTransactionRow>
@@ -204,6 +207,7 @@ interface SignTransactionRow {
   isLast: boolean;
   onClick: any;
   subRow?: ActionItemSubRow;
+  isCurrent: boolean;
 }
 function SignTransactionRow({
   actionItem,
@@ -212,6 +216,7 @@ function SignTransactionRow({
   children,
   onClick,
   subRow,
+  isCurrent,
 }: SignTransactionRow & { children: React.ReactNode }) {
   const { index, title, description, actionStatus } = actionItem;
   const { status } = actionStatus;
@@ -228,8 +233,7 @@ function SignTransactionRow({
   }
 
   const isStatusSuccess = status === "Success";
-  const isHighlighted = false; // Need to implement https://tppr.me/xkN4je
-  const isStateDefault = !isStatusSuccess && !isHighlighted;
+  const isStateDefault = !isStatusSuccess && !isCurrent;
 
   return (
     <div className="w-full relative">
@@ -238,7 +242,7 @@ function SignTransactionRow({
         onClick={onClick}
         className={classNames(
           "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap",
-          isHighlighted ? "bg-emerald-950" : "bg-gray-950",
+          isCurrent ? "bg-emerald-950" : "bg-gray-950",
         )}
       >
         <div className="w-[46px] flex items-center justify-center self-stretch">
@@ -246,7 +250,7 @@ function SignTransactionRow({
             className={classNames(
               "w-[20px] aspect-square border border-emerald-500 rounded-full flex items-center justify-center transition-colors hover:border-emerald-500",
               isStatusSuccess ? "border-emerald-500 bg-emerald-500" : "",
-              isHighlighted ? "border-emerald-500" : "",
+              isCurrent ? "border-emerald-500" : "",
               isStateDefault ? "border-zinc-600" : "",
             )}
           >
@@ -265,7 +269,7 @@ function SignTransactionRow({
               className={classNames(
                 "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
                 isStatusSuccess ? "text-emerald-620" : "",
-                isHighlighted ? "text-emerald-500" : "",
+                isCurrent ? "text-emerald-500" : "",
                 isStateDefault ? "text-stone-500" : "",
               )}
             >

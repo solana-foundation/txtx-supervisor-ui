@@ -110,12 +110,18 @@ interface SubGroup {
 }
 function SubGroup({ subGroup }: SubGroup) {
   const { actionItems, allowBatchCompletion } = subGroup;
+  const idx = actionItems.findIndex((item) => ['Todo', 'Error'].includes(item.actionStatus.status) );
+  let currentItemId:string;
+  if (idx > -1) {
+    currentItemId = actionItems[idx].id;
+  }
 
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
     const { actionType, id } = actionItem;
     const { type } = actionType;
     const isFirst = i === 0;
     const isLast = i === actionItems.length - 1;
+    const isCurrent = currentItemId === id;
 
     if (type === "ReviewInput") {
       accumulator.push(
@@ -124,6 +130,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "ProvideInput") {
@@ -133,6 +140,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "PickInputOption") {
@@ -142,6 +150,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "ProvidePublicKey") {
@@ -151,6 +160,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "ProvideSignedTransaction") {
@@ -160,6 +170,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "DisplayOutput") {
@@ -169,6 +180,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "DisplayErrorLog") {
