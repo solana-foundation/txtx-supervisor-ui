@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function usePageVisibility() {
+export default function useTabVisibility() {
   const [isVisible, setIsVisible] = useState(!document.hidden);
 
   useEffect(() => {

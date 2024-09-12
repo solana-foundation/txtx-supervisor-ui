@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import usePageVisibility from '../../hooks/usePageVisibility';
+import useTabVisibility from '../../hooks/useTabVisibility';
 
 const requestNotificationPermission = () => {
     if (Notification.permission !== 'granted') {
@@ -15,7 +15,7 @@ const requestNotificationPermission = () => {
   
 const TaskComponent = () => {
   const [taskCompleted, setTaskCompleted] = useState(false);
-  const isVisible = usePageVisibility();
+  const isVisible = useTabVisibility();
 
   useEffect(() => {
     // Request notification permission when component mounts
