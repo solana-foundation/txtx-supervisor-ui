@@ -1,64 +1,142 @@
 import { phLogOnChainError, phLogOnChainSuccess } from "../posthog";
+import { Result } from "./result";
+
+export enum AddonErrorType {
+  ADDON_NOT_SUPPORTED,
+  NETWORK_NOT_SUPPORTED,
+  GET_PUBLIC_KEY_FAILED,
+  SIGN_MESSAGE_FAILED,
+  SIGN_TRANSACTION_FAILED,
+}
+
+export function getAddonErrorMessage(
+  error: AddonErrorType,
+  namespace: string | undefined,
+  network: string | undefined,
+): string {
+  switch (error) {
+    case AddonErrorType.ADDON_NOT_SUPPORTED:
+      return `Addon ${namespace} is not supported`;
+    case AddonErrorType.NETWORK_NOT_SUPPORTED:
+      return `Network ${network} is not supported for namespace ${namespace}`;
+    case AddonErrorType.GET_PUBLIC_KEY_FAILED:
+      return `Failed to get ${namespace} public key`;
+    case AddonErrorType.SIGN_MESSAGE_FAILED:
+      return `Failed to sign ${namespace} message`;
+    case AddonErrorType.SIGN_TRANSACTION_FAILED:
+      return `Failed to sign ${namespace} transaction`;
+  }
+}
 
 const PH_GET_ADDRESS = "get_address";
 const PH_GET_PUBLIC_KEY = "get_public_key";
 const PH_SIGN_MESSAGE = "sign_message";
 const PH_SIGN_TRANSACTION = "sign_transaction";
+
+export type AddonAndNetwork = { addon: Addon; networks: string[] };
 export class AddonManager {
-  public addons: { [namespace: string]: { addon: Addon; networks: string[] } } =
-    {};
+  public addons: { [namespace: string]: AddonAndNetwork } = {};
+
+  private getAddonAndNetworks(
+    namespace: string,
+  ): Result<AddonAndNetwork, string> {
+    if (!this.addons[namespace]) {
+      return Result.err(`Addon ${namespace} is not supported`);
+    }
+    return Result.ok(this.addons[namespace]);
+  }
 
   public registerAddon(namespace: string, addon: Addon) {
     if (this.addons[namespace]) {
-      throw new Error(`namespace ${namespace} already exists`);
+      return;
     }
 
     this.addons[namespace] = { addon, networks: [] };
   }
 
-  public addNetworkInstance(namespace: string, networkId: string) {
-    if (!this.addons[namespace].networks.includes(networkId)) {
-      this.addons[namespace].networks.push(networkId);
+  public addNetworkInstance(
+    namespace: string,
+    networkId: string,
+  ): Result<null, string> {
+    const result = this.getAddonAndNetworks(namespace);
+    if (result.is_err()) {
+      return Result.err(result.unwrap_err());
     }
+    const { networks } = result.unwrap();
+    if (!networks.includes(networkId)) {
+      networks.push(networkId);
+    }
+    return Result.ok(null);
   }
 
-  getAddon(namespace: string, networkId: string): Addon {
-    if (!this.addons[namespace]) {
-      throw new Error(`could not find addon for namespace ${namespace}`);
+  getAddon(namespace: string, networkId: string): Result<Addon, string> {
+    const addonAndNetworkResult = this.getAddonAndNetworks(namespace);
+    if (addonAndNetworkResult.is_err()) {
+      return Result.err(addonAndNetworkResult.unwrap_err());
     }
-    const { addon, networks } = this.addons[namespace];
+    const { addon, networks } = addonAndNetworkResult.unwrap();
 
     const network = networks.find((network) => network === networkId);
     if (!network) {
-      throw new Error(
-        `could not find network ${networkId} for addon ${namespace}`,
+      return Result.err(
+        `Network ${network} is not supported for namespace ${namespace}`,
       );
     }
-    return addon;
+    return Result.ok(addon);
   }
 
-  public async connectWallet(namespace: string, networkId: string) {
-    const addon = this.getAddon(namespace, networkId);
+  public async connectWallet(
+    namespace: string,
+    networkId: string,
+  ): Promise<Result<null, string>> {
+    const result = this.getAddon(namespace, networkId);
+    if (result.is_err()) {
+      return Result.err(result.unwrap_err());
+    }
+    const addon = result.unwrap();
     addon.connectWallet();
+    return Result.ok(null);
   }
 
-  public disconnectWallet(namespace: string, networkId: string) {
-    const addon = this.getAddon(namespace, networkId);
+  public disconnectWallet(
+    namespace: string,
+    networkId: string,
+  ): Result<null, string> {
+    const result = this.getAddon(namespace, networkId);
+    if (result.is_err()) {
+      return Result.err(result.unwrap_err());
+    }
+    const addon = result.unwrap();
     addon.disconnectWallet();
+    return Result.ok(null);
   }
 
-  public isWalletConnected(namespace: string, networkId: string): boolean {
-    const addon = this.getAddon(namespace, networkId);
-    return addon.isWalletConnected();
+  public isWalletConnected(
+    namespace: string,
+    networkId: string,
+  ): Result<boolean, string> {
+    const result = this.getAddon(namespace, networkId);
+    if (result.is_err()) {
+      return Result.err(result.unwrap_err());
+    }
+    const addon = result.unwrap();
+    return Result.ok(addon.isWalletConnected());
   }
 
-  public getAddress(namespace: string, networkId: string): string {
-    const addon = this.getAddon(namespace, networkId);
-    const result = addon.getAddress(networkId);
-    if (typeof result === "object") {
-      throw new Error(result.error);
+  public getAddress(
+    namespace: string,
+    networkId: string,
+  ): Result<string, string> {
+    const addonResult = this.getAddon(namespace, networkId);
+    if (addonResult.is_err()) {
+      return Result.err(addonResult.unwrap_err());
+    }
+    const addon = addonResult.unwrap();
+    const addressResult = addon.getAddress(networkId);
+    if (typeof addressResult === "object") {
+      return Result.err(addressResult.error);
     } else {
-      return result;
+      return Result.ok(addressResult);
     }
   }
 
@@ -67,16 +145,22 @@ export class AddonManager {
     networkId: string,
     address: string,
     message: string,
-  ): Promise<string | undefined> {
-    const addon = this.getAddon(namespace, networkId);
+  ): Promise<Result<string, string>> {
+    const addonResult = this.getAddon(namespace, networkId);
+    if (addonResult.is_err()) {
+      return Result.err(addonResult.unwrap_err());
+    }
+    const addon = addonResult.unwrap();
     const result = await addon.getPublicKey(networkId, address, message);
     if (typeof result === "object") {
       console.error(result.error);
       phLogOnChainError(namespace, PH_GET_PUBLIC_KEY, result.error);
-      return;
+      return Result.err(
+        `Failed to get ${namespace} public key: ${result.error}`,
+      );
     } else {
       phLogOnChainSuccess(namespace, PH_GET_PUBLIC_KEY);
-      return result;
+      return Result.ok(result);
     }
   }
 
@@ -85,16 +169,20 @@ export class AddonManager {
     networkId: string,
     address: string,
     message: string,
-  ): Promise<string | undefined> {
-    const addon = this.getAddon(namespace, networkId);
+  ): Promise<Result<string, string>> {
+    const addonResult = this.getAddon(namespace, networkId);
+    if (addonResult.is_err()) {
+      return Result.err(addonResult.unwrap_err());
+    }
+    const addon = addonResult.unwrap();
     const result = await addon.signMessage(networkId, address, message);
     if (typeof result === "object") {
       console.error(result.error);
       phLogOnChainError(namespace, PH_SIGN_MESSAGE, result.error);
-      return;
+      return Result.err(`Failed to sign ${namespace} message: ${result.error}`);
     } else {
       phLogOnChainSuccess(namespace, PH_SIGN_MESSAGE);
-      return result;
+      return Result.ok(result);
     }
   }
 
@@ -103,16 +191,22 @@ export class AddonManager {
     networkId: string,
     address: string,
     txHex: string,
-  ): Promise<string | undefined> {
-    const addon = this.getAddon(namespace, networkId);
+  ): Promise<Result<string, string>> {
+    const addonResult = this.getAddon(namespace, networkId);
+    if (addonResult.is_err()) {
+      return Result.err(addonResult.unwrap_err());
+    }
+    const addon = addonResult.unwrap();
     const result = await addon.signTransaction(txHex);
     if (typeof result === "object") {
       console.error(result.error);
       phLogOnChainError(namespace, PH_SIGN_TRANSACTION, result.error);
-      return;
+      return Result.err(
+        `Failed to sign ${namespace} transaction: ${result.error}`,
+      );
     } else {
       phLogOnChainSuccess(namespace, PH_SIGN_TRANSACTION);
-      return result;
+      return Result.ok(result);
     }
   }
 }
