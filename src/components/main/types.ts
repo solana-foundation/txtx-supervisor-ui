@@ -188,6 +188,13 @@ export interface Diagnostic {
   message: string;
   level: DiagnosticLevel;
 }
+export function errorDiagnostic(message: string): Diagnostic {
+  return {
+    span: null,
+    message,
+    level: "Error",
+  };
+}
 
 export interface DiagnosticSpan {
   line_start: number;
