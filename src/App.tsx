@@ -19,7 +19,6 @@ import { ApolloProvider } from "@apollo/client";
 import useOpenChannel from "./hooks/useOpenChannel";
 import useApolloClient from "./hooks/useApolloClient";
 import { SuspensePage } from "./components/pages/suspense";
-import usePageVisibility from "./hooks/usePageVisibility";
 import TaskNotification from "./components/popup/task-notification";
 
 const devMode = process.env.TXTX_DEV_MODE === "true";
@@ -100,8 +99,6 @@ function AppInternal() {
   useSubscriptions();
   // open multiparty channel if it's enabled, authenticated, and hasn't been opened
   useOpenChannel();
-  const isVisible = usePageVisibility();
-
   const panelScrollHandler = (index) => {
     window.location.hash = panelRefs.current[index].current.id;
     // when we select a new panel, the panels resize some, which makes the
