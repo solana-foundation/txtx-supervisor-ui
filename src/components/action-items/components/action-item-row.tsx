@@ -1,7 +1,8 @@
 import React from "react";
 import { classNames } from "../../../utils/helpers";
-import { ActionItemRequest } from "../../main/types";
+import { ActionItemRequest, errorDiagnostic } from "../../main/types";
 import { CheckIcon } from "@heroicons/react/20/solid";
+import { AddonErrorType, getAddonErrorMessage } from "../../../utils/addons";
 
 export interface ActionItemRow {
   actionItem: ActionItemRequest;
@@ -22,19 +23,19 @@ export function ActionItemRow({
   const { status } = actionStatus;
   // todo: handle other statuses
   let checkClass;
-  if (status === "Todo") {
-    checkClass = "text-white";
-  } else if (status === "Success") {
-    checkClass = "text-emerald-500";
-  } else if (status === "Error") {
+  if (status === "Error") {
     const diag = actionStatus.data;
     checkClass = "text-rose-400";
-    subRow = subRow ? subRow : { text: diag.message };
   }
 
+  subRow =
+    !subRow && status === "Error"
+      ? { text: actionStatus.data.message }
+      : subRow;
+  const isStatusError = status === "Error";
   const isStatusSuccess = status === "Success";
   const isHighlighted = false; // Need to implement https://tppr.me/xkN4je
-  const isStateDefault = !isStatusSuccess && !isHighlighted;
+  const isStateDefault = !isStatusSuccess && !isHighlighted && !isStatusError;
 
   return (
     <div className="w-full relative">
@@ -52,6 +53,7 @@ export function ActionItemRow({
               isStatusSuccess ? "border-emerald-500 bg-emerald-500" : "",
               isHighlighted ? "border-emerald-500" : "",
               isStateDefault ? "border-zinc-600" : "",
+              isStatusError ? "border-rose-400" : "",
             )}
           >
             <CheckIcon
@@ -71,6 +73,7 @@ export function ActionItemRow({
                 isStatusSuccess ? "text-emerald-620" : "",
                 isHighlighted ? "text-emerald-500" : "",
                 isStateDefault ? "text-stone-500" : "",
+                isStatusError ? "text-rose-400" : "",
               )}
             >
               {description ? `${description} (${title})` : title}
@@ -81,7 +84,9 @@ export function ActionItemRow({
         {children}
       </div>
 
-      {subRow ? <ActionItemSubRow {...subRow} /> : undefined}
+      {subRow ? (
+        <ActionItemSubRow {...subRow} isError={isStatusError} />
+      ) : undefined}
 
       {!isLast && <div className="border-b border-gray-800" />}
     </div>
@@ -89,9 +94,14 @@ export function ActionItemRow({
 }
 export interface ActionItemSubRow {
   text: string;
+  isError?: boolean;
   children?: JSX.Element;
 }
-export function ActionItemSubRow({ text, children }: ActionItemSubRow) {
+export function ActionItemSubRow({
+  text,
+  children,
+  isError = false,
+}: ActionItemSubRow) {
   let el = children ? (
     <div className="absolute bottom-4 right-4 self-stretch justify-end items-end gap-2.5 inline-flex">
       {children}
@@ -123,7 +133,12 @@ export function ActionItemSubRow({ text, children }: ActionItemSubRow) {
           children ? "gap-2.5" : "",
         )}
       >
-        <div className="self-stretch text-stone-500 text-sm font-medium font-inter leading-[18.20px]">
+        <div
+          className={classNames(
+            "self-stretch text-sm font-medium font-inter leading-[18.20px]",
+            isError ? "text-rose-400" : "text-stone-500",
+          )}
+        >
           {/* weird rendering bug I can't figure out: whenever the text here is an empty string
             there's an unstyled gap. so just insert a zero-width string here
         */}
@@ -132,5 +147,35 @@ export function ActionItemSubRow({ text, children }: ActionItemSubRow) {
       </div>
       {el}
     </div>
+  );
+}
+
+export function ErrorActionItemRow({
+  error,
+  originalActionItem,
+  isFirst,
+  isLast,
+}: {
+  error: string;
+  originalActionItem: ActionItemRequest;
+  isFirst: boolean;
+  isLast: boolean;
+}) {
+  let errorActionItem: ActionItemRequest = {
+    ...originalActionItem,
+    actionStatus: {
+      status: "Error",
+      data: errorDiagnostic(error),
+    },
+  };
+  return (
+    <ActionItemRow
+      actionItem={errorActionItem}
+      isFirst={isFirst}
+      isLast={isLast}
+      onClick={() => {}}
+    >
+      <div></div>
+    </ActionItemRow>
   );
 }
