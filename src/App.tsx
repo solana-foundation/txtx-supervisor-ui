@@ -143,7 +143,6 @@ function AppInternal() {
           {...{ title: protocolName }}
           panelScrollHandler={panelScrollHandler}
         ></Header>
-        <TaskNotification/>
         <main
           className="min-h-screen pt-0 mt-0" //pl-16 when we reinsatate sidebar
           onClick={() => setModalVisible(!modalVisible)}
@@ -172,6 +171,7 @@ function AppInternal() {
             )}
           </div>
         </main>
+        <TaskNotification/>
       </div>
 
       {/* <aside className="block lg:px-8 xl:left-20 fixed bottom-0 top-16 xl:w-96 overflow-y-auto border-r border-gray-200 px-4 py-6 border-r dark:border-slate-500/20 transition-all">
