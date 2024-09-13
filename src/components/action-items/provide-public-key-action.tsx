@@ -1,5 +1,8 @@
 import React from "react";
-import { ActionItemRow } from "./components/action-item-row";
+import {
+  ActionItemRow,
+  ErrorActionItemRow,
+} from "./components/action-item-row";
 import { ActionItemRequest, ActionItemResponse } from "../main/types";
 import { ReviewInputCell } from "./components/review-input-cell";
 import { ElementSize, PanelButton } from "../buttons/panel-button";
@@ -21,6 +24,7 @@ export function ProvidePublicKeyAction({
   isFirst,
   isLast,
 }: ProvidePublicKeyAction) {
+  const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
   const { id, actionStatus, actionType } = actionItem;
 
   if (actionType.type !== "ProvidePublicKey") {
@@ -31,14 +35,37 @@ export function ProvidePublicKeyAction({
 
   const { namespace, networkId, message } = actionType.data;
   const { status } = actionStatus;
-  addonManager.addNetworkInstance(namespace, networkId);
-
-  const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
-
-  const isWalletConnected = addonManager.isWalletConnected(
+  const addNetworkResult = addonManager.addNetworkInstance(
     namespace,
     networkId,
   );
+
+  if (addNetworkResult.is_err()) {
+    return (
+      <ErrorActionItemRow
+        error={addNetworkResult.unwrap_err()}
+        originalActionItem={actionItem}
+        isFirst={isFirst}
+        isLast={isLast}
+      />
+    );
+  }
+
+  const isWalletConnectedResult = addonManager.isWalletConnected(
+    namespace,
+    networkId,
+  );
+  if (isWalletConnectedResult.is_err()) {
+    return (
+      <ErrorActionItemRow
+        error={isWalletConnectedResult.unwrap_err()}
+        originalActionItem={actionItem}
+        isFirst={isFirst}
+        isLast={isLast}
+      />
+    );
+  }
+  const isWalletConnected = isWalletConnectedResult.unwrap();
   if (!isWalletConnected) {
     const onClick = async () => {
       await addonManager.connectWallet(namespace, networkId);
@@ -65,7 +92,18 @@ export function ProvidePublicKeyAction({
       </ActionItemRow>
     );
   } else {
-    const address = addonManager.getAddress(namespace, networkId);
+    const addressResult = addonManager.getAddress(namespace, networkId);
+    if (addressResult.is_err()) {
+      return (
+        <ErrorActionItemRow
+          error={addressResult.unwrap_err()}
+          originalActionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+        />
+      );
+    }
+    const address = addressResult.unwrap();
 
     if (status === "Todo") {
       const publicKeyFromStorage = getPublicKeyFromLocalStorage(
@@ -75,12 +113,23 @@ export function ProvidePublicKeyAction({
 
       if (publicKeyFromStorage === undefined) {
         const onClick = async () => {
-          let publicKey = await addonManager.getPublicKey(
+          const publicKeyResult = await addonManager.getPublicKey(
             namespace,
             networkId,
             address,
             message,
           );
+          if (publicKeyResult.is_err()) {
+            return (
+              <ErrorActionItemRow
+                error={publicKeyResult.unwrap_err()}
+                originalActionItem={actionItem}
+                isFirst={isFirst}
+                isLast={isLast}
+              />
+            );
+          }
+          const publicKey = publicKeyResult.unwrap();
           if (publicKey === undefined) {
             throw new Error("failed to fetch public key");
           }
