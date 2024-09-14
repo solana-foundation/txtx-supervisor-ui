@@ -112,10 +112,10 @@ interface SubGroup {
 function SubGroup({ subGroup }: SubGroup) {
   const { actionItems, allowBatchCompletion } = subGroup;
   
-  const idx = actionItems.findIndex((item) => ['Todo', 'Error'].includes(item.actionStatus.status) );
+  const firstIncompleteActionIdx = actionItems.findIndex((item) => item.actionStatus.status === "Todo" || item.actionStatus.status === "Error" );
   let currentItemId:string;
-  if (idx > -1) {
-    currentItemId = actionItems[idx].id;
+  if (firstIncompleteActionIdx > -1) {
+    currentItemId = actionItems[firstIncompleteActionIdx].id;
   }
 
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
@@ -201,6 +201,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "OpenModal") {
