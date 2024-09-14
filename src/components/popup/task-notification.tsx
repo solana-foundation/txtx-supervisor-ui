@@ -5,7 +5,7 @@ import { selectVisibleProgressBlock } from '../../reducers/runbooks-slice';
 import { useSelector } from 'react-redux';
 
 const TITLE_TEXT = ['txtx runbooks', 'txtx - task in progress...', 'txtx - task complete'];
-const TITLE_ICONS = ['favicon', 'red_light', 'green_light'];
+const TITLE_ICONS = ['favicon', 'pending', 'complete'];
 
 const changeTab = (taskStatus:number) => {
     const link = document.querySelector("link[rel*='icon']") || document.createElement('link') as any;
