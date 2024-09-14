@@ -10,11 +10,13 @@ export interface OpenModalAction {
   actionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
+  isCurrent: boolean;
 }
 export function OpenModalAction({
   actionItem,
   isFirst,
   isLast,
+  isCurrent
 }: OpenModalAction) {
   const dispatch = useAppDispatch();
   const { actionType, description, actionStatus } = actionItem;
@@ -61,7 +63,7 @@ export function OpenModalAction({
       isLast={isLast}
       onClick={() => {}}
       subRow={subRow}
-      isCurrent={false}
+      isCurrent={isCurrent}
     >
       {el}
     </ActionItemRow>

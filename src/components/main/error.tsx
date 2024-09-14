@@ -194,6 +194,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     }
