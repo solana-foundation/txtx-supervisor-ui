@@ -6,8 +6,12 @@ import { useSelector } from 'react-redux';
 
 const TITLE_TEXT = ['txtx runbooks', 'txtx - task in progress...', 'txtx - task complete'];
 const TITLE_ICONS = ['favicon', 'pending', 'complete'];
-
-const changeTab = (taskStatus:number) => {
+const enum TaskStatus {
+  NotRunning,
+  Pending,
+  Complete
+}
+const changeTabContents = (taskStatus:number) => {
     const link = document.querySelector("link[rel*='icon']") || document.createElement('link') as any;
     link.type = 'image/x-icon';
     link.rel = '[rel*="icon"]';
@@ -28,51 +32,44 @@ const showNotification = (title, options) => {
 };
 
 const TaskNotification = () => {
-  const isHidden = usePageVisibility();
-  const [taskStatus, setTaskStatus] = useState(0);
+  const isBrowserTabHidden = usePageVisibility();
+  const [taskStatus, setTaskStatus] = useState(TaskStatus.NotRunning);
   const progressBlocks = useSelector(selectVisibleProgressBlock);
   const pushProgressBlockStatus = useSelector(selectVisibleProgressBlock);
 
     useEffect(() => {
-      if (taskStatus === 2) {
-        if (isHidden) {
+      changeTabContents(taskStatus);
+      if (taskStatus === TaskStatus.Complete) {
+        setTimeout(() => {
+          setTaskStatus(TaskStatus.NotRunning); 
+          changeTabContents(TaskStatus.NotRunning);
+        }, 5000);
+        if (isBrowserTabHidden) {
           showNotification('Task Complete', {
             body: 'Your task has been completed successfully!',
             icon: '/assets/favicon.png',
           });
         }
       }
-      changeTab(taskStatus);
-      setTimeout(() => {
-        changeTab(0);
-      }, 5000);
   
       return () => {
-        changeTab(0);
+        //changeTabContents(TaskStatus.NotRunning);
       };
-    }, [isHidden, taskStatus]);
+    }, [isBrowserTabHidden, taskStatus]);
 
     useEffect(() => {
       if (progressBlocks !== undefined) {
-        const block: ProgressBlock = progressBlocks;
-        console.log('TaskNotification:progressBlockEvent: ', progressBlocks)
-        if (block && block.type === 'ProgressBar' && block.visible && block.panel.length === 0) {
-          requestNotificationPermission();
-          setTaskStatus(1);
-          console.log('TaskNotification:progressBlockEvent: setTaskStatus(1)')
-      }
+        requestNotificationPermission();
+        setTaskStatus(TaskStatus.Pending);
       }
     }, [progressBlocks]);
 
     useEffect(() => {
       if (pushProgressBlockStatus?.type === 'ProgressBar') {
-        console.log('TaskNotification:pushProgressBlockStatus: ', pushProgressBlockStatus)
         const statuses:Array<ProgressBarStatus> = pushProgressBlockStatus?.panel[0]?.statuses || []
-        // the action holds an array of the all the progress updates - the complete looks to be the last.
-        const idx = statuses.findIndex((o) => o.status.toLowerCase().startsWith('complete'))
+        const idx = statuses.findIndex((o) => o.status.toLowerCase().startsWith('complete') || o.status.toLowerCase().startsWith('valid'))
         if (idx > -1) {
-          setTaskStatus(2);
-          console.log('TaskNotification:progressBlockEvent: setTaskStatus(2)')
+          setTaskStatus(TaskStatus.Complete);
         }
       }
     }, [pushProgressBlockStatus]);

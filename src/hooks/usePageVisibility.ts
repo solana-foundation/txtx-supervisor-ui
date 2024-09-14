@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 
 export default function usePageVisibility() {
-  const [isHidden, setIsHidden] = useState(document.hidden);
+  const [isBrowserTabHidden, setIsBrowserTabHidden] = useState(document.hidden);
   const [hasPageLoaded, setHasPageLoaded] = useState(false);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (hasPageLoaded) {
-        setIsHidden(document.hidden);
+        setIsBrowserTabHidden(document.hidden);
       }
     };
 
@@ -19,5 +19,5 @@ export default function usePageVisibility() {
     };
   }, [hasPageLoaded]);
 
-  return isHidden;
+  return isBrowserTabHidden;
 }
