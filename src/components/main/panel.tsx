@@ -16,6 +16,7 @@ import { PickInputOptionAction } from "../action-items/pick-input-option-action"
 import { DisplayOutputAction } from "../action-items/display-output-action";
 import { OpenModalAction } from "../action-items/open-modal-action";
 import { ProvideSignedMessageAction } from "../action-items/provide-signed-message-action";
+import { SendTransactionAction } from "../action-items/send-transaction-action";
 
 function useFirstRender() {
   const ref = useRef(true);
@@ -165,6 +166,15 @@ function SubGroup({ subGroup }: SubGroup) {
     } else if (type === "ProvideSignedTransaction") {
       accumulator.push(
         <ProvideSignedTransactionAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={id}
+        />,
+      );
+    } else if (type === "SendTransaction") {
+      accumulator.push(
+        <SendTransactionAction
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}

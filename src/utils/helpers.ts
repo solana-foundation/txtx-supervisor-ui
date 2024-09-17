@@ -16,7 +16,7 @@ export function sortNavItemsRecursive(a: NavItem, b: NavItem) {
   }
 }
 
-export function classNames(...classes) {
+export function classNames(...classes: string[]): string {
   return classes.filter(Boolean).join(" ");
 }
 

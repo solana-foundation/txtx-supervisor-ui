@@ -18,7 +18,7 @@ export function ActionItemRow({
   children,
   onClick,
   subRow,
-}: ActionItemRow & { children }) {
+}: ActionItemRow & { children: React.ReactNode }) {
   const { index, title, description, actionStatus } = actionItem;
   const { status } = actionStatus;
   // todo: handle other statuses
