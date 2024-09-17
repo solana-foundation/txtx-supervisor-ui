@@ -35,6 +35,7 @@ export function ReviewInputAction({
       data: {
         inputName: actionType.data.inputName,
         valueChecked: actionStatus.status === "Todo",
+        forceExecution: actionType.data.forceExecution,
       },
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });
