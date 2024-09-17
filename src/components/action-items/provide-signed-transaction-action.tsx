@@ -1,5 +1,8 @@
 import React from "react";
-import { ActionItemSubRow } from "./components/action-item-row";
+import {
+  ActionItemSubRow,
+  ErrorActionItemRow,
+} from "./components/action-item-row";
 import {
   ActionItemRequest,
   ActionItemResponse,
@@ -64,7 +67,7 @@ export function ProvideSignedTransactionAction({
       actionItemId: id,
       type: "ProvideSignedTransaction",
       data: {
-        signedTransactionBytes: null,
+        signedTransactionResult: null,
         signerUuid: signerUuid,
         signatureApproved: null,
       },
@@ -81,7 +84,7 @@ export function ProvideSignedTransactionAction({
         actionItemId: id,
         type: "ProvideSignedTransaction",
         data: {
-          signedTransactionBytes: null,
+          signedTransactionResult: null,
           signerUuid: signerUuid,
           signatureApproved: true,
         },
@@ -93,10 +96,21 @@ export function ProvideSignedTransactionAction({
   } else {
     addonManager.addNetworkInstance(namespace, networkId);
 
-    const isWalletConnected = addonManager.isWalletConnected(
+    const isWalletConnectedResult = addonManager.isWalletConnected(
       namespace,
       networkId,
     );
+    if (isWalletConnectedResult.is_err()) {
+      return (
+        <ErrorActionItemRow
+          error={isWalletConnectedResult.unwrap_err()}
+          originalActionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+        />
+      );
+    }
+    const isWalletConnected = isWalletConnectedResult.unwrap();
 
     if (!isWalletConnected) {
       onClick = async () => {
@@ -105,21 +119,36 @@ export function ProvideSignedTransactionAction({
       primaryButtonTitle = "Connect Wallet";
       primaryButtonIsDisabled = false;
     } else {
-      const address = addonManager.getAddress(namespace, networkId);
+      const addressResult = addonManager.getAddress(namespace, networkId);
+      if (addressResult.is_err()) {
+        return (
+          <ErrorActionItemRow
+            error={addressResult.unwrap_err()}
+            originalActionItem={actionItem}
+            isFirst={isFirst}
+            isLast={isLast}
+          />
+        );
+      }
+      const address = addressResult.unwrap();
+
       onClick = async () => {
         console.log(transaction);
-        const signedTxHex = await addonManager.signTransaction(
+        const signTxResult = await addonManager.signTransaction(
           namespace,
           networkId,
           address,
           transaction,
         );
-        if (signedTxHex !== undefined) {
+        if (addressResult.is_err()) {
+          // todo: we need a way to set an error state that can be displayed on the page
+        } else {
+          const result = signTxResult.unwrap();
           const event: ActionItemResponse = {
             actionItemId: id,
             type: "ProvideSignedTransaction",
             data: {
-              signedTransactionBytes: signedTxHex,
+              signedTransactionResult: result,
               signerUuid: signerUuid,
               signatureApproved: null,
             },
@@ -183,7 +212,7 @@ function SignTransactionRow({
   children,
   onClick,
   subRow,
-}: SignTransactionRow & { children }) {
+}: SignTransactionRow & { children: React.ReactNode }) {
   const { index, title, description, actionStatus } = actionItem;
   const { status } = actionStatus;
   // todo: handle other statuses

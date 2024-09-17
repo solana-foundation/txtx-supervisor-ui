@@ -32,6 +32,7 @@ const PH_GET_ADDRESS = "get_address";
 const PH_GET_PUBLIC_KEY = "get_public_key";
 const PH_SIGN_MESSAGE = "sign_message";
 const PH_SIGN_TRANSACTION = "sign_transaction";
+const PH_SEND_TRANSACTION = "send_transaction";
 
 export type AddonAndNetwork = { addon: Addon; networks: string[] };
 export class AddonManager {
@@ -197,7 +198,7 @@ export class AddonManager {
       return Result.err(addonResult.unwrap_err());
     }
     const addon = addonResult.unwrap();
-    const result = await addon.signTransaction(txHex);
+    const result = await addon.signTransaction(txHex, address);
     if (typeof result === "object") {
       console.error(result.error);
       phLogOnChainError(namespace, PH_SIGN_TRANSACTION, result.error);
@@ -209,15 +210,39 @@ export class AddonManager {
       return Result.ok(result);
     }
   }
+
+  public async sendTransaction(
+    namespace: string,
+    networkId: string,
+    address: string,
+    txHex: string,
+  ): Promise<Result<string, string>> {
+    const addonResult = this.getAddon(namespace, networkId);
+    if (addonResult.is_err()) {
+      return Result.err(addonResult.unwrap_err());
+    }
+    const addon = addonResult.unwrap();
+    const result = await addon.sendTransaction(txHex, address);
+    if (typeof result === "object") {
+      console.error(result.error);
+      phLogOnChainError(namespace, PH_SEND_TRANSACTION, result.error);
+      return Result.err(
+        `Failed to send ${namespace} transaction: ${result.error}`,
+      );
+    } else {
+      phLogOnChainSuccess(namespace, PH_SEND_TRANSACTION);
+      return Result.ok(result);
+    }
+  }
 }
 
 export type ConnectedWalletInfo = string;
 export type ConnectWalletFunction = () => void;
 export type AddonError = { error: string };
 export abstract class Addon {
-  public abstract connectWallet();
+  public abstract connectWallet(): void;
 
-  public abstract disconnectWallet();
+  public abstract disconnectWallet(): void;
 
   public abstract isWalletConnected(): boolean;
 
@@ -235,5 +260,13 @@ export abstract class Addon {
     message: string,
   ): Promise<string | AddonError>;
 
-  public abstract signTransaction(txHex: string): Promise<string | AddonError>;
+  public abstract signTransaction(
+    txHex: string,
+    signerAddress: string,
+  ): Promise<string | AddonError>;
+
+  public abstract sendTransaction(
+    txHex: string,
+    signerAddress: string,
+  ): Promise<string | AddonError>;
 }
