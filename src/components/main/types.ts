@@ -212,6 +212,7 @@ export type ActionItemRequestType =
   | ProvidePublicKeyActionItemRequest
   | ProvideSignedMessageActionItemRequest
   | ProvideSignedTransactionActionItemRequest
+  | SendTransactionActionItemRequest
   | DisplayOutputActionItemRequest
   | DisplayErrorLogActionItemRequest
   | ValidateBlockActionItemRequest
@@ -242,6 +243,10 @@ export type ProvideSignedTransactionActionItemRequest = {
   type: "ProvideSignedTransaction";
   data: ProvideSignedTransactionRequest;
 };
+export type SendTransactionActionItemRequest = {
+  type: "SendTransaction";
+  data: SendTransactionRequest;
+};
 export type DisplayOutputActionItemRequest = {
   type: "DisplayOutput";
   data: DisplayOutputRequest;
@@ -260,6 +265,7 @@ export type ValidateModalActionItemRequest = { type: "ValidateModal" };
 export interface ReviewInputRequest {
   inputName: string;
   value: Value;
+  forceExecution: boolean;
 }
 export interface ProvideInputRequest {
   inputName: string;
@@ -288,6 +294,16 @@ export interface ProvideSignedTransactionRequest {
   expectedSignerAddress: string | null;
   skippable: boolean;
   onlyApprovalNeeded: boolean;
+  signerUuid: string;
+  payload: Value;
+  formattedPayload: string | null;
+  namespace: string;
+  networkId: string;
+}
+
+export interface SendTransactionRequest {
+  checkExpectationActionUuid: string | null;
+  expectedSignerAddress: string | null;
   signerUuid: string;
   payload: Value;
   formattedPayload: string | null;
@@ -327,12 +343,14 @@ type ActionItemResponseType =
   | { type: "ProvidePublicKey"; data: ProvidePublicKeyResponse }
   | { type: "ProvideSignedMessage"; data: ProvideSignedMessageResponse }
   | { type: "ProvideSignedTransaction"; data: ProvideSignedTransactionResponse }
+  | { type: "SendTransaction"; data: SendTransactionResponse }
   | { type: "ValidateBlock" }
   | { type: "ValidateModal" };
 
 export interface ReviewInputResponse {
   inputName: string;
   valueChecked: boolean;
+  forceExecution: boolean;
 }
 
 export interface ProvidedInputResponse {
@@ -350,9 +368,13 @@ export interface ProvideSignedMessageResponse {
 }
 
 export interface ProvideSignedTransactionResponse {
-  signedTransactionBytes: string | null;
+  signedTransactionResult: string | null;
   signerUuid: string;
   signatureApproved: boolean | null;
+}
+export interface SendTransactionResponse {
+  transactionHash: string;
+  signerUuid: string;
 }
 
 export type Primitive = "Primitive";
@@ -395,9 +417,7 @@ export function toValue(input: any, type: Type): Value {
   } else if (type === "null") {
     return { type, value: null };
   } else if (type === "array" && Array.isArray(input)) {
-    throw new Error("object toValue not implemented");
-    let values = input.map(({ input, type }) => toValue(input, type));
-    return { type: "array", value: values };
+    throw new Error("array toValue not implemented");
   } else if (type === "object") {
     throw new Error("object toValue not implemented");
   } else if (type === "buffer") {
@@ -441,7 +461,7 @@ export function formatValueForDisplay(input: Value): DisplayableValue {
   }
 }
 
-function toHexString(byteArray) {
+function toHexString(byteArray: string) {
   return Array.from(byteArray, function (byte) {
     // @ts-ignore
     return ("0" + (byte & 0xff).toString(16)).slice(-2);
