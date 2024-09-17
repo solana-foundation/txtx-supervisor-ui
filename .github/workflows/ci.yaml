@@ -40,7 +40,7 @@ jobs:
         run: tar -zcvf txtx-web-ui.tar.gz dist
 
       - name: Upload Build
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: txtx-web-ui.tar.gz
           path: txtx-web-ui.tar.gz
