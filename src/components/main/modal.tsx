@@ -1,4 +1,5 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect } from "react";
+
 import { ActionGroup, ActionSubGroup, ModalBlock } from "./types";
 import { classNames } from "../../utils/helpers";
 import { ReviewInputAction } from "../action-items/review-input-action";
@@ -17,6 +18,7 @@ import { setModalVisibility } from "../../reducers/runbooks-slice";
 import { ValidateModalAction } from "../action-items/validate-modal-action";
 import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { ModalWrapper } from "./modal-wrapper";
+import useHandleEscapeKey from "../../hooks/useHandleEscapeKey";
 
 export interface Modal {
   block: ModalBlock<true>;
@@ -25,6 +27,15 @@ export interface Modal {
 export function Modal({ block, index }: Modal) {
   const dispatch = useAppDispatch();
   const isVisible = block.visible;
+
+  useHandleEscapeKey(
+    () => {
+      dispatch(setModalVisibility([block.uuid, false]));
+    },
+    [dispatch, block.uuid, block.visible],
+    isVisible,
+  );
+
   return (
     <ModalWrapper
       visible={isVisible}
