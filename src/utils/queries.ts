@@ -119,6 +119,7 @@ export const GET_RUNBOOK_METADATA = gql`
     runbook {
       name
       description
+      registeredAddons
     }
   }
 `;
