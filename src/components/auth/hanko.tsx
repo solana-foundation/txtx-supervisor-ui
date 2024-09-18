@@ -7,9 +7,9 @@ import {
   setMultiPartyAuth,
   setMultiPartyEnabled,
 } from "../../reducers/multi-party-slice";
+import useHandleEscapeKey from "../../hooks/useHandleEscapeKey";
 
-const HANKO_API_URL =
-  process.env.HANKO_API_URL || "http://localhost:8000";
+const HANKO_API_URL = process.env.HANKO_API_URL || "http://localhost:8000";
 
 export default function HankoAuth() {
   const dispatch = useAppDispatch();
@@ -37,17 +37,9 @@ export default function HankoAuth() {
       console.error("hanko error", error);
     });
   }, []);
-  
-  useEffect(() => {
-    const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        dispatch(setMultiPartyEnabled(false));
-      }
-    };
-    document.addEventListener("keydown", handleEscapeKey);
-    return () => {
-      document.removeEventListener("keydown", handleEscapeKey);
-    };
+
+  useHandleEscapeKey(() => {
+    dispatch(setMultiPartyEnabled(false));
   }, [dispatch]);
 
   const onModalClick = () => {
