@@ -27,7 +27,6 @@ export function ButtonSubGroup({ subGroup, modalUuid }: ButtonSubGroup) {
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
     const { actionType, id } = actionItem;
     const { type } = actionType;
-    console.log("button subgroup item: ", type);
     if (type === "ValidateModal") {
       if (!modalUuid) {
         throw new Error(
