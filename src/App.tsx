@@ -19,7 +19,6 @@ import { ApolloProvider } from "@apollo/client";
 import useOpenChannel from "./hooks/useOpenChannel";
 import useApolloClient from "./hooks/useApolloClient";
 import { SuspensePage } from "./components/pages/suspense";
-import confetti from "./components/animations/confetti";
 
 const devMode = process.env.TXTX_DEV_MODE === "true";
 const protocol = window.location.protocol;
