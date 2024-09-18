@@ -1,8 +1,6 @@
 import React from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks";
+import { useAppSelector } from "../../hooks";
 import RunbookStatusBar from "./runbook-status-bar";
-import { useQuery } from "@apollo/client";
-import { GET_RUNBOOK_METADATA } from "../../utils/queries";
 import { selectRunbook, setMetadata } from "../../reducers/runbooks-slice";
 import MultiPartyToggle from "./multi-party-toggle";
 import {
@@ -16,40 +14,28 @@ import { selectIsOperator } from "../../reducers/participant-auth-slice";
 export interface HeaderProps {
   title: string;
   panelScrollHandler: any;
+  loading: boolean;
 }
-export function Header({ title, panelScrollHandler }: HeaderProps) {
-  const dispatch = useAppDispatch();
+export function Header({ title, panelScrollHandler, loading }: HeaderProps) {
   const multiPartyEnabled = useAppSelector(isMultiPartyEnabled);
   const authenticated = useAppSelector(isMultiPartyAuthenticated);
   const multiPartyInstantiated = useAppSelector(isMultiPartyInstantiated);
   const clientIsOperator = useAppSelector(selectIsOperator);
-
-  const { loading } = useQuery(GET_RUNBOOK_METADATA, {
-    onCompleted: (result) => {
-      const { name, description } = result.runbook;
-      const metadata = {
-        name,
-        description,
-        uuid: "",
-      };
-      dispatch(setMetadata(metadata));
-    },
-  });
-
   const { metadata } = useAppSelector(selectRunbook);
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+
+  const name = loading ? "Loading" : metadata.name;
+  const description = loading ? "" : metadata.description;
+
   return (
     <div className="backdrop-blur-md bg-opacity-50 sticky top-0 z-50 px-8 py-4 flex shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 bg-zinc-950 border-b dark:border-zinc-900">
       <div className="flex-1"></div>
       <div className="absolute left-1/2 w-full transform -translate-x-1/2 justify-center flex flex-col items-center">
         <div className="self-stretch px-8 flex-col gap-2 flex">
           <div className="self-stretch text-emerald-500 text-center font-bold font-inter uppercase">
-            {metadata.name}
+            {name}
           </div>
           <div className="self-stretch text-white text-sm font-normal font-inter text-center">
-            {metadata.description}
+            {description}
           </div>
 
           {/* <RunbookStatusBar

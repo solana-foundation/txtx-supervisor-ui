@@ -5,6 +5,7 @@ import {
   GET_ERROR_BLOCKS,
   GET_MODAL_BLOCKS,
   GET_PROGRESS_BLOCKS,
+  GET_RUNBOOK_METADATA,
 } from "../utils/queries";
 import {
   ActionBlock,
@@ -15,6 +16,7 @@ import {
 import {
   setActionBlocks,
   setErrorBlocks,
+  setMetadata,
   setModalBlocks,
   setProgressBlocks,
 } from "../reducers/runbooks-slice";
@@ -45,11 +47,25 @@ export default function useQueries(): { loading: boolean } {
       dispatch(setProgressBlocks(blocks));
     },
   });
+  const { loading: runbookMetadataLoading } = useQuery(GET_RUNBOOK_METADATA, {
+    onCompleted: (result) => {
+      const { name, description, registeredAddons } = result.runbook;
+      const metadata = {
+        name,
+        description,
+        uuid: "",
+        registeredAddons,
+      };
+      dispatch(setMetadata(metadata));
+    },
+  });
+
   return {
     loading:
       actionBlocksLoading ||
       modalBlocksLoading ||
       progressBlocksLoading ||
-      errorBlocksLoading,
+      errorBlocksLoading ||
+      runbookMetadataLoading,
   };
 }
