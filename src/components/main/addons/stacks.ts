@@ -62,25 +62,23 @@ export class StacksAddon implements Addon {
   ): Promise<string | AddonError> {
     const stacksNetworkId =
       networkId.toLocaleLowerCase() === "mainnet" ? "mainnet" : "testnet";
-    let publicKey;
-    await openSignatureRequestPopup({
-      message,
-      network:
-        stacksNetworkId == "mainnet"
-          ? new StacksMainnet()
-          : new StacksTestnet(),
-      appDetails: appDetails,
-      onFinish(response) {
-        publicKey = response.publicKey;
-        if (publicKey === undefined) {
-          return {
-            error: `Address mismatch between user session and selected wallet address.`,
-          };
-        }
-      },
+    return new Promise((resolve, reject) => {
+      openSignatureRequestPopup({
+        message,
+        network:
+          stacksNetworkId === "mainnet"
+            ? new StacksMainnet()
+            : new StacksTestnet(),
+        appDetails: appDetails,
+        onFinish(response) {
+          if (response.publicKey) {
+            resolve(response.publicKey);
+          } else {
+            reject(new Error("Failed to sign message to obtain public key"));
+          }
+        },
+      });
     });
-    storePublicKeyInLocalStorage(getStorageKey("stacks"), address, publicKey);
-    return publicKey;
   }
 
   public isWalletConnected(): boolean {
@@ -94,33 +92,25 @@ export class StacksAddon implements Addon {
   ): Promise<string | AddonError> {
     const stacksNetworkId =
       networkId.toLocaleLowerCase() === "mainnet" ? "mainnet" : "testnet";
-    let signedMessage;
-
-    await openSignatureRequestPopup({
-      message,
-      network:
-        stacksNetworkId == "mainnet"
-          ? new StacksMainnet()
-          : new StacksTestnet(),
-      appDetails: appDetails,
-      onFinish(response) {
-        function moveLastByteToFront(str) {
-          if (str.length <= 2) {
-            return str;
-          }
-          var lastChar = str.substring(str.length - 2);
-          var stringWithoutLastChar = str.substring(0, str.length - 2);
-          return lastChar + stringWithoutLastChar;
-        }
-
-        signedMessage = moveLastByteToFront(response.signature);
-      },
+    return new Promise((resolve, reject) => {
+      openSignatureRequestPopup({
+        message,
+        network:
+          stacksNetworkId === "mainnet"
+            ? new StacksMainnet()
+            : new StacksTestnet(),
+        appDetails: appDetails,
+        onFinish(response) {
+          resolve(moveLastByteToFront(response.signature));
+        },
+      });
     });
-
-    return signedMessage;
   }
 
-  public async signTransaction(txHex: string): Promise<string | AddonError> {
+  public async signTransaction(
+    txHex: string,
+    _signerAddress: string,
+  ): Promise<string | AddonError> {
     if ("LeatherProvider" in window) {
       // @ts-ignore
       const response = await LeatherProvider.request("stx_signTransaction", {
@@ -145,4 +135,19 @@ export class StacksAddon implements Addon {
       }
     }
   }
+  public async sendTransaction(
+    _txHash: string,
+    _signerAddress: string,
+  ): Promise<string | AddonError> {
+    return { error: "Send Transaction not supported for Stacks" };
+  }
+}
+
+function moveLastByteToFront(str: string) {
+  if (str.length <= 2) {
+    return str;
+  }
+  var lastChar = str.substring(str.length - 2);
+  var stringWithoutLastChar = str.substring(0, str.length - 2);
+  return lastChar + stringWithoutLastChar;
 }

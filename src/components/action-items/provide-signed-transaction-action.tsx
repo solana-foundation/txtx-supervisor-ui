@@ -1,5 +1,8 @@
 import React from "react";
-import { ActionItemSubRow } from "./components/action-item-row";
+import {
+  ActionItemSubRow,
+  ErrorActionItemRow,
+} from "./components/action-item-row";
 import {
   ActionItemRequest,
   ActionItemResponse,
@@ -16,11 +19,13 @@ export interface ProvideSignedTransactionAction {
   actionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
+  isCurrent: boolean;
 }
 export function ProvideSignedTransactionAction({
   actionItem,
   isFirst,
   isLast,
+  isCurrent,
 }: ProvideSignedTransactionAction) {
   const { id, actionStatus, title, description, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
@@ -64,7 +69,7 @@ export function ProvideSignedTransactionAction({
       actionItemId: id,
       type: "ProvideSignedTransaction",
       data: {
-        signedTransactionBytes: null,
+        signedTransactionResult: null,
         signerUuid: signerUuid,
         signatureApproved: null,
       },
@@ -81,7 +86,7 @@ export function ProvideSignedTransactionAction({
         actionItemId: id,
         type: "ProvideSignedTransaction",
         data: {
-          signedTransactionBytes: null,
+          signedTransactionResult: null,
           signerUuid: signerUuid,
           signatureApproved: true,
         },
@@ -93,10 +98,22 @@ export function ProvideSignedTransactionAction({
   } else {
     addonManager.addNetworkInstance(namespace, networkId);
 
-    const isWalletConnected = addonManager.isWalletConnected(
+    const isWalletConnectedResult = addonManager.isWalletConnected(
       namespace,
       networkId,
     );
+    if (isWalletConnectedResult.is_err()) {
+      return (
+        <ErrorActionItemRow
+          error={isWalletConnectedResult.unwrap_err()}
+          originalActionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          isCurrent={isCurrent}
+        />
+      );
+    }
+    const isWalletConnected = isWalletConnectedResult.unwrap();
 
     if (!isWalletConnected) {
       onClick = async () => {
@@ -105,21 +122,37 @@ export function ProvideSignedTransactionAction({
       primaryButtonTitle = "Connect Wallet";
       primaryButtonIsDisabled = false;
     } else {
-      const address = addonManager.getAddress(namespace, networkId);
+      const addressResult = addonManager.getAddress(namespace, networkId);
+      if (addressResult.is_err()) {
+        return (
+          <ErrorActionItemRow
+            error={addressResult.unwrap_err()}
+            originalActionItem={actionItem}
+            isFirst={isFirst}
+            isLast={isLast}
+            isCurrent={isCurrent}
+          />
+        );
+      }
+      const address = addressResult.unwrap();
+
       onClick = async () => {
         console.log(transaction);
-        const signedTxHex = await addonManager.signTransaction(
+        const signTxResult = await addonManager.signTransaction(
           namespace,
           networkId,
           address,
           transaction,
         );
-        if (signedTxHex !== undefined) {
+        if (addressResult.is_err()) {
+          // todo: we need a way to set an error state that can be displayed on the page
+        } else {
+          const result = signTxResult.unwrap();
           const event: ActionItemResponse = {
             actionItemId: id,
             type: "ProvideSignedTransaction",
             data: {
-              signedTransactionBytes: signedTxHex,
+              signedTransactionResult: result,
               signerUuid: signerUuid,
               signatureApproved: null,
             },
@@ -159,10 +192,14 @@ export function ProvideSignedTransactionAction({
               onClick={onClick}
               isDisabled={primaryButtonIsDisabled}
               size={ElementSize.L}
+              color={
+                isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
+              }
             />
           </div>
         ),
       }}
+      isCurrent={isCurrent}
     >
       <div></div>
     </SignTransactionRow>
@@ -175,32 +212,24 @@ interface SignTransactionRow {
   isLast: boolean;
   onClick: any;
   subRow?: ActionItemSubRow;
+  isCurrent: boolean;
 }
-function SignTransactionRow({
+export function SignTransactionRow({
   actionItem,
   isFirst,
   isLast,
   children,
   onClick,
   subRow,
-}: SignTransactionRow & { children }) {
+  isCurrent,
+}: SignTransactionRow & { children: React.ReactNode }) {
   const { index, title, description, actionStatus } = actionItem;
   const { status } = actionStatus;
-  // todo: handle other statuses
-  let checkClass;
-  if (status === "Todo") {
-    checkClass = "text-white";
-  } else if (status === "Success") {
-    checkClass = "text-emerald-500";
-  } else if (status === "Error") {
-    const diag = actionStatus.data;
-    checkClass = "text-rose-400";
-    subRow = { text: diag.message };
-  }
 
   const isStatusSuccess = status === "Success";
-  const isHighlighted = false; // Need to implement https://tppr.me/xkN4je
-  const isStateDefault = !isStatusSuccess && !isHighlighted;
+  const isStatusError = status === "Error";
+  const isStateDefault = !isStatusSuccess && !isCurrent;
+  subRow = isStatusError ? { text: actionStatus.data.message } : subRow;
 
   return (
     <div className="w-full relative">
@@ -209,7 +238,7 @@ function SignTransactionRow({
         onClick={onClick}
         className={classNames(
           "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap",
-          isHighlighted ? "bg-emerald-950" : "bg-gray-950",
+          isCurrent ? "bg-emerald-950" : "bg-gray-950",
         )}
       >
         <div className="w-[46px] flex items-center justify-center self-stretch">
@@ -217,7 +246,7 @@ function SignTransactionRow({
             className={classNames(
               "w-[20px] aspect-square border border-emerald-500 rounded-full flex items-center justify-center transition-colors hover:border-emerald-500",
               isStatusSuccess ? "border-emerald-500 bg-emerald-500" : "",
-              isHighlighted ? "border-emerald-500" : "",
+              isCurrent ? "border-emerald-500" : "",
               isStateDefault ? "border-zinc-600" : "",
             )}
           >
@@ -236,7 +265,7 @@ function SignTransactionRow({
               className={classNames(
                 "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
                 isStatusSuccess ? "text-emerald-620" : "",
-                isHighlighted ? "text-emerald-500" : "",
+                isCurrent ? "text-emerald-500" : "",
                 isStateDefault ? "text-stone-500" : "",
               )}
             >

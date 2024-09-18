@@ -16,6 +16,7 @@ import { PickInputOptionAction } from "../action-items/pick-input-option-action"
 import { DisplayOutputAction } from "../action-items/display-output-action";
 import { OpenModalAction } from "../action-items/open-modal-action";
 import { DisplayErrorLogAction } from "../action-items/display-error-log-action";
+import { selectActiveActionId } from "../../reducers/runbooks-slice";
 
 function useFirstRender() {
   const ref = useRef(true);
@@ -109,6 +110,7 @@ interface SubGroup {
   subGroup: ActionSubGroup;
 }
 function SubGroup({ subGroup }: SubGroup) {
+  const activeItemId = useAppSelector(selectActiveActionId);
   const { actionItems, allowBatchCompletion } = subGroup;
 
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
@@ -116,6 +118,7 @@ function SubGroup({ subGroup }: SubGroup) {
     const { type } = actionType;
     const isFirst = i === 0;
     const isLast = i === actionItems.length - 1;
+    const isCurrent = activeItemId === id;
 
     if (type === "ReviewInput") {
       accumulator.push(
@@ -124,6 +127,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "ProvideInput") {
@@ -133,6 +137,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "PickInputOption") {
@@ -142,6 +147,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "ProvidePublicKey") {
@@ -151,6 +157,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "ProvideSignedTransaction") {
@@ -160,6 +167,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "DisplayOutput") {
@@ -169,6 +177,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "DisplayErrorLog") {
@@ -182,6 +191,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     }

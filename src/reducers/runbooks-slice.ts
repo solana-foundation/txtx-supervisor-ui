@@ -12,6 +12,7 @@ import {
   ProgressBarStatusUpdate,
   ProgressBarVisibilityUpdate,
   ErrorBlock,
+  ActionItemRequest,
 } from "../components/main/types";
 
 export interface Runbook {
@@ -36,6 +37,61 @@ const initialState: Runbook = {
   namespacedNetworks: {},
   runbookComplete: false,
 };
+
+const selectActivePanelActionId = createSelector(
+  [(state: Runbook) => state.actionBlocks],
+  (blocks: ActionBlock[]): string | null => {
+    for (const { panel, visible } of blocks) {
+      if (!visible) continue;
+      for (const group of panel.groups) {
+        for (const subGroup of group.subGroups) {
+          for (const action of subGroup.actionItems) {
+            if (isActionItemIncomplete(action)) {
+              return action.id;
+            }
+          }
+        }
+      }
+    }
+    return null;
+  },
+);
+const selectActiveModalActionId = createSelector(
+  [(state: Runbook) => state.modalBlocks],
+  (modalBlocks: ModalBlock[]): string | null => {
+    for (const { panel, visible } of modalBlocks) {
+      if (!visible) continue;
+      for (const group of panel.groups) {
+        for (const subGroup of group.subGroups) {
+          for (const action of subGroup.actionItems) {
+            if (isActionItemIncomplete(action)) {
+              return action.id;
+            }
+          }
+        }
+      }
+    }
+    return null;
+  },
+);
+const selectActiveErrorActionId = createSelector(
+  [(state: Runbook) => state.errorBlocks],
+  (errorBlocks: ErrorBlock[]): string | null => {
+    for (const { panel, visible } of errorBlocks) {
+      if (!visible) continue;
+      for (const group of panel.groups) {
+        for (const subGroup of group.subGroups) {
+          for (const action of subGroup.actionItems) {
+            if (isActionItemIncomplete(action)) {
+              return action.id;
+            }
+          }
+        }
+      }
+    }
+    return null;
+  },
+);
 
 export const runbooksSlice = createSlice({
   name: "runbooks",
@@ -232,7 +288,7 @@ export const runbooksSlice = createSlice({
         const modalIdx = state.modalBlocks.findIndex(
           (modal) => modal.uuid === uuid,
         );
-        if (modalIdx === undefined) return;
+        if (modalIdx === undefined || modalIdx === -1) return;
         state.modalBlocks[modalIdx].visible = visibility;
       },
     ),
@@ -271,12 +327,31 @@ export const runbooksSlice = createSlice({
       },
     ),
     selectModalValidationReady: createSelector(
-      [(state) => state.modalBlocks, (_, buttonUuid: string) => buttonUuid],
+      [
+        (state: Runbook) => state.modalBlocks,
+        (_, buttonUuid: string) => buttonUuid,
+      ],
       (modalBlocks: ModalBlock[], buttonUuid: string): boolean => {
         return checkValidationReady(modalBlocks, buttonUuid);
       },
     ),
     selectRunbookComplete: (state) => state.runbookComplete,
+    selectActiveActionId: createSelector(
+      [
+        selectActiveErrorActionId,
+        selectActiveModalActionId,
+        selectActivePanelActionId,
+      ],
+      (
+        activeErrorActionId: string | null,
+        activeModalActionId: string | null,
+        activePanelActionId: string | null,
+      ) => {
+        return (
+          activeErrorActionId || activeModalActionId || activePanelActionId
+        );
+      },
+    ),
   },
 });
 
@@ -302,6 +377,9 @@ function checkValidationReady(
     ),
   );
 }
+function isActionItemIncomplete(actionItem: ActionItemRequest) {
+  return actionItem.actionStatus.status !== "Success";
+}
 
 export const {
   setActionBlocks,
@@ -325,4 +403,5 @@ export const {
   selectModalValidationReady,
   selectIsSomeProgressBlockVisible,
   selectRunbookComplete,
+  selectActiveActionId,
 } = runbooksSlice.selectors;

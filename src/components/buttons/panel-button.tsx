@@ -3,6 +3,7 @@ import { MouseEventHandler } from "react";
 import { classNames } from "../../utils/helpers";
 
 export enum ButtonColor {
+  ActiveEmerald,
   Emerald,
   Amber,
   Black,
@@ -33,6 +34,8 @@ export function PanelButton({
 }: PanelButtonProps) {
   const colorClass = () => {
     if (isDisabled) return "opacity-30 bg-black text-zinc-400";
+    if (color === ButtonColor.ActiveEmerald)
+      return "bg-emerald-500 hover:bg-emerald-600 text-gray-950";
     if (color === ButtonColor.Emerald)
       return "bg-emerald-800 hover:bg-teal-950 text-emerald-500";
     if (color === ButtonColor.EmeraldSecondary)
