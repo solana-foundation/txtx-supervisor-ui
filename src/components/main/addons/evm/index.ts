@@ -12,6 +12,9 @@ import {
   TransactionSerializable,
 } from "viem";
 import supportedChains from "./chains";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider } from "wagmi";
+import { createElement } from "react";
 
 const projectId = "a750324b860cf7867328c96408bc03ac";
 const metadata = {
@@ -22,13 +25,13 @@ const metadata = {
 };
 
 // const allChainsAsConst: AsConst<typeof allChains> = allChains;
-export const wagmiConfig = defaultWagmiConfig({
+const wagmiConfig = defaultWagmiConfig({
   chains: supportedChains,
   projectId,
   metadata,
 });
 
-export class EvmAddon implements Addon {
+export default class EvmAddon implements Addon {
   private modal: any;
   constructor() {
     this.modal = createWeb3Modal({
@@ -38,6 +41,21 @@ export class EvmAddon implements Addon {
       enableOnramp: false,
     });
   }
+  public injectProvider(inner: any): React.FunctionComponentElement<any> {
+    const queryClient = new QueryClient();
+    const withQueryClient = createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      inner,
+    );
+    const withWagmi = createElement(
+      WagmiProvider,
+      { config: wagmiConfig },
+      withQueryClient,
+    );
+    return withWagmi;
+  }
+
   public async connectWallet() {
     if (this.modal.getIsConnectedState()) {
       console.warn(

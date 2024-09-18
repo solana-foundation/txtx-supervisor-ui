@@ -55,6 +55,18 @@ export class AddonManager {
     this.addons[namespace] = { addon, networks: [] };
   }
 
+  public injectProvider(
+    namespace: string,
+    inner: any,
+  ): Result<React.FunctionComponentElement<any>, string> {
+    const result = this.getAddonAndNetworks(namespace);
+    if (result.is_err()) {
+      return Result.err(result.unwrap_err());
+    }
+    const { addon } = result.unwrap();
+    return Result.ok(addon.injectProvider(inner));
+  }
+
   public addNetworkInstance(
     namespace: string,
     networkId: string,
@@ -240,6 +252,10 @@ export type ConnectedWalletInfo = string;
 export type ConnectWalletFunction = () => void;
 export type AddonError = { error: string };
 export abstract class Addon {
+  public abstract injectProvider(
+    inner: any,
+  ): React.FunctionComponentElement<any>;
+
   public abstract connectWallet(): void;
 
   public abstract disconnectWallet(): void;
