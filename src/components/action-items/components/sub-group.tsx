@@ -1,0 +1,138 @@
+import React from "react";
+import { useAppSelector } from "../../../hooks";
+import { selectActiveActionId } from "../../../reducers/runbooks-slice";
+import { ActionSubGroup } from "../../main/types";
+import { DisplayOutputAction } from "../display-output-action";
+import { PickInputOptionAction } from "../pick-input-option-action";
+import { ProvideInputAction } from "../provide-input-action";
+import { ProvidePublicKeyAction } from "../provide-public-key-action";
+import { ProvideSignedTransactionAction } from "../provide-signed-transaction-action";
+import { ReviewInputAction } from "../review-input-action";
+import { SendTransactionAction } from "../send-transaction-action";
+import { ProvideSignedMessageAction } from "../provide-signed-message-action";
+import { OpenModalAction } from "../open-modal-action";
+import { classNames } from "../../../utils/helpers";
+
+interface SubGroup {
+  subGroup: ActionSubGroup;
+}
+export function SubGroup({ subGroup }: SubGroup) {
+  const activeItemId = useAppSelector(selectActiveActionId);
+  const { actionItems, allowBatchCompletion } = subGroup;
+
+  let isCurrentSubGroup = false;
+  const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
+    const { actionType, id } = actionItem;
+    const { type } = actionType;
+    const isFirst = i === 0;
+    const isLast = i === actionItems.length - 1;
+    const isCurrent = activeItemId === id;
+    if (isCurrent) {
+      isCurrentSubGroup = true;
+    }
+
+    if (type === "ReviewInput") {
+      accumulator.push(
+        <ReviewInputAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={id}
+          isCurrent={isCurrent}
+        />,
+      );
+    } else if (type === "ProvideInput") {
+      accumulator.push(
+        <ProvideInputAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={id}
+          isCurrent={isCurrent}
+        />,
+      );
+    } else if (type === "PickInputOption") {
+      accumulator.push(
+        <PickInputOptionAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={id}
+          isCurrent={isCurrent}
+        />,
+      );
+    } else if (type === "ProvidePublicKey") {
+      accumulator.push(
+        <ProvidePublicKeyAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={id}
+          isCurrent={isCurrent}
+        />,
+      );
+    } else if (type === "ProvideSignedMessage") {
+      accumulator.push(
+        <ProvideSignedMessageAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={id}
+          isCurrent={isCurrent}
+        />,
+      );
+    } else if (type === "ProvideSignedTransaction") {
+      accumulator.push(
+        <ProvideSignedTransactionAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={id}
+          isCurrent={isCurrent}
+        />,
+      );
+    } else if (type === "SendTransaction") {
+      accumulator.push(
+        <SendTransactionAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={id}
+          isCurrent={isCurrent}
+        />,
+      );
+    } else if (type === "DisplayOutput") {
+      accumulator.push(
+        <DisplayOutputAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={id}
+          isCurrent={isCurrent}
+        />,
+      );
+    } else if (type === "OpenModal") {
+      accumulator.push(
+        <OpenModalAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={id}
+          isCurrent={isCurrent}
+        />,
+      );
+    }
+    return accumulator;
+  }, [] as JSX.Element[]);
+
+  return (
+    <div
+      className={classNames(
+        "self-stretch flex-col justify-start items-start inline-flex border rounded overflow-hidden",
+        isCurrentSubGroup ? "border-emerald-650" : "border-gray-800",
+      )}
+    >
+      {uiActionItems}
+    </div>
+  );
+}
