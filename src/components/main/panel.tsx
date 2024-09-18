@@ -1,11 +1,5 @@
 import React, { forwardRef, useRef } from "react";
-import { classNames } from "../../utils/helpers";
 import { useAppSelector } from "../../hooks";
-import {
-  RunbookStepStatus,
-  statusForStepNumber,
-} from "../header/runbook-status-bar";
-import { selectRunbookActiveStep } from "../../reducers/runbook-step-slice";
 import { ActionBlock, ActionGroup, ActionSubGroup } from "./types";
 import { ReviewInputAction } from "../action-items/review-input-action";
 import { ProvideInputAction } from "../action-items/provide-input-action";
@@ -17,6 +11,7 @@ import { DisplayOutputAction } from "../action-items/display-output-action";
 import { OpenModalAction } from "../action-items/open-modal-action";
 import { ProvideSignedMessageAction } from "../action-items/provide-signed-message-action";
 import { SendTransactionAction } from "../action-items/send-transaction-action";
+import { selectActiveActionId } from "../../reducers/runbooks-slice";
 
 function useFirstRender() {
   const ref = useRef(true);
@@ -36,14 +31,7 @@ export const Panel = forwardRef(function Panel(
 ) {
   const { uuid, visible, panel } = block;
   const { title, description, groups } = panel;
-  const activeStep = useAppSelector(selectRunbookActiveStep);
   const firstRender = useFirstRender();
-
-  let status = statusForStepNumber(panelIndex, activeStep);
-
-  const contentVisibility = "";
-  // status === RunbookStepStatus.Queued ? "invisible" : "";
-  const buttonsDisabled = status === RunbookStepStatus.Complete;
 
   const panelId =
     title.toLocaleLowerCase().split(" ").join("-") + "-" + panelIndex;
@@ -58,10 +46,7 @@ export const Panel = forwardRef(function Panel(
 
   return (
     <div
-      className={classNames(
-        "w-full p-4 md:p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex",
-        contentVisibility,
-      )}
+      className="w-full p-4 md:p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex"
       id={uuid}
     >
       <div className="self-stretch justify-start items-start inline-flex">
@@ -110,6 +95,7 @@ interface SubGroup {
   subGroup: ActionSubGroup;
 }
 function SubGroup({ subGroup }: SubGroup) {
+  const activeItemId = useAppSelector(selectActiveActionId);
   const { actionItems, allowBatchCompletion } = subGroup;
 
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
@@ -117,6 +103,7 @@ function SubGroup({ subGroup }: SubGroup) {
     const { type } = actionType;
     const isFirst = i === 0;
     const isLast = i === actionItems.length - 1;
+    const isCurrent = activeItemId === id;
 
     if (type === "ReviewInput") {
       accumulator.push(
@@ -125,6 +112,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "ProvideInput") {
@@ -134,6 +122,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "PickInputOption") {
@@ -143,6 +132,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "ProvidePublicKey") {
@@ -152,6 +142,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "ProvideSignedMessage") {
@@ -161,6 +152,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "ProvideSignedTransaction") {
@@ -170,6 +162,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "SendTransaction") {
@@ -179,6 +172,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "DisplayOutput") {
@@ -188,6 +182,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "OpenModal") {
@@ -197,6 +192,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     }

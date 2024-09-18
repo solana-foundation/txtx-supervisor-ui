@@ -13,11 +13,13 @@ export interface ReviewInputAction {
   actionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
+  isCurrent: boolean;
 }
 export function ReviewInputAction({
   actionItem,
   isFirst,
   isLast,
+  isCurrent,
 }: ReviewInputAction) {
   const { id, actionStatus, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
@@ -47,8 +49,13 @@ export function ReviewInputAction({
       isFirst={isFirst}
       isLast={isLast}
       onClick={onClick}
+      isCurrent={isCurrent}
     >
-      <ReviewInputCell value={value} actionStatus={actionStatus} />
+      <ReviewInputCell
+        value={value}
+        actionStatus={actionStatus}
+        isCurrent={isCurrent}
+      />
     </ActionItemRow>
   );
 }

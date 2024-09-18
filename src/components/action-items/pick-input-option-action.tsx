@@ -13,11 +13,13 @@ export interface PickInputOptionAction {
   actionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
+  isCurrent: boolean;
 }
 export function PickInputOptionAction({
   actionItem,
   isFirst,
   isLast,
+  isCurrent
 }: PickInputOptionAction) {
   const { id } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
@@ -37,6 +39,7 @@ export function PickInputOptionAction({
       isFirst={isFirst}
       isLast={isLast}
       onClick={onClick}
+      isCurrent={isCurrent}
     >
       <PickInputOptionCell actionItem={actionItem} setSelected={setSelected} />
     </ActionItemRow>

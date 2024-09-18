@@ -1,7 +1,7 @@
 import React from "react";
-import { ActionItemRow } from "./components/action-item-row";
+import { ActionItemRow, ActionItemSubRow } from "./components/action-item-row";
 import { ActionItemRequest } from "../main/types";
-import { ElementSize, PanelButton } from "../buttons/panel-button";
+import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { useAppDispatch } from "../../hooks";
 import { setModalVisibility } from "../../reducers/runbooks-slice";
 import { ReviewInputCell } from "./components/review-input-cell";
@@ -10,11 +10,13 @@ export interface OpenModalAction {
   actionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
+  isCurrent: boolean;
 }
 export function OpenModalAction({
   actionItem,
   isFirst,
   isLast,
+  isCurrent,
 }: OpenModalAction) {
   const dispatch = useAppDispatch();
   const { actionType, description, actionStatus } = actionItem;
@@ -32,16 +34,17 @@ export function OpenModalAction({
     dispatch(setModalVisibility([modalUuid, true]));
   };
 
-  let subRow;
+  let subRow: ActionItemSubRow | undefined = undefined;
   if (actionStatus.status !== "Success") {
     subRow = {
-      text: description,
+      text: description || "",
       children: (
         <PanelButton
           title={title}
           onClick={onClick}
           isDisabled={false}
           size={ElementSize.M}
+          color={isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald}
         />
       ),
     };
@@ -49,7 +52,11 @@ export function OpenModalAction({
 
   const el =
     actionStatus.status === "Success" ? (
-      <ReviewInputCell value={actionStatus.data} actionStatus={actionStatus} />
+      <ReviewInputCell
+        value={actionStatus.data}
+        actionStatus={actionStatus}
+        isCurrent={isCurrent}
+      />
     ) : (
       <div></div>
     );
@@ -61,6 +68,7 @@ export function OpenModalAction({
       isLast={isLast}
       onClick={() => {}}
       subRow={subRow}
+      isCurrent={isCurrent}
     >
       {el}
     </ActionItemRow>

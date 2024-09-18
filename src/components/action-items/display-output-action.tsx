@@ -7,11 +7,13 @@ export interface DisplayOutputAction {
   actionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
+  isCurrent: boolean;
 }
 export function DisplayOutputAction({
   actionItem,
   isFirst,
   isLast,
+  isCurrent,
 }: DisplayOutputAction) {
   const { actionStatus, actionType } = actionItem;
 
@@ -40,6 +42,7 @@ export function DisplayOutputAction({
     <ReviewInputCell
       value={displayValue?.toString() || ""}
       actionStatus={actionStatus}
+      isCurrent={isCurrent}
     />
   );
   return (
@@ -49,6 +52,7 @@ export function DisplayOutputAction({
       isLast={isLast}
       onClick={onClick}
       subRow={subRow}
+      isCurrent={isCurrent}
     >
       {el}
     </ActionItemRow>

@@ -5,10 +5,19 @@ import { ActionItemStatus, DisplayableValue } from "../../main/types";
 export interface ReviewInputCell {
   value: DisplayableValue;
   actionStatus: ActionItemStatus;
+  isCurrent: boolean;
 }
-export function ReviewInputCell({ value, actionStatus }: ReviewInputCell) {
+export function ReviewInputCell({
+  value,
+  actionStatus,
+  isCurrent,
+}: ReviewInputCell) {
   const { status } = actionStatus;
-  // todo: handle other statuses
+
+  const isStatusError = status === "Error";
+  const isStatusSuccess = status === "Success";
+  const isStateDefault = !isStatusSuccess && !isStatusError && !isCurrent;
+
   let descriptionContainerClass, descriptionClass;
   if (status === "Todo") {
     descriptionContainerClass = "bg-neutral-800";
@@ -36,13 +45,19 @@ export function ReviewInputCell({ value, actionStatus }: ReviewInputCell) {
         <div
           className={classNames(
             "px-2 py-0.5 rounded-sm flex-col justify-end items-start gap-2.5 inline-flex",
-            descriptionContainerClass,
+            isStatusSuccess ? "bg-teal-950" : "",
+            isCurrent ? "bg-emerald-500" : "",
+            isStatusError ? "bg-stone-900" : "",
+            isStateDefault ? "bg-neutral-800" : "",
           )}
         >
           <div
             className={classNames(
               "text-sm font-normal font-gt uppercase leading-[18.20px] break-all",
-              descriptionClass,
+              isStatusSuccess ? "text-emerald-500" : "",
+              isCurrent ? "text-gray-950" : "",
+              isStatusError ? "text-rose-400" : "",
+              isStateDefault ? "text-gray-400" : "",
             )}
           >
             {el}

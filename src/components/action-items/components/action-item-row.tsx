@@ -10,6 +10,7 @@ export interface ActionItemRow {
   isLast: boolean;
   onClick: any;
   subRow?: ActionItemSubRow;
+  isCurrent: boolean;
 }
 export function ActionItemRow({
   actionItem,
@@ -18,6 +19,7 @@ export function ActionItemRow({
   children,
   onClick,
   subRow,
+  isCurrent,
 }: ActionItemRow & { children: React.ReactNode }) {
   const { index, title, description, actionStatus } = actionItem;
   const { status } = actionStatus;
@@ -34,8 +36,7 @@ export function ActionItemRow({
       : subRow;
   const isStatusError = status === "Error";
   const isStatusSuccess = status === "Success";
-  const isHighlighted = false; // Need to implement https://tppr.me/xkN4je
-  const isStateDefault = !isStatusSuccess && !isHighlighted && !isStatusError;
+  const isStateDefault = !isStatusSuccess && !isStatusError && !isCurrent;
 
   return (
     <div className="w-full relative">
@@ -43,7 +44,7 @@ export function ActionItemRow({
         onClick={onClick}
         className={classNames(
           "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap",
-          isHighlighted ? "bg-emerald-950" : "bg-gray-950",
+          isCurrent ? "bg-emerald-950" : "bg-gray-950",
         )}
       >
         <div className="w-[46px] flex items-center justify-center self-stretch">
@@ -51,7 +52,7 @@ export function ActionItemRow({
             className={classNames(
               "w-[20px] aspect-square border border-emerald-500 rounded-full flex items-center justify-center transition-colors hover:border-emerald-500",
               isStatusSuccess ? "border-emerald-500 bg-emerald-500" : "",
-              isHighlighted ? "border-emerald-500" : "",
+              isCurrent ? "border-emerald-500" : "",
               isStateDefault ? "border-zinc-600" : "",
               isStatusError ? "border-rose-400" : "",
             )}
@@ -71,7 +72,7 @@ export function ActionItemRow({
               className={classNames(
                 "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
                 isStatusSuccess ? "text-emerald-620" : "",
-                isHighlighted ? "text-emerald-500" : "",
+                isCurrent ? "text-emerald-500" : "",
                 isStateDefault ? "text-stone-500" : "",
                 isStatusError ? "text-rose-400" : "",
               )}
@@ -155,11 +156,13 @@ export function ErrorActionItemRow({
   originalActionItem,
   isFirst,
   isLast,
+  isCurrent,
 }: {
   error: string;
   originalActionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
+  isCurrent: boolean;
 }) {
   let errorActionItem: ActionItemRequest = {
     ...originalActionItem,
@@ -174,6 +177,7 @@ export function ErrorActionItemRow({
       isFirst={isFirst}
       isLast={isLast}
       onClick={() => {}}
+      isCurrent={isCurrent}
     >
       <div></div>
     </ActionItemRow>

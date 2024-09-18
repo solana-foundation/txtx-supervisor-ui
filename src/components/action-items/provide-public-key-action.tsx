@@ -5,7 +5,7 @@ import {
 } from "./components/action-item-row";
 import { ActionItemRequest, ActionItemResponse } from "../main/types";
 import { ReviewInputCell } from "./components/review-input-cell";
-import { ElementSize, PanelButton } from "../buttons/panel-button";
+import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import {
@@ -18,11 +18,13 @@ export interface ProvidePublicKeyAction {
   actionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
+  isCurrent: boolean;
 }
 export function ProvidePublicKeyAction({
   actionItem,
   isFirst,
   isLast,
+  isCurrent,
 }: ProvidePublicKeyAction) {
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
   const { id, actionStatus, actionType } = actionItem;
@@ -47,6 +49,7 @@ export function ProvidePublicKeyAction({
         originalActionItem={actionItem}
         isFirst={isFirst}
         isLast={isLast}
+        isCurrent={isCurrent}
       />
     );
   }
@@ -62,6 +65,7 @@ export function ProvidePublicKeyAction({
         originalActionItem={actionItem}
         isFirst={isFirst}
         isLast={isLast}
+        isCurrent={isCurrent}
       />
     );
   }
@@ -84,9 +88,13 @@ export function ProvidePublicKeyAction({
               onClick={onClick}
               isDisabled={false}
               size={ElementSize.L}
+              color={
+                isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
+              }
             />
           ),
         }}
+        isCurrent={isCurrent}
       >
         <div></div>
       </ActionItemRow>
@@ -100,6 +108,7 @@ export function ProvidePublicKeyAction({
           originalActionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
+          isCurrent={isCurrent}
         />
       );
     }
@@ -126,6 +135,7 @@ export function ProvidePublicKeyAction({
                 originalActionItem={actionItem}
                 isFirst={isFirst}
                 isLast={isLast}
+                isCurrent={isCurrent}
               />
             );
           }
@@ -157,9 +167,13 @@ export function ProvidePublicKeyAction({
                   onClick={onClick}
                   isDisabled={false}
                   size={ElementSize.L}
+                  color={
+                    isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
+                  }
                 />
               ),
             }}
+            isCurrent={isCurrent}
           >
             <div></div>
           </ActionItemRow>
@@ -181,10 +195,12 @@ export function ProvidePublicKeyAction({
             isFirst={isFirst}
             isLast={isLast}
             onClick={onClick}
+            isCurrent={isCurrent}
           >
             <ReviewInputCell
               value={address}
               actionStatus={actionItem.actionStatus}
+              isCurrent={isCurrent}
             />
           </ActionItemRow>
         );
@@ -197,10 +213,12 @@ export function ProvidePublicKeyAction({
           isFirst={isFirst}
           isLast={isLast}
           onClick={onClick}
+          isCurrent={isCurrent}
         >
           <ReviewInputCell
             value={address}
             actionStatus={actionItem.actionStatus}
+            isCurrent={isCurrent}
           />
         </ActionItemRow>
       );
@@ -223,13 +241,18 @@ export function ProvidePublicKeyAction({
                 onClick={onClick}
                 isDisabled={false}
                 size={ElementSize.L}
+                color={
+                  isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
+                }
               />
             ),
           }}
+          isCurrent={isCurrent}
         >
           <ReviewInputCell
             value={address}
             actionStatus={actionItem.actionStatus}
+            isCurrent={isCurrent}
           />
         </ActionItemRow>
       );

@@ -8,22 +8,25 @@ import {
   ActionItemResponse,
   formatValueForDisplay,
 } from "../main/types";
-import { ElementSize, PanelButton } from "../buttons/panel-button";
+import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import addonManager from "../../utils/addons-initializer";
 import { classNames } from "../../utils/helpers";
 import { CheckIcon } from "@heroicons/react/20/solid";
+import { SignTransactionRow } from "./provide-signed-transaction-action";
 
 export interface SendTransactionAction {
   actionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
+  isCurrent: boolean;
 }
 export function SendTransactionAction({
   actionItem,
   isFirst,
   isLast,
+  isCurrent,
 }: SendTransactionAction) {
   const { id, actionStatus, title, description, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
@@ -72,6 +75,7 @@ export function SendTransactionAction({
         originalActionItem={actionItem}
         isFirst={isFirst}
         isLast={isLast}
+        isCurrent={isCurrent}
       />
     );
   }
@@ -95,6 +99,7 @@ export function SendTransactionAction({
           originalActionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
+          isCurrent={isCurrent}
         />
       );
     }
@@ -136,6 +141,7 @@ export function SendTransactionAction({
       isFirst={isFirst}
       isLast={isLast}
       onClick={() => {}}
+      isCurrent={isCurrent}
       subRow={{
         text: displayedValue,
         children: (
@@ -145,6 +151,9 @@ export function SendTransactionAction({
               onClick={onClick}
               isDisabled={primaryButtonIsDisabled}
               size={ElementSize.L}
+              color={
+                isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
+              }
             />
           </div>
         ),
@@ -152,90 +161,5 @@ export function SendTransactionAction({
     >
       <div></div>
     </SignTransactionRow>
-  );
-}
-
-interface SignTransactionRow {
-  actionItem: ActionItemRequest;
-  isFirst: boolean;
-  isLast: boolean;
-  onClick: any;
-  subRow?: ActionItemSubRow;
-}
-function SignTransactionRow({
-  actionItem,
-  isFirst,
-  isLast,
-  children,
-  onClick,
-  subRow,
-}: SignTransactionRow & { children: React.ReactNode }) {
-  const { index, title, description, actionStatus } = actionItem;
-  const { status } = actionStatus;
-  // todo: handle other statuses
-  let checkClass;
-  if (status === "Todo") {
-    checkClass = "text-white";
-  } else if (status === "Success") {
-    checkClass = "text-emerald-500";
-  } else if (status === "Error") {
-    const diag = actionStatus.data;
-    checkClass = "text-rose-400";
-    subRow = { text: diag.message };
-  }
-
-  const isStatusSuccess = status === "Success";
-  const isHighlighted = false; // Need to implement https://tppr.me/xkN4je
-  const isStateDefault = !isStatusSuccess && !isHighlighted;
-
-  return (
-    <div className="w-full relative">
-      {/* Header Row */}
-      <div
-        onClick={onClick}
-        className={classNames(
-          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap",
-          isHighlighted ? "bg-emerald-950" : "bg-gray-950",
-        )}
-      >
-        <div className="w-[46px] flex items-center justify-center self-stretch">
-          <div
-            className={classNames(
-              "w-[20px] aspect-square border border-emerald-500 rounded-full flex items-center justify-center transition-colors hover:border-emerald-500",
-              isStatusSuccess ? "border-emerald-500 bg-emerald-500" : "",
-              isHighlighted ? "border-emerald-500" : "",
-              isStateDefault ? "border-zinc-600" : "",
-            )}
-          >
-            <CheckIcon
-              className={classNames(
-                "w-[16px] aspect-square transition-opacity",
-                !isStatusSuccess ? "opacity-0" : "",
-              )}
-            />
-          </div>
-        </div>
-
-        <div className="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
-          <div className="self-stretch py-3.5 md:py-[18px] justify-start items-start inline-flex">
-            <div
-              className={classNames(
-                "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
-                isStatusSuccess ? "text-emerald-620" : "",
-                isHighlighted ? "text-emerald-500" : "",
-                isStateDefault ? "text-stone-500" : "",
-              )}
-            >
-              {description ? `${description} (${title})` : title}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Sub Row */}
-      {subRow ? <ActionItemSubRow {...subRow} /> : undefined}
-      {/* Border */}
-      {!isLast && <div className="border-b border-gray-800" />}
-    </div>
   );
 }
