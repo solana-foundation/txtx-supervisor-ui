@@ -11,6 +11,7 @@ export interface RunbookMetadata {
   name: string;
   description: string;
   uuid: string;
+  registeredAddons: string[];
 }
 
 export interface UpdateActionItemEvent<Deserialized = true> {
