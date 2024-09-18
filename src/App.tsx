@@ -1,6 +1,6 @@
 import { Header } from "./components/header/header";
 import { NavGroup } from "./components/sidebar/nav";
-import React, { useRef, useState } from "react";
+import React, { ReactNode, useRef, useState } from "react";
 import Runbook from "./components/main/runbook";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { selectRunbook } from "./reducers/runbooks-slice";
@@ -19,6 +19,7 @@ import { ApolloProvider } from "@apollo/client";
 import useOpenChannel from "./hooks/useOpenChannel";
 import useApolloClient from "./hooks/useApolloClient";
 import { SuspensePage } from "./components/pages/suspense";
+import AddonsProvider from "./components/main/addons-provider";
 
 const devMode = process.env.TXTX_DEV_MODE === "true";
 const protocol = window.location.protocol;
@@ -64,7 +65,11 @@ const RedirectComponent = () => {
   return <Navigate to={`/c/${slug}`} replace />;
 };
 
-export const ProtectedRoute = ({ children }) => {
+interface ProtectedRouteProps {
+  children: ReactNode;
+}
+
+export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { tokenNeeded, token } = useParticipantAuth();
   const { slug } = useParams();
   if (tokenNeeded === undefined) {
@@ -78,7 +83,11 @@ export const ProtectedRoute = ({ children }) => {
   if (apolloClient === undefined) {
     throw new Error("failed to initialize apollo client.");
   }
-  return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
+  return (
+    <ApolloProvider client={apolloClient}>
+      <AddonsProvider>{children}</AddonsProvider>
+    </ApolloProvider>
+  );
 };
 
 function AppInternal() {
@@ -87,7 +96,6 @@ function AppInternal() {
   const [navGroups, setNavGroups] = useState<NavGroup[]>();
   const [protocolName, setProtocolName] = useState<string>("");
   const panelRefs = useRef<any[]>([]);
-  const dispatch = useAppDispatch();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { modalBlocks } = useAppSelector(selectRunbook);
   const multiPartyEnabled = useAppSelector(isMultiPartyEnabled);
@@ -99,7 +107,7 @@ function AppInternal() {
   // open multiparty channel if it's enabled, authenticated, and hasn't been opened
   useOpenChannel();
 
-  const panelScrollHandler = (index) => {
+  const panelScrollHandler = (index: any) => {
     window.location.hash = panelRefs.current[index].current.id;
     // when we select a new panel, the panels resize some, which makes the
     // location of the ref change. set a timeout to give the css resizing a
@@ -142,21 +150,20 @@ function AppInternal() {
         <Header
           {...{ title: protocolName }}
           panelScrollHandler={panelScrollHandler}
+          loading={loading}
         ></Header>
         <main
           className="min-h-screen pt-0 mt-0" //pl-16 when we reinsatate sidebar
           onClick={() => setModalVisible(!modalVisible)}
         >
           <div className="flex justify-center py-9">
-            {loading ? (
-              ""
-            ) : multiPartyEnabled && !multiPartyAuthenticated ? (
+            {loading ? undefined : multiPartyEnabled &&
+              !multiPartyAuthenticated ? (
               <HankoAuth />
-            ) : (
-              ""
-            )}
+            ) : undefined}
+
             {loading
-              ? ""
+              ? undefined
               : modalBlocks.map((block, i) => (
                   <Modal block={block} index={i} key={block.uuid} />
                 ))}

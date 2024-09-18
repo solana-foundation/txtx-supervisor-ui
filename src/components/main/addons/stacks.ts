@@ -6,11 +6,9 @@ import {
   showConnect,
 } from "@stacks/connect";
 import { StacksMainnet, StacksTestnet } from "@stacks/network";
-import {
-  getStorageKey,
-  storePublicKeyInLocalStorage,
-} from "../../../utils/helpers";
 import Wallet from "sats-connect";
+import { createElement } from "react";
+import { Connect } from "@stacks/connect-react";
 
 const appConfig = new AppConfig(["store_write", "publish_data"]);
 const userSession = new UserSession({ appConfig });
@@ -18,7 +16,7 @@ const appDetails = {
   name: "txtx",
   icon: window.location.origin, // todo
 };
-export const authOptions = {
+const authOptions = {
   appDetails,
   redirectTo: "/",
   onFinish: () => {
@@ -26,8 +24,21 @@ export const authOptions = {
   },
   userSession,
 };
+let didInject = false;
 
-export class StacksAddon implements Addon {
+export default class StacksAddon implements Addon {
+  public injectProvider(inner: any): React.FunctionComponentElement<any> {
+    if (didInject) {
+      return inner;
+    }
+    didInject = true;
+    const withConnect = createElement(Connect, {
+      authOptions: authOptions,
+      children: inner,
+    });
+    return withConnect;
+  }
+
   public async connectWallet() {
     if (userSession.isUserSignedIn()) {
       console.warn(
