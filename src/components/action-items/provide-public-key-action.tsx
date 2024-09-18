@@ -24,7 +24,7 @@ export function ProvidePublicKeyAction({
   actionItem,
   isFirst,
   isLast,
-  isCurrent
+  isCurrent,
 }: ProvidePublicKeyAction) {
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
   const { id, actionStatus, actionType } = actionItem;
@@ -49,6 +49,7 @@ export function ProvidePublicKeyAction({
         originalActionItem={actionItem}
         isFirst={isFirst}
         isLast={isLast}
+        isCurrent={isCurrent}
       />
     );
   }
@@ -64,6 +65,7 @@ export function ProvidePublicKeyAction({
         originalActionItem={actionItem}
         isFirst={isFirst}
         isLast={isLast}
+        isCurrent={isCurrent}
       />
     );
   }
@@ -103,6 +105,7 @@ export function ProvidePublicKeyAction({
           originalActionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
+          isCurrent={isCurrent}
         />
       );
     }
@@ -129,6 +132,7 @@ export function ProvidePublicKeyAction({
                 originalActionItem={actionItem}
                 isFirst={isFirst}
                 isLast={isLast}
+                isCurrent={isCurrent}
               />
             );
           }
@@ -164,7 +168,7 @@ export function ProvidePublicKeyAction({
               ),
             }}
             isCurrent={isCurrent}
-            >
+          >
             <div></div>
           </ActionItemRow>
         );
@@ -186,7 +190,7 @@ export function ProvidePublicKeyAction({
             isLast={isLast}
             onClick={onClick}
             isCurrent={isCurrent}
-            >
+          >
             <ReviewInputCell
               value={address}
               actionStatus={actionItem.actionStatus}
@@ -203,7 +207,7 @@ export function ProvidePublicKeyAction({
           isLast={isLast}
           onClick={onClick}
           isCurrent={isCurrent}
-          >
+        >
           <ReviewInputCell
             value={address}
             actionStatus={actionItem.actionStatus}

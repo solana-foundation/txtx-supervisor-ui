@@ -109,6 +109,7 @@ export function ProvideSignedTransactionAction({
           originalActionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
+          isCurrent={isCurrent}
         />
       );
     }
@@ -129,6 +130,7 @@ export function ProvideSignedTransactionAction({
             originalActionItem={actionItem}
             isFirst={isFirst}
             isLast={isLast}
+            isCurrent={isCurrent}
           />
         );
       }

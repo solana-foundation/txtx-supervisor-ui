@@ -111,9 +111,13 @@ interface SubGroup {
 }
 function SubGroup({ subGroup }: SubGroup) {
   const { actionItems, allowBatchCompletion } = subGroup;
-  
-  const firstIncompleteActionIdx = actionItems.findIndex((item) => item.actionStatus.status === "Todo" || item.actionStatus.status === "Error" );
-  let currentItemId:string;
+
+  const firstIncompleteActionIdx = actionItems.findIndex(
+    (item) =>
+      item.actionStatus.status === "Todo" ||
+      item.actionStatus.status === "Error",
+  );
+  let currentItemId: string;
   if (firstIncompleteActionIdx > -1) {
     currentItemId = actionItems[firstIncompleteActionIdx].id;
   }
@@ -192,6 +196,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "DisplayOutput") {

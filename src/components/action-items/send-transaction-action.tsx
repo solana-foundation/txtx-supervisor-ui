@@ -19,11 +19,13 @@ export interface SendTransactionAction {
   actionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
+  isCurrent: boolean;
 }
 export function SendTransactionAction({
   actionItem,
   isFirst,
   isLast,
+  isCurrent,
 }: SendTransactionAction) {
   const { id, actionStatus, title, description, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
@@ -72,6 +74,7 @@ export function SendTransactionAction({
         originalActionItem={actionItem}
         isFirst={isFirst}
         isLast={isLast}
+        isCurrent={isCurrent}
       />
     );
   }
@@ -95,6 +98,7 @@ export function SendTransactionAction({
           originalActionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
+          isCurrent={isCurrent}
         />
       );
     }

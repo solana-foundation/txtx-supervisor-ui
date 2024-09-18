@@ -156,11 +156,13 @@ export function ErrorActionItemRow({
   originalActionItem,
   isFirst,
   isLast,
+  isCurrent,
 }: {
   error: string;
   originalActionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
+  isCurrent: boolean;
 }) {
   let errorActionItem: ActionItemRequest = {
     ...originalActionItem,
@@ -175,6 +177,7 @@ export function ErrorActionItemRow({
       isFirst={isFirst}
       isLast={isLast}
       onClick={() => {}}
+      isCurrent={isCurrent}
     >
       <div></div>
     </ActionItemRow>
