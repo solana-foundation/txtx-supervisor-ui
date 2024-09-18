@@ -5,7 +5,7 @@ import {
 } from "./components/action-item-row";
 import { ActionItemRequest, ActionItemResponse } from "../main/types";
 import { ReviewInputCell } from "./components/review-input-cell";
-import { ElementSize, PanelButton } from "../buttons/panel-button";
+import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import {
@@ -88,6 +88,9 @@ export function ProvidePublicKeyAction({
               onClick={onClick}
               isDisabled={false}
               size={ElementSize.L}
+              color={
+                isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
+              }
             />
           ),
         }}
@@ -164,6 +167,9 @@ export function ProvidePublicKeyAction({
                   onClick={onClick}
                   isDisabled={false}
                   size={ElementSize.L}
+                  color={
+                    isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
+                  }
                 />
               ),
             }}
@@ -194,6 +200,7 @@ export function ProvidePublicKeyAction({
             <ReviewInputCell
               value={address}
               actionStatus={actionItem.actionStatus}
+              isCurrent={isCurrent}
             />
           </ActionItemRow>
         );
@@ -211,6 +218,7 @@ export function ProvidePublicKeyAction({
           <ReviewInputCell
             value={address}
             actionStatus={actionItem.actionStatus}
+            isCurrent={isCurrent}
           />
         </ActionItemRow>
       );
@@ -233,6 +241,9 @@ export function ProvidePublicKeyAction({
                 onClick={onClick}
                 isDisabled={false}
                 size={ElementSize.L}
+                color={
+                  isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
+                }
               />
             ),
           }}
@@ -241,6 +252,7 @@ export function ProvidePublicKeyAction({
           <ReviewInputCell
             value={address}
             actionStatus={actionItem.actionStatus}
+            isCurrent={isCurrent}
           />
         </ActionItemRow>
       );

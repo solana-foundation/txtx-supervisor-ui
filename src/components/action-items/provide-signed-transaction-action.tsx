@@ -192,6 +192,9 @@ export function ProvideSignedTransactionAction({
               onClick={onClick}
               isDisabled={primaryButtonIsDisabled}
               size={ElementSize.L}
+              color={
+                isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
+              }
             />
           </div>
         ),
@@ -211,7 +214,7 @@ interface SignTransactionRow {
   subRow?: ActionItemSubRow;
   isCurrent: boolean;
 }
-function SignTransactionRow({
+export function SignTransactionRow({
   actionItem,
   isFirst,
   isLast,
@@ -222,20 +225,11 @@ function SignTransactionRow({
 }: SignTransactionRow & { children: React.ReactNode }) {
   const { index, title, description, actionStatus } = actionItem;
   const { status } = actionStatus;
-  // todo: handle other statuses
-  let checkClass;
-  if (status === "Todo") {
-    checkClass = "text-white";
-  } else if (status === "Success") {
-    checkClass = "text-emerald-500";
-  } else if (status === "Error") {
-    const diag = actionStatus.data;
-    checkClass = "text-rose-400";
-    subRow = { text: diag.message };
-  }
 
   const isStatusSuccess = status === "Success";
+  const isStatusError = status === "Error";
   const isStateDefault = !isStatusSuccess && !isCurrent;
+  subRow = isStatusError ? { text: actionStatus.data.message } : subRow;
 
   return (
     <div className="w-full relative">

@@ -13,7 +13,7 @@ export function DisplayOutputAction({
   actionItem,
   isFirst,
   isLast,
-  isCurrent
+  isCurrent,
 }: DisplayOutputAction) {
   const { actionStatus, actionType } = actionItem;
 
@@ -42,6 +42,7 @@ export function DisplayOutputAction({
     <ReviewInputCell
       value={displayValue?.toString() || ""}
       actionStatus={actionStatus}
+      isCurrent={isCurrent}
     />
   );
   return (
