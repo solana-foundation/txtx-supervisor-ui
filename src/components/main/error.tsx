@@ -16,6 +16,7 @@ import { PickInputOptionAction } from "../action-items/pick-input-option-action"
 import { DisplayOutputAction } from "../action-items/display-output-action";
 import { OpenModalAction } from "../action-items/open-modal-action";
 import { DisplayErrorLogAction } from "../action-items/display-error-log-action";
+import { selectActiveActionId } from "../../reducers/runbooks-slice";
 
 function useFirstRender() {
   const ref = useRef(true);
@@ -109,19 +110,15 @@ interface SubGroup {
   subGroup: ActionSubGroup;
 }
 function SubGroup({ subGroup }: SubGroup) {
+  const activeItemId = useAppSelector(selectActiveActionId);
   const { actionItems, allowBatchCompletion } = subGroup;
-  const firstIncompleteActionIdx = actionItems.findIndex((item) => item.actionStatus.status === "Todo" || item.actionStatus.status === "Error" );
-  let currentItemId:string;
-  if (firstIncompleteActionIdx > -1) {
-    currentItemId = actionItems[firstIncompleteActionIdx].id;
-  }
 
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
     const { actionType, id } = actionItem;
     const { type } = actionType;
     const isFirst = i === 0;
     const isLast = i === actionItems.length - 1;
-    const isCurrent = currentItemId === id;
+    const isCurrent = activeItemId === id;
 
     if (type === "ReviewInput") {
       accumulator.push(

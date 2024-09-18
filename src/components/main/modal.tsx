@@ -14,7 +14,10 @@ import {
   RunbookStepStatus,
   statusForStepNumber,
 } from "../header/runbook-status-bar";
-import { setModalVisibility } from "../../reducers/runbooks-slice";
+import {
+  selectActiveActionId,
+  setModalVisibility,
+} from "../../reducers/runbooks-slice";
 import { ValidateModalAction } from "../action-items/validate-modal-action";
 import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { ModalWrapper } from "./modal-wrapper";
@@ -78,10 +81,8 @@ const Panel = forwardRef(function Panel(
 
   return (
     <div
-      className={classNames(
-        "w-full p-6 bg-zinc-700 rounded-lg shadow drop-shadow-sm border border-zinc-200 flex-col justify-center items-start gap-2.5 inline-flex",
-        contentVisibility,
-      )}
+      className="w-full p-4 md:p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex"
+      id={uuid}
     >
       <div className="self-stretch justify-start items-start inline-flex">
         <div
@@ -150,6 +151,7 @@ interface SubGroup {
   subGroup: ActionSubGroup;
 }
 function SubGroup({ subGroup }: SubGroup) {
+  const activeItemId = useAppSelector(selectActiveActionId);
   const { actionItems, allowBatchCompletion } = subGroup;
 
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
@@ -157,6 +159,7 @@ function SubGroup({ subGroup }: SubGroup) {
     const { type } = actionType;
     const isFirst = i === 0;
     const isLast = i === actionItems.length - 1;
+    const isCurrent = activeItemId === id;
 
     if (type === "ReviewInput") {
       accumulator.push(
@@ -165,6 +168,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "ProvideInput") {
@@ -174,6 +178,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "PickInputOption") {
@@ -183,6 +188,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "ProvidePublicKey") {
@@ -192,6 +198,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "ProvideSignedTransaction") {
@@ -201,6 +208,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     } else if (type === "DisplayOutput") {
@@ -210,6 +218,7 @@ function SubGroup({ subGroup }: SubGroup) {
           isFirst={isFirst}
           isLast={isLast}
           key={id}
+          isCurrent={isCurrent}
         />,
       );
     }
