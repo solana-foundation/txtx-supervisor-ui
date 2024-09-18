@@ -20,7 +20,7 @@ export function ProvideInputAction({
   actionItem,
   isFirst,
   isLast,
-  isCurrent
+  isCurrent,
 }: ProvideInputAction) {
   const { id, actionType, actionStatus } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
@@ -40,6 +40,7 @@ export function ProvideInputAction({
       data: {
         inputName: actionType.data.inputName,
         valueChecked: actionStatus.status === "Todo",
+        forceExecution: false,
       },
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });
