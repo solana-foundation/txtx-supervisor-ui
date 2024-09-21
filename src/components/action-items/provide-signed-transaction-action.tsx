@@ -69,7 +69,7 @@ export function ProvideSignedTransactionAction({
       actionItemId: id,
       type: "ProvideSignedTransaction",
       data: {
-        signedTransactionResult: null,
+        signedTransactionBytes: null,
         signerUuid: signerUuid,
         signatureApproved: null,
       },
@@ -86,7 +86,7 @@ export function ProvideSignedTransactionAction({
         actionItemId: id,
         type: "ProvideSignedTransaction",
         data: {
-          signedTransactionResult: null,
+          signedTransactionBytes: null,
           signerUuid: signerUuid,
           signatureApproved: true,
         },
@@ -144,7 +144,7 @@ export function ProvideSignedTransactionAction({
           address,
           transaction,
         );
-        if (addressResult.is_err()) {
+        if (signTxResult.is_err()) {
           // todo: we need a way to set an error state that can be displayed on the page
         } else {
           const result = signTxResult.unwrap();
@@ -152,7 +152,7 @@ export function ProvideSignedTransactionAction({
             actionItemId: id,
             type: "ProvideSignedTransaction",
             data: {
-              signedTransactionResult: result,
+              signedTransactionBytes: result,
               signerUuid: signerUuid,
               signatureApproved: null,
             },
