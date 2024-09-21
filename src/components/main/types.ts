@@ -369,7 +369,7 @@ export interface ProvideSignedMessageResponse {
 }
 
 export interface ProvideSignedTransactionResponse {
-  signedTransactionResult: string | null;
+  signedTransactionBytes: string | null;
   signerUuid: string;
   signatureApproved: boolean | null;
 }
