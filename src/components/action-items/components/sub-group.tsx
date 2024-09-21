@@ -12,6 +12,7 @@ import { SendTransactionAction } from "../send-transaction-action";
 import { ProvideSignedMessageAction } from "../provide-signed-message-action";
 import { OpenModalAction } from "../open-modal-action";
 import { classNames } from "../../../utils/helpers";
+import { DisplayErrorLogAction } from "../display-error-log-action";
 
 interface SubGroup {
   subGroup: ActionSubGroup;
@@ -21,14 +22,18 @@ export function SubGroup({ subGroup }: SubGroup) {
   const { actionItems, allowBatchCompletion } = subGroup;
 
   let isCurrentSubGroup = false;
+  let isErrorSubGroup = false;
   const uiActionItems = actionItems.reduce((accumulator, actionItem, i) => {
-    const { actionType, id } = actionItem;
+    const { actionType, id, actionStatus } = actionItem;
     const { type } = actionType;
     const isFirst = i === 0;
     const isLast = i === actionItems.length - 1;
     const isCurrent = activeItemId === id;
     if (isCurrent) {
       isCurrentSubGroup = true;
+    }
+    if (actionStatus.status === "Error") {
+      isErrorSubGroup = true;
     }
 
     if (type === "ReviewInput") {
@@ -121,6 +126,10 @@ export function SubGroup({ subGroup }: SubGroup) {
           isCurrent={isCurrent}
         />,
       );
+    } else if (type === "DisplayErrorLog") {
+      accumulator.push(
+        <DisplayErrorLogAction actionItem={actionItem} key={id} />,
+      );
     }
     return accumulator;
   }, [] as JSX.Element[]);
@@ -129,7 +138,9 @@ export function SubGroup({ subGroup }: SubGroup) {
     <div
       className={classNames(
         "self-stretch flex-col justify-start items-start inline-flex border rounded overflow-hidden",
-        isCurrentSubGroup ? "border-emerald-650" : "border-gray-800",
+        isCurrentSubGroup && !isErrorSubGroup
+          ? "border-emerald-650"
+          : "border-gray-800",
       )}
     >
       {uiActionItems}
