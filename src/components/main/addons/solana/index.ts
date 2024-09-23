@@ -11,8 +11,12 @@ import {
 } from "../../../../utils/helpers";
 import { RustSolanaTransaction } from "./codec";
 
+const SOLANA_WALLET_STORAGE_KEY = "txtx_solana_wallet";
+const NAMESPACE = "solana";
+
+const localhostEndpoint = "http://127.0.0.1:8899";
 const devnet = WalletAdapterNetwork.Devnet;
-const devnetEndpoint = "http://127.0.0.1:8899"; // clusterApiUrl(devnet);
+const devnetEndpoint = clusterApiUrl(devnet);
 const testnet = WalletAdapterNetwork.Testnet;
 const testnetEndpoint = clusterApiUrl(testnet);
 const mainnet = WalletAdapterNetwork.Mainnet;
@@ -20,9 +24,9 @@ const mainnetEndpoint = clusterApiUrl(mainnet);
 
 const storeSelectedSolanaWallet = (wallet: Adapter | null) => {
   if (!wallet) {
-    localStorage.removeItem("solana_wallet");
+    localStorage.removeItem(SOLANA_WALLET_STORAGE_KEY);
   } else {
-    localStorage.setItem("solana_wallet", wallet.name);
+    localStorage.setItem(SOLANA_WALLET_STORAGE_KEY, wallet.name);
   }
 };
 
@@ -31,13 +35,14 @@ export default class SolanaAddon implements Addon {
   private connection: Connection;
   private testnetConnection: Connection;
   private devnetConnection: Connection;
+  private localhostConnection: Connection;
 
   constructor() {
     this.solConnect = new SolanaConnect();
 
     this.solConnect.onWalletChange(storeSelectedSolanaWallet);
 
-    let wallet = localStorage.getItem("solana_wallet");
+    let wallet = localStorage.getItem(SOLANA_WALLET_STORAGE_KEY);
     if (wallet) {
       this.solConnect.activeWallet = wallet;
       this.solConnect.getWallet()?.connect();
@@ -46,6 +51,7 @@ export default class SolanaAddon implements Addon {
     this.connection = new Connection(mainnetEndpoint);
     this.testnetConnection = new Connection(testnetEndpoint);
     this.devnetConnection = new Connection(devnetEndpoint);
+    this.localhostConnection = new Connection(localhostEndpoint);
   }
 
   public injectProvider(inner: any): React.FunctionComponentElement<any> {
@@ -62,9 +68,13 @@ export default class SolanaAddon implements Addon {
     });
     const withDevnetConnection = createElement(ConnectionContext.Provider, {
       children: withTestnetConnection,
-      value: { connection: this.testnetConnection },
+      value: { connection: this.devnetConnection },
     });
-    return withDevnetConnection;
+    const withLocalhostConnection = createElement(ConnectionContext.Provider, {
+      children: withDevnetConnection,
+      value: { connection: this.localhostConnection },
+    });
+    return withMainnetConnectionProvider;
   }
 
   public connectWallet(): void {
@@ -86,7 +96,6 @@ export default class SolanaAddon implements Addon {
 
   public getAddress(networkId: string): string | AddonError {
     let wallet = this.solConnect.getWallet();
-    console.log("wallet pubkey", wallet?.publicKey);
     if (!wallet) {
       return { error: "cannot get address; wallet not connected" };
     }
@@ -117,7 +126,7 @@ export default class SolanaAddon implements Addon {
       return { error: "wallet had not public key" };
     }
 
-    storePublicKeyInLocalStorage(getStorageKey("solana"), address, pubKey);
+    storePublicKeyInLocalStorage(getStorageKey(NAMESPACE), address, pubKey);
     return pubKey;
   }
 
@@ -142,10 +151,10 @@ export default class SolanaAddon implements Addon {
       const signed = await wallet.signTransaction(rustTx.toTransaction());
       const signedRustTx = RustSolanaTransaction.fromTransaction(signed);
       return signedRustTx.toHex();
-    } else {
-      console.log("no sign tx");
     }
-    return { error: "sign tx not implemented" };
+    return {
+      error: `signTransaction not implemented by ${wallet.name} wallet`,
+    };
   }
 
   public sendTransaction(
