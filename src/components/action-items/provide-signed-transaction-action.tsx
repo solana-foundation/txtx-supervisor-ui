@@ -137,7 +137,6 @@ export function ProvideSignedTransactionAction({
       const address = addressResult.unwrap();
 
       onClick = async () => {
-        console.log(transaction);
         const signTxResult = await addonManager.signTransaction(
           namespace,
           networkId,

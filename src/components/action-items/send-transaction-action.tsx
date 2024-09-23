@@ -106,7 +106,6 @@ export function SendTransactionAction({
     const address = addressResult.unwrap();
 
     onClick = async () => {
-      console.log(transaction);
       const sendTxResult = await addonManager.sendTransaction(
         namespace,
         networkId,
