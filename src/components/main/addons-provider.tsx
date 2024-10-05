@@ -13,7 +13,7 @@ export interface AddonsProviderProps {
 const ADDONS: { [key: string]: () => Promise<any> } = {
   evm: () => import("./addons/evm"),
   stacks: () => import("./addons/stacks"),
-  solana: () => import("./addons/solana"),
+  svm: () => import("./addons/svm"),
 };
 
 export default function AddonsProvider({ children }: AddonsProviderProps) {
