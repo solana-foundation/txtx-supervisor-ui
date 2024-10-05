@@ -439,7 +439,11 @@ export function formatValueForDisplay(input: Value): DisplayableValue {
     return "";
   }
   if (type === "buffer" || type === "string") {
-    return value;
+    if (value.length > 100) {
+      return value.slice(0, 100) + "...";
+    } else {
+      return value;
+    }
   } else if (type === "bool") {
     return value.toString();
   } else if (type === "integer") {
@@ -454,11 +458,16 @@ export function formatValueForDisplay(input: Value): DisplayableValue {
     return JSON.stringify(
       keys.map((k) => {
         let val = obj[k];
-        return formatValueForDisplay(val);
+        return { [k]: formatValueForDisplay(val) };
       }),
     );
   } else {
-    return value.toString();
+    const str = value.toString();
+    if (str.length > 100) {
+      return str.slice(0, 100) + "...";
+    } else {
+      return str;
+    }
   }
 }
 
