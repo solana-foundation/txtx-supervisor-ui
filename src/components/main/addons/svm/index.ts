@@ -12,7 +12,7 @@ import {
 import { RustSolanaTransaction } from "./codec";
 
 const SOLANA_WALLET_STORAGE_KEY = "txtx_solana_wallet";
-const NAMESPACE = "solana";
+const NAMESPACE = "svm";
 
 const localhostEndpoint = "http://127.0.0.1:8899";
 const devnet = WalletAdapterNetwork.Devnet;
