@@ -14,7 +14,10 @@ import { useMutation } from "@apollo/client";
 import addonManager from "../../utils/addons-initializer";
 import { classNames } from "../../utils/helpers";
 import { CheckIcon } from "@heroicons/react/20/solid";
-import { SignTransactionRow } from "./provide-signed-transaction-action";
+import {
+  SignTransactionRow,
+  valueToStringForSignature,
+} from "./provide-signed-transaction-action";
 
 export interface SendTransactionAction {
   actionItem: ActionItemRequest;
@@ -48,16 +51,18 @@ export function SendTransactionAction({
     },
   } = actionType;
 
-  const transaction = formatValueForDisplay(payload);
+  const txForDisplay = formatValueForDisplay(payload);
 
-  if (transaction == null || typeof transaction !== "string") {
+  if (txForDisplay == null || typeof txForDisplay !== "string") {
     throw new Error(
       `SignTransaction component requires string payload, received ${actionType.data.payload}`,
     );
   }
   // insert a zero-width space every other character to allow the text to break as needed
   const displayedValue =
-    formattedPayload || transaction.match(/(.{1})/g)?.join("​") || transaction;
+    formattedPayload ||
+    txForDisplay.match(/(.{1})/g)?.join("​") ||
+    txForDisplay;
 
   const alreadySigned = actionStatus.status === "Success";
   const signatureBlocked = actionStatus.status === "Blocked";
@@ -110,7 +115,7 @@ export function SendTransactionAction({
         namespace,
         networkId,
         address,
-        transaction,
+        valueToStringForSignature(payload),
       );
       if (addressResult.is_err()) {
         // todo: we need a way to set an error state that can be displayed on the page
