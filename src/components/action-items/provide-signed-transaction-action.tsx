@@ -7,6 +7,7 @@ import {
   ActionItemRequest,
   ActionItemResponse,
   formatValueForDisplay,
+  Value,
 } from "../main/types";
 import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
@@ -49,16 +50,18 @@ export function ProvideSignedTransactionAction({
     },
   } = actionType;
 
-  const transaction = formatValueForDisplay(payload);
+  const txForDisplay = formatValueForDisplay(payload);
 
-  if (transaction == null || typeof transaction !== "string") {
+  if (txForDisplay == null || typeof txForDisplay !== "string") {
     throw new Error(
       `ProvideSignedTransactionAction component requires string payload, received ${actionType.data.payload}`,
     );
   }
   // insert a zero-width space every other character to allow the text to break as needed
   const displayedValue =
-    formattedPayload || transaction.match(/(.{1})/g)?.join("​") || transaction;
+    formattedPayload ||
+    txForDisplay.match(/(.{1})/g)?.join("​") ||
+    txForDisplay;
 
   const alreadySigned = actionStatus.status === "Success";
   const signatureBlocked = actionStatus.status === "Blocked";
@@ -137,12 +140,11 @@ export function ProvideSignedTransactionAction({
       const address = addressResult.unwrap();
 
       onClick = async () => {
-        console.log(transaction);
         const signTxResult = await addonManager.signTransaction(
           namespace,
           networkId,
           address,
-          transaction,
+          valueToStringForSignature(payload),
         );
         if (signTxResult.is_err()) {
           // todo: we need a way to set an error state that can be displayed on the page
@@ -281,4 +283,26 @@ export function SignTransactionRow({
       {!isLast && <div className="border-b border-gray-800" />}
     </div>
   );
+}
+
+export function valueToStringForSignature(input: Value): string {
+  const { type, value } = input;
+  if (value == null) {
+    throw new Error("Null values are not supported for signing");
+  }
+  if (type === "buffer" || type === "string") {
+    return value;
+  } else if (type === "bool") {
+    throw new Error("Boolean values are not supported for signing");
+  } else if (type === "integer") {
+    throw new Error("Integer values are not supported for signing");
+  } else if (type === "null") {
+    throw new Error("Null values are not supported for signing");
+  } else if (type === "array" && Array.isArray(value)) {
+    throw new Error("Array values are not supported for signing");
+  } else if (type === "object" && typeof value === "object") {
+    throw new Error("Object values are not supported for signing");
+  } else {
+    return value.toString();
+  }
 }

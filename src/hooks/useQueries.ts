@@ -47,25 +47,12 @@ export default function useQueries(): { loading: boolean } {
       dispatch(setProgressBlocks(blocks));
     },
   });
-  const { loading: runbookMetadataLoading } = useQuery(GET_RUNBOOK_METADATA, {
-    onCompleted: (result) => {
-      const { name, description, registeredAddons } = result.runbook;
-      const metadata = {
-        name,
-        description,
-        uuid: "",
-        registeredAddons,
-      };
-      dispatch(setMetadata(metadata));
-    },
-  });
 
   return {
     loading:
       actionBlocksLoading ||
       modalBlocksLoading ||
       progressBlocksLoading ||
-      errorBlocksLoading ||
-      runbookMetadataLoading,
+      errorBlocksLoading
   };
 }

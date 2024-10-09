@@ -2,7 +2,6 @@ import React from "react";
 import { classNames } from "../../../utils/helpers";
 import { ActionItemRequest, errorDiagnostic } from "../../main/types";
 import { CheckIcon } from "@heroicons/react/20/solid";
-import { AddonErrorType, getAddonErrorMessage } from "../../../utils/addons";
 
 export interface ActionItemRow {
   actionItem: ActionItemRequest;
