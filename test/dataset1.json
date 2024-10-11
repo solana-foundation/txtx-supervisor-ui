@@ -1,0 +1,113 @@
+{
+    "actionBlocks": [
+        {
+            "__typename": "GqlActionBlock",
+            "type": "ActionPanel",
+            "uuid": "e0d59cbb-40b3-4710-a86c-6198dca2e6d7",
+            "visible": true,
+            "panel": {
+                "__typename": "GqlActionPanelData",
+                "title": "runbook checklist mockup",
+                "description": "",
+                "groups": [
+                    {
+                        "__typename": "GqlActionGroup",
+                        "title": "",
+                        "subGroups": [
+                            {
+                                "__typename": "GqlActionSubGroup",
+                                "allowBatchCompletion": false,
+                                "actionItems": [
+                                    {
+                                        "__typename": "GqlActionItemRequest",
+                                        "id": "63361198258fcbd8-e3adb926c53540a7",
+                                        "index": 0,
+                                        "title": "Select the environment to target",
+                                        "description": null,
+                                        "actionStatus": "{\"status\":\"Success\",\"data\":null}",
+                                        "actionType": "{\"type\":\"PickInputOption\",\"data\":{\"options\":[{\"value\":\"devnet\",\"displayedValue\":\"devnet\"},{\"value\":\"testnet\",\"displayedValue\":\"testnet\"},{\"value\":\"mainnet\",\"displayedValue\":\"mainnet\"}],\"selected\":{\"value\":\"devnet\",\"displayedValue\":\"devnet\"}}}"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "__typename": "GqlActionGroup",
+                        "title": "Review and check the following signer related action items",
+                        "subGroups": [
+                            {
+                                "__typename": "GqlActionSubGroup",
+                                "allowBatchCompletion": false,
+                                "actionItems": [
+                                    {
+                                        "__typename": "GqlActionItemRequest",
+                                        "id": "d71fd10b2ea48c4a-56f4a7a4793ebe51",
+                                        "index": 1,
+                                        "title": "Connect wallet operator",
+                                        "description": null,
+                                        "actionStatus": "{\"status\":\"Success\",\"data\":\"ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC\"}",
+                                        "actionType": "{\"type\":\"ProvidePublicKey\",\"data\":{\"checkExpectationActionUuid\":\"0x60c17d8999a6ce7b8ca617faef33f6454beb5e8e448fd90521ad0f2f13cf6560\",\"message\":\"The Times 03/Jan/2009 Chancellor on brink of second bailout for banks.\",\"namespace\":\"stacks\",\"networkId\":\"devnet\"}}"
+                                    },
+                                    {
+                                        "__typename": "GqlActionItemRequest",
+                                        "id": "f10620cdb1cf3feb-6e71c986d914280d",
+                                        "index": 2,
+                                        "title": "Check operator expected address",
+                                        "description": null,
+                                        "actionStatus": "{\"status\":\"Success\",\"data\":\"ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC\"}",
+                                        "actionType": "{\"type\":\"ReviewInput\",\"data\":{\"inputName\":\"\",\"value\":{\"type\":\"string\",\"value\":\"ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC\"},\"forceExecution\":false}}"
+                                    },
+                                    {
+                                        "__typename": "GqlActionItemRequest",
+                                        "id": "aea8de06252cfbdf-968b98750b8554aa",
+                                        "index": 3,
+                                        "title": "Check signer balance",
+                                        "description": null,
+                                        "actionStatus": "{\"status\":\"Todo\"}",
+                                        "actionType": "{\"type\":\"ReviewInput\",\"data\":{\"inputName\":\"\",\"value\":{\"type\":\"string\",\"value\":\"91609999.990000 STX\"},\"forceExecution\":false}}"
+                                    }
+                                ]
+                            },
+                            {
+                                "__typename": "GqlActionSubGroup",
+                                "allowBatchCompletion": false,
+                                "actionItems": [
+                                    {
+                                        "__typename": "GqlActionItemRequest",
+                                        "id": "a70dca3b7cae3a2b-fa5cbeb51f92c97e",
+                                        "index": 4,
+                                        "title": "start runbook",
+                                        "description": null,
+                                        "actionStatus": "{\"status\":\"Todo\"}",
+                                        "actionType": "{\"type\":\"ValidateBlock\",\"data\":{\"internalIdx\":0}}"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "__typename": "GqlActionGroup",
+                        "title": "",
+                        "subGroups": [
+                            {
+                                "__typename": "GqlActionSubGroup",
+                                "allowBatchCompletion": false,
+                                "actionItems": [
+                                    {
+                                        "__typename": "GqlActionItemRequest",
+                                        "id": "63361198258fcbd8-e3adb926c5350000",
+                                        "index": 5,
+                                        "title": "Select target environment",
+                                        "description": null,
+                                        "actionStatus": "{\"status\":\"Success\",\"data\":null}",
+                                        "actionType": "{\"type\":\"SelectOption\",\"data\":{\"options\":[{\"value\":\"devnet\",\"displayedValue\":\"devnet\"},{\"value\":\"testnet\",\"displayedValue\":\"testnet\"},{\"value\":\"mainnet\",\"displayedValue\":\"mainnet\"}],\"selected\":{\"value\":\"devnet\",\"displayedValue\":\"devnet\"}}}"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -210,6 +210,7 @@ export type ActionItemRequestType =
   | ReviewInputActionItemRequest
   | ProvideInputActionItemRequest
   | PickInputOptionActionItemRequest
+  | SelectOptionActionItemRequest
   | ProvidePublicKeyActionItemRequest
   | ProvideSignedMessageActionItemRequest
   | ProvideSignedTransactionActionItemRequest
@@ -227,6 +228,10 @@ export type ReviewInputActionItemRequest = {
 export type ProvideInputActionItemRequest = {
   type: "ProvideInput";
   data: ProvideInputRequest;
+};
+export type SelectOptionActionItemRequest = {
+  type: "SelectOption";
+  data: SelectOptionRequest;
 };
 export type PickInputOptionActionItemRequest = {
   type: "PickInputOption";
@@ -274,6 +279,10 @@ export interface ProvideInputRequest {
   defaultValue?: Value;
 }
 
+export interface SelectOptionRequest {
+  options: InputOption[];
+  selected: InputOption;
+}
 export interface PickInputOptionRequest {
   options: InputOption[];
   selected: InputOption;

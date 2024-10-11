@@ -13,10 +13,12 @@ import { ProvideSignedMessageAction } from "../provide-signed-message-action";
 import { OpenModalAction } from "../open-modal-action";
 import { classNames } from "../../../utils/helpers";
 import { DisplayErrorLogAction } from "../display-error-log-action";
+import { SelectOptionAction } from "../../action-items-lib/select-option-action";
 
 interface SubGroup {
   subGroup: ActionSubGroup;
 }
+
 export function SubGroup({ subGroup }: SubGroup) {
   const activeItemId = useAppSelector(selectActiveActionId);
   const { actionItems, allowBatchCompletion } = subGroup;
@@ -59,6 +61,16 @@ export function SubGroup({ subGroup }: SubGroup) {
     } else if (type === "PickInputOption") {
       accumulator.push(
         <PickInputOptionAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={id}
+          isCurrent={isCurrent}
+        />,
+      );
+    } else if (type === "SelectOption") {
+      accumulator.push(
+        <SelectOptionAction
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}

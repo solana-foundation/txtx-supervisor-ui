@@ -21,6 +21,7 @@ import useApolloClient from "./hooks/useApolloClient";
 import { SuspensePage } from "./components/pages/suspense";
 import AddonsProvider from "./components/main/addons-provider";
 
+export const tstMode = process.env.TXTX_TEST_MODE === "true";
 const devMode = process.env.TXTX_DEV_MODE === "true";
 const protocol = window.location.protocol;
 const host = devMode ? "localhost:8488" : window.location.host;
