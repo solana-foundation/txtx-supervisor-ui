@@ -9,12 +9,12 @@ import {
 } from "../../reducers/multi-party-slice";
 import useHandleEscapeKey from "../../hooks/useHandleEscapeKey";
 
-const HANKO_API_URL = process.env.HANKO_API_URL || "http://localhost:8000";
+const ID_SERVICE_URL = process.env.ID_SERVICE_URL || "http://localhost:8000";
 
 export default function HankoAuth() {
   const dispatch = useAppDispatch();
   const hanko = useMemo(
-    () => new Hanko(HANKO_API_URL, { cookieSameSite: "none" }),
+    () => new Hanko(ID_SERVICE_URL, { cookieSameSite: "none" }),
     [],
   );
 
@@ -33,7 +33,7 @@ export default function HankoAuth() {
   }, [hanko, redirectAfterLogin]);
 
   useEffect(() => {
-    register(HANKO_API_URL).catch((error) => {
+    register(ID_SERVICE_URL).catch((error) => {
       console.error("hanko error", error);
     });
   }, []);

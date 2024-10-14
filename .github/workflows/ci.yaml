@@ -25,7 +25,7 @@ jobs:
       - name: Build .env file
         run: |
           touch .env
-          echo HANKO_API_URL=${{ secrets.HANKO_API_URL }} >> .env
+          echo ID_SERVICE_URL=${{ secrets.ID_SERVICE_URL }} >> .env
           cat .env
 
       - name: Use Node.js
