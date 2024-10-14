@@ -41,7 +41,7 @@ export function ProvideInputCell({
               "grow text-sm font-normal font-gt leading-[18.20px] text-right",
               "border-gray-800 rounded-l-sm",
               "focus:outline-none focus:ring-0 ring-0 focus:border-emerald-500",
-              inputClass,
+              inputClass || '',
             )}
             defaultValue={defaultInputValue}
             key={defaultInputValue}

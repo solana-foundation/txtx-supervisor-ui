@@ -38,6 +38,10 @@ export function ActionItemRow({
   const isStatusSuccess = status === "Success";
   const isStateDefault = !isStatusSuccess && !isStatusError && !isCurrent;
 
+  if (actionItem.actionType.type === 'ProvideInput') {
+    
+  }
+
   return (
     <div className="w-full relative">
       <div

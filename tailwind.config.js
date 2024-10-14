@@ -5,6 +5,10 @@ module.exports = {
   content: ["./src/**/*.{html,js,ts,jsx,tsx}"],
   theme: {
     colors: {
+      inputbg: { 400: "#122221", 600: "#122221" },
+      inputfg: { 400: "#D7EAE9", 600: "#758A89" },
+      error: { 400: "#fe889f", 600: "#FB6D88" },
+      primary: { 400: "#10372C", 600: "#10372C"}, 
       amber: {
         400: "#FFB615",
       },

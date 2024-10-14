@@ -4,7 +4,6 @@ import { selectActiveActionId } from "../../../reducers/runbooks-slice";
 import { ActionSubGroup } from "../../main/types";
 import { DisplayOutputAction } from "../display-output-action";
 import { PickInputOptionAction } from "../pick-input-option-action";
-import { ProvideInputAction } from "../provide-input-action";
 import { ProvidePublicKeyAction } from "../provide-public-key-action";
 import { ProvideSignedTransactionAction } from "../provide-signed-transaction-action";
 import { ReviewInputAction } from "../review-input-action";
@@ -13,7 +12,7 @@ import { ProvideSignedMessageAction } from "../provide-signed-message-action";
 import { OpenModalAction } from "../open-modal-action";
 import { classNames } from "../../../utils/helpers";
 import { DisplayErrorLogAction } from "../display-error-log-action";
-import { SelectOptionAction } from "../../action-items-lib/select-option-action";
+import { ProvideInputAction } from "../../action-items-lib/provide-input/provide-input-action";
 
 interface SubGroup {
   subGroup: ActionSubGroup;
@@ -61,16 +60,6 @@ export function SubGroup({ subGroup }: SubGroup) {
     } else if (type === "PickInputOption") {
       accumulator.push(
         <PickInputOptionAction
-          actionItem={actionItem}
-          isFirst={isFirst}
-          isLast={isLast}
-          key={id}
-          isCurrent={isCurrent}
-        />,
-      );
-    } else if (type === "SelectOption") {
-      accumulator.push(
-        <SelectOptionAction
           actionItem={actionItem}
           isFirst={isFirst}
           isLast={isLast}
