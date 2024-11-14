@@ -5,7 +5,7 @@ import {
   openSignatureRequestPopup,
   showConnect,
 } from "@stacks/connect";
-import { StacksMainnet, StacksTestnet } from "@stacks/network";
+import { STACKS_MAINNET, STACKS_TESTNET } from "@stacks/network";
 import Wallet from "sats-connect";
 import { createElement } from "react";
 import { Connect } from "@stacks/connect-react";
@@ -77,9 +77,7 @@ export default class StacksAddon implements Addon {
       openSignatureRequestPopup({
         message,
         network:
-          stacksNetworkId === "mainnet"
-            ? new StacksMainnet()
-            : new StacksTestnet(),
+          stacksNetworkId === "mainnet" ? STACKS_MAINNET : STACKS_TESTNET,
         appDetails: appDetails,
         onFinish(response) {
           if (response.publicKey) {
@@ -107,9 +105,7 @@ export default class StacksAddon implements Addon {
       openSignatureRequestPopup({
         message,
         network:
-          stacksNetworkId === "mainnet"
-            ? new StacksMainnet()
-            : new StacksTestnet(),
+          stacksNetworkId === "mainnet" ? STACKS_MAINNET : STACKS_TESTNET,
         appDetails: appDetails,
         onFinish(response) {
           resolve(moveLastByteToFront(response.signature));
