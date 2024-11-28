@@ -31,14 +31,15 @@ export default function HankoAuth() {
   }, []);
 
   useEffect(() => {
-    hanko.onAuthFlowCompleted((response) => {
+    if (authResult?.user) {
       const auth = {
-        userId: response.userID,
+        userId: authResult!.user.id,
       };
-
+      document.cookie=`Bearer=${authResult.accessToken}`;
       dispatch(setMultiPartyAuth(auth));
-    });
-  }, [hanko, redirectAfterLogin]);
+      redirectAfterLogin();
+    }
+  }, [authResult]);
 
   useEffect(() => {
     register(ID_SERVICE_URL).catch((error) => {
