@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { register } from "@teamhanko/hanko-elements";
 import React from "react";
 import { ModalWrapper } from "../main/modal-wrapper";
 import { useAppDispatch } from "../../hooks";
@@ -16,7 +15,7 @@ const nhost = new NhostClient({
   region: process.env.NHOST_REGION
 });
 
-export default function HankoAuth() {
+export default function NhostAuth() {
   const [authResult, setAuthResult] = useState<AuthResult | undefined>();
   const dispatch = useAppDispatch();
 

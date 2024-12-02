@@ -1,4 +1,4 @@
-export const AUTH_COOKIE_KEY = "hanko";
+export const AUTH_COOKIE_KEY = "nhost";
 export default function useCookie(name: string) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
