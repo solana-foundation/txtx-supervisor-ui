@@ -8,7 +8,7 @@ import {
 } from "../../reducers/multi-party-slice";
 import useHandleEscapeKey from "../../hooks/useHandleEscapeKey";
 import { Authentication, AuthResult } from "@txtxrun/txtx-ui-kit";
-import { NhostClient, NhostProvider } from "@nhost/react";
+import { NhostClient } from "@nhost/react";
 
 const nhost = new NhostClient({
   subdomain: process.env.NHOST_SUBDOMAIN,
@@ -39,9 +39,7 @@ export default function NhostAuth() {
   return (
     <ModalWrapper visible={true} onClick={onModalClick}>
       <div className="w-content mx-auto">
-        <NhostProvider nhost={nhost}>
-          <Authentication nhost={nhost} setAuthResult={setAuthResult} />
-        </NhostProvider>
+        <Authentication nhost={nhost} setAuthResult={setAuthResult} />
       </div>
     </ModalWrapper>
   );
