@@ -7,7 +7,7 @@
     "dev": "TXTX_DEV_MODE=true parcel",
     "restart": "npm run clean && npm i && npm run dev",
     "clean": "rm -rf .parcel-cache & rm -rf dist",
-    "build": "parcel build",
+    "build": "parcel build --no-scope-hoist",
     "rebuild": "npm run clean && npm run build",
     "i": "dotenv npm i"
   },
