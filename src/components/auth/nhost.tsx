@@ -1,5 +1,4 @@
-import { useEffect, useCallback, useMemo } from "react";
-import { register, Hanko } from "@teamhanko/hanko-elements";
+import { useEffect, useState } from "react";
 import React from "react";
 import { ModalWrapper } from "../main/modal-wrapper";
 import { useAppDispatch } from "../../hooks";
@@ -8,35 +7,28 @@ import {
   setMultiPartyEnabled,
 } from "../../reducers/multi-party-slice";
 import useHandleEscapeKey from "../../hooks/useHandleEscapeKey";
+import { Authentication, AuthResult } from "@txtxrun/txtx-ui-kit";
+import { NhostClient } from "@nhost/react";
+import { AUTH_COOKIE_KEY } from "../../hooks/useCookie";
 
-const ID_SERVICE_URL = process.env.ID_SERVICE_URL || "http://localhost:8000";
+const nhost = new NhostClient({
+  subdomain: process.env.NHOST_SUBDOMAIN,
+  region: process.env.NHOST_REGION
+});
 
-export default function HankoAuth() {
+export default function NhostAuth() {
+  const [authResult, setAuthResult] = useState<AuthResult | undefined>();
   const dispatch = useAppDispatch();
-  const hanko = useMemo(
-    () => new Hanko(ID_SERVICE_URL, { cookieSameSite: "none" }),
-    [],
-  );
-
-  const redirectAfterLogin = useCallback(() => {
-    window.location.reload();
-  }, []);
 
   useEffect(() => {
-    hanko.onAuthFlowCompleted((response) => {
+    if (authResult?.user) {
       const auth = {
-        userId: response.userID,
+        userId: authResult!.user.id,
       };
-
+      document.cookie=`${AUTH_COOKIE_KEY}=Bearer=${authResult.accessToken}`;
       dispatch(setMultiPartyAuth(auth));
-    });
-  }, [hanko, redirectAfterLogin]);
-
-  useEffect(() => {
-    register(ID_SERVICE_URL).catch((error) => {
-      console.error("hanko error", error);
-    });
-  }, []);
+    }
+  }, [authResult]);
 
   useHandleEscapeKey(() => {
     dispatch(setMultiPartyEnabled(false));
@@ -48,7 +40,7 @@ export default function HankoAuth() {
   return (
     <ModalWrapper visible={true} onClick={onModalClick}>
       <div className="w-content mx-auto">
-        <hanko-auth class="hankoComponent" />
+        <Authentication nhost={nhost} setAuthResult={setAuthResult} />
       </div>
     </ModalWrapper>
   );
