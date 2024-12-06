@@ -30,8 +30,12 @@ export default function useOpenChannel() {
 
     const response = await fetch(`${process.env.ID_SERVICE_URL}/refresh`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ refreshToken: authInfo.refreshToken})
     });
+
     const { accessToken, refreshToken, user, exp } = await response.json();
     const newAuth = {
       accessToken,
