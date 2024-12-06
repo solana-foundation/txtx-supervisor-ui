@@ -1,25 +1,57 @@
 import { BACKEND_URL } from "../App";
-import { useAppDispatch } from "../hooks";
+import { useAppDispatch, useAppSelector } from "../hooks";
 import {
   clearMultiPartySharing,
   setMultiPartyEnabled,
+  setMultiPartyAuth,
+  auth
 } from "../reducers/multi-party-slice";
 import useCookie, { AUTH_COOKIE_KEY } from "./useCookie";
 
 let isDeleting = false;
 export default function useDeleteChannel(doDelete: boolean, slug: string) {
+  const authInfo = useAppSelector(auth);
   const dispatch = useAppDispatch();
   const cookie = useCookie(AUTH_COOKIE_KEY);
   if (cookie === undefined || !doDelete || isDeleting) return;
+
+  const refreshAccessTokenIfExpired = async () => {
+    if (!authInfo || !authInfo.accessTokenExp) return;
+    const nowInSeconds = Math.floor(Date.now()/1000);
+    const accessTokenIsExpired = nowInSeconds > authInfo.accessTokenExp;
+    if (!accessTokenIsExpired) return;
+
+    const response = await fetch(`${process.env.ID_SERVICE_URL}/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ refreshToken: authInfo.refreshToken})
+    });
+
+    const { accessToken, refreshToken, user, exp } = await response.json();
+    const newAuth = {
+      accessToken,
+      refreshToken,
+      user,
+      accessTokenExp: exp
+    };
+    document.cookie=`${AUTH_COOKIE_KEY}=Bearer=${newAuth.accessToken}`;
+    dispatch(setMultiPartyAuth(newAuth));
+  }
+
   isDeleting = true;
-  fetch(`${BACKEND_URL}/api/v1/channels`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ slug }),
-    credentials: "include",
-  })
+  refreshAccessTokenIfExpired()
+    .then(() => {
+      return fetch(`${BACKEND_URL}/api/v1/channels`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ slug }),
+        credentials: "include",
+      })
+    })
     .then((res) => {
       if (res.status == 200) {
         isDeleting = false;
