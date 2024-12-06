@@ -1,10 +1,8 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import useCookie, { AUTH_COOKIE_KEY } from "../hooks/useCookie";
+import type { AuthResult } from "@txtxrun/txtx-ui-kit";
 
-export interface MultiPartyAuth {
-  userId: string;
-}
 export interface MultiPartySharing {
   totp: string;
   httpEndpointUrl: string;
@@ -13,7 +11,7 @@ export interface MultiPartySharing {
 }
 export interface MultiPartyMode {
   enabled: boolean;
-  auth?: MultiPartyAuth;
+  auth?: AuthResult;
   sharing?: MultiPartySharing;
 }
 const initialState: MultiPartyMode = {
@@ -30,7 +28,7 @@ export const multiPartySlice = createSlice({
       },
     ),
     setMultiPartyAuth: create.reducer(
-      (state, action: PayloadAction<MultiPartyAuth>) => {
+      (state, action: PayloadAction<AuthResult>) => {
         state.auth = action.payload;
       },
     ),
@@ -48,6 +46,7 @@ export const multiPartySlice = createSlice({
   }),
   selectors: {
     isMultiPartyEnabled: (state) => state.enabled,
+    auth: (state) => state.auth,
     isMultiPartyAuthenticated: (state) =>
       state.auth !== undefined && useCookie(AUTH_COOKIE_KEY) !== undefined,
     isMultiPartyInstantiated: (state) => state.sharing !== undefined,
@@ -65,6 +64,7 @@ export const {
 
 export const {
   isMultiPartyEnabled,
+  auth,
   isMultiPartyAuthenticated,
   isMultiPartyInstantiated,
   selectMultiPartySharing,
