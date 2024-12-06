@@ -22,9 +22,9 @@ export default function NhostAuth() {
 
   useEffect(() => {
     if (authResult?.user) {
-      const auth = {
-        userId: authResult!.user.id,
-      };
+      // @ts-ignore - remove this when new type is available in txtx-ui-kit
+      const { user, accessToken, refreshToken, accessTokenExp } = authResult;
+      const auth = { user, accessToken, refreshToken, accessTokenExp };
       document.cookie=`${AUTH_COOKIE_KEY}=Bearer=${authResult.accessToken}`;
       dispatch(setMultiPartyAuth(auth));
     }
