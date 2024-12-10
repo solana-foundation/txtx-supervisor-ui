@@ -1,6 +1,5 @@
 import { BACKEND_URL } from "../App";
 import { AUTH_COOKIE_KEY } from "../hooks/useCookie";
-import { ChannelOpenResponse } from "../components/main/multi-player-types";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import {
   isMultiPartyAuthenticated,
@@ -9,8 +8,9 @@ import {
   setMultiPartyEnabled,
   setMultiPartyAuth,
   setMultiPartySharing,
-  auth
+  auth,
 } from "../reducers/multi-party-slice";
+import { useEffect } from "react";
 
 let fetching = false;
 export default function useOpenChannel() {
@@ -20,68 +20,88 @@ export default function useOpenChannel() {
   const instantiated = useAppSelector(isMultiPartyInstantiated);
   const authInfo = useAppSelector(auth);
 
-  if (!authenticated || instantiated || fetching) return;
-
   const refreshAccessTokenIfExpired = async () => {
     if (!authInfo || !authInfo.accessTokenExp) return;
-    const nowInSeconds = Math.floor(Date.now()/1000);
+    const nowInSeconds = Math.floor(Date.now() / 1000);
     const accessTokenIsExpired = nowInSeconds > authInfo.accessTokenExp;
     if (!accessTokenIsExpired) return;
 
     const response = await fetch(`${process.env.ID_SERVICE_URL}/refresh`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ refreshToken: authInfo.refreshToken})
+      body: JSON.stringify({ refreshToken: authInfo.refreshToken }),
     });
+    if (response.status === 200) {
+      const { accessToken, refreshToken, user, exp } = await response.json();
+      const newAuth = {
+        accessToken,
+        refreshToken,
+        user,
+        accessTokenExp: exp,
+      };
+      document.cookie = `${AUTH_COOKIE_KEY}=Bearer=${newAuth.accessToken}`;
+      dispatch(setMultiPartyAuth(newAuth));
+    } else {
+      console.error("failed to refresh access token", await response.text());
+    }
+  };
 
-    const { accessToken, refreshToken, user, exp } = await response.json();
-    const newAuth = {
-      accessToken,
-      refreshToken,
-      user,
-      accessTokenExp: exp
-    };
-    document.cookie=`${AUTH_COOKIE_KEY}=Bearer=${newAuth.accessToken}`;
-    dispatch(setMultiPartyAuth(newAuth));
-  }
+  const getOpenChannel = async () => {
+    return await fetch(`${BACKEND_URL}/api/v1/channels`, {
+      credentials: "include",
+    });
+  };
 
-  fetching = true;
-  refreshAccessTokenIfExpired()
-    .then(() => {
-      return fetch(`${BACKEND_URL}/api/v1/channels`, {
-        credentials: "include",
-      });
-    }).then(res => {
-      if (res.status === 200) {
-        res.json().then((response: ChannelOpenResponse) => {
-          if(!enabled) {
-              dispatch(setMultiPartyEnabled(true));
-          }
-          dispatch(setMultiPartySharing(response));
-        });
+  const postOpenChannel = async () => {
+    return await fetch(`${BACKEND_URL}/api/v1/channels`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+  };
+
+  const openChannel = async () => {
+    if (!authenticated || instantiated || fetching) {
+      return;
+    }
+    fetching = true;
+    try {
+      await refreshAccessTokenIfExpired();
+      const getOpenChannelResponse = await getOpenChannel();
+
+      if (getOpenChannelResponse.status === 200) {
+        const channelData = await getOpenChannelResponse.json();
+
+        if (!enabled) {
+          dispatch(setMultiPartyEnabled(true));
+        }
+        dispatch(setMultiPartySharing(channelData));
+      } else if (enabled) {
+        const openChannelResponse = await postOpenChannel();
+
+        if (openChannelResponse.status === 200) {
+          const channelData = await openChannelResponse.json();
+
+          dispatch(setMultiPartySharing(channelData));
+        } else {
+          dispatch(setMultiPartyEnabled(false));
+          const err = await openChannelResponse.text();
+          console.error("create channel failed", err);
+        }
       }
-      else if(enabled) {
-        fetch(`${BACKEND_URL}/api/v1/channels`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        })
-          .then(res => {
-            res.json().then((response: ChannelOpenResponse) => {
-              dispatch(setMultiPartySharing(response));
-            });
-          })
-          .catch(err => {
-            console.error("create channel failed", err);
-          }).finally(() => {
-            fetching = false;
-          });
-      }
-    }).finally(() => {
+    } catch (err) {
+      console.error("failed to open channel", err);
+      dispatch(setMultiPartyEnabled(false));
+    } finally {
       fetching = false;
-    });
+    }
+  };
+
+  useEffect(() => {
+    openChannel();
+  }, [fetching, authenticated, instantiated, enabled]);
 }
