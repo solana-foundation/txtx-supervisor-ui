@@ -1,4 +1,4 @@
-import { BACKEND_URL } from "../App";
+import { BACKEND_URL, ID_SERVICE_URL } from "../App";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import {
   clearMultiPartySharing,
@@ -21,7 +21,7 @@ export default function useDeleteChannel(doDelete: boolean, slug: string) {
     const accessTokenIsExpired = nowInSeconds > authInfo.accessTokenExp;
     if (!accessTokenIsExpired) return;
 
-    const response = await fetch(`${process.env.ID_SERVICE_URL}/refresh`, {
+    const response = await fetch(`${ID_SERVICE_URL}/refresh`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -36,6 +36,7 @@ export default function useDeleteChannel(doDelete: boolean, slug: string) {
       user,
       accessTokenExp: exp
     };
+
     document.cookie=`${AUTH_COOKIE_KEY}=Bearer=${newAuth.accessToken}`;
     dispatch(setMultiPartyAuth(newAuth));
   }

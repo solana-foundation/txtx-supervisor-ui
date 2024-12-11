@@ -1,4 +1,4 @@
-import { BACKEND_URL } from "../App";
+import { BACKEND_URL, ID_SERVICE_URL } from "../App";
 import { AUTH_COOKIE_KEY } from "../hooks/useCookie";
 import { ChannelOpenResponse } from "../components/main/multi-player-types";
 import { useAppDispatch, useAppSelector } from "../hooks";
@@ -28,7 +28,7 @@ export default function useOpenChannel() {
     const accessTokenIsExpired = nowInSeconds > authInfo.accessTokenExp;
     if (!accessTokenIsExpired) return;
 
-    const response = await fetch(`${process.env.ID_SERVICE_URL}/refresh`, {
+    const response = await fetch(`${ID_SERVICE_URL}/refresh`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -43,6 +43,7 @@ export default function useOpenChannel() {
       user,
       accessTokenExp: exp
     };
+
     document.cookie=`${AUTH_COOKIE_KEY}=Bearer=${newAuth.accessToken}`;
     dispatch(setMultiPartyAuth(newAuth));
   }
