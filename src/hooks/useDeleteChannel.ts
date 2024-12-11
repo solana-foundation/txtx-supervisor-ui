@@ -4,21 +4,21 @@ import {
   clearMultiPartySharing,
   setMultiPartyEnabled,
   setMultiPartyAuth,
-  auth
+  selectAuth
 } from "../reducers/multi-party-slice";
 import useCookie, { AUTH_COOKIE_KEY } from "./useCookie";
 
 let isDeleting = false;
 export default function useDeleteChannel(doDelete: boolean, slug: string) {
-  const authInfo = useAppSelector(auth);
+  const auth = useAppSelector(selectAuth);
   const dispatch = useAppDispatch();
   const cookie = useCookie(AUTH_COOKIE_KEY);
   if (cookie === undefined || !doDelete || isDeleting) return;
 
   const refreshAccessTokenIfExpired = async () => {
-    if (!authInfo || !authInfo.accessTokenExp) return;
+    if (!auth || !auth.accessTokenExp) return;
     const nowInSeconds = Math.floor(Date.now()/1000);
-    const accessTokenIsExpired = nowInSeconds > authInfo.accessTokenExp;
+    const accessTokenIsExpired = nowInSeconds > auth.accessTokenExp;
     if (!accessTokenIsExpired) return;
 
     const response = await fetch(`${ID_SERVICE_URL}/refresh`, {
@@ -26,7 +26,7 @@ export default function useDeleteChannel(doDelete: boolean, slug: string) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ refreshToken: authInfo.refreshToken})
+      body: JSON.stringify({ refreshToken: auth.refreshToken})
     });
 
     const { accessToken, refreshToken, user, exp } = await response.json();
