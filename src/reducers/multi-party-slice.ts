@@ -47,6 +47,13 @@ export const multiPartySlice = createSlice({
   selectors: {
     isMultiPartyEnabled: (state) => state.enabled,
     selectAuth: (state) => state.auth,
+    selectIsAccessTokenExpired: state => {
+      if (!state.auth || !state.auth.accessToken || !state.auth.accessTokenExp) {
+        return false;
+      }
+      const nowInSeconds = Math.floor(Date.now()/1000);
+      return nowInSeconds > state.auth.accessTokenExp;
+    },
     isMultiPartyAuthenticated: (state) =>
       state.auth !== undefined && useCookie(AUTH_COOKIE_KEY) !== undefined,
     isMultiPartyInstantiated: (state) => state.sharing !== undefined,
@@ -68,4 +75,5 @@ export const {
   isMultiPartyAuthenticated,
   isMultiPartyInstantiated,
   selectMultiPartySharing,
+  selectIsAccessTokenExpired
 } = multiPartySlice.selectors;
