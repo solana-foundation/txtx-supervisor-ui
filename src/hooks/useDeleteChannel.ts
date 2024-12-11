@@ -1,32 +1,32 @@
 import { useEffect } from "react";
-import { BACKEND_URL } from "../App";
+import { BACKEND_URL, ID_SERVICE_URL } from "../App";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import {
   clearMultiPartySharing,
   setMultiPartyEnabled,
   setMultiPartyAuth,
-  auth,
+  selectAuth
 } from "../reducers/multi-party-slice";
 import useCookie, { AUTH_COOKIE_KEY } from "./useCookie";
 
 let isDeleting = false;
 export default function useDeleteChannel(doDelete: boolean, slug: string) {
-  const authInfo = useAppSelector(auth);
+  const auth = useAppSelector(selectAuth);
   const dispatch = useAppDispatch();
   const cookie = useCookie(AUTH_COOKIE_KEY);
 
   const refreshAccessTokenIfExpired = async () => {
-    if (!authInfo || !authInfo.accessTokenExp) return;
-    const nowInSeconds = Math.floor(Date.now() / 1000);
-    const accessTokenIsExpired = nowInSeconds > authInfo.accessTokenExp;
+    if (!auth || !auth.accessTokenExp) return;
+    const nowInSeconds = Math.floor(Date.now()/1000);
+    const accessTokenIsExpired = nowInSeconds > auth.accessTokenExp;
     if (!accessTokenIsExpired) return;
 
-    const response = await fetch(`${process.env.ID_SERVICE_URL}/refresh`, {
+    const response = await fetch(`${ID_SERVICE_URL}/refresh`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ refreshToken: authInfo.refreshToken }),
+      body: JSON.stringify({ refreshToken: auth.refreshToken})
     });
     if (response.status === 200) {
       const { accessToken, refreshToken, user, exp } = await response.json();

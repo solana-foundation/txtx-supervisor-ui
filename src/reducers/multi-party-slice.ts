@@ -46,7 +46,7 @@ export const multiPartySlice = createSlice({
   }),
   selectors: {
     isMultiPartyEnabled: (state) => state.enabled,
-    auth: (state) => state.auth,
+    selectAuth: (state) => state.auth,
     isMultiPartyAuthenticated: (state) =>
       state.auth !== undefined && useCookie(AUTH_COOKIE_KEY) !== undefined,
     isMultiPartyInstantiated: (state) => state.sharing !== undefined,
@@ -64,7 +64,7 @@ export const {
 
 export const {
   isMultiPartyEnabled,
-  auth,
+  selectAuth,
   isMultiPartyAuthenticated,
   isMultiPartyInstantiated,
   selectMultiPartySharing,
