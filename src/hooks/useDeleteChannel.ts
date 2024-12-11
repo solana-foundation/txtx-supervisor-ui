@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BACKEND_URL, ID_SERVICE_URL } from "../App";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import {
@@ -13,7 +14,6 @@ export default function useDeleteChannel(doDelete: boolean, slug: string) {
   const auth = useAppSelector(selectAuth);
   const dispatch = useAppDispatch();
   const cookie = useCookie(AUTH_COOKIE_KEY);
-  if (cookie === undefined || !doDelete || isDeleting) return;
 
   const refreshAccessTokenIfExpired = async () => {
     if (!auth || !auth.accessTokenExp) return;
@@ -24,47 +24,61 @@ export default function useDeleteChannel(doDelete: boolean, slug: string) {
     const response = await fetch(`${ID_SERVICE_URL}/refresh`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ refreshToken: auth.refreshToken})
     });
+    if (response.status === 200) {
+      const { accessToken, refreshToken, user, exp } = await response.json();
+      const newAuth = {
+        accessToken,
+        refreshToken,
+        user,
+        accessTokenExp: exp,
+      };
+      document.cookie = `${AUTH_COOKIE_KEY}=Bearer=${newAuth.accessToken}`;
+      dispatch(setMultiPartyAuth(newAuth));
+    } else {
+      console.error("failed to refresh access token", await response.text());
+    }
+  };
 
-    const { accessToken, refreshToken, user, exp } = await response.json();
-    const newAuth = {
-      accessToken,
-      refreshToken,
-      user,
-      accessTokenExp: exp
-    };
+  const sendDeleteChannel = async () => {
+    return fetch(`${BACKEND_URL}/api/v1/channels`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ slug }),
+      credentials: "include",
+    });
+  };
 
-    document.cookie=`${AUTH_COOKIE_KEY}=Bearer=${newAuth.accessToken}`;
-    dispatch(setMultiPartyAuth(newAuth));
-  }
+  const deleteChannel = async () => {
+    if (cookie === undefined || !doDelete || isDeleting) return;
+    isDeleting = true;
 
-  isDeleting = true;
-  refreshAccessTokenIfExpired()
-    .then(() => {
-      return fetch(`${BACKEND_URL}/api/v1/channels`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ slug }),
-        credentials: "include",
-      })
-    })
-    .then((res) => {
-      if (res.status == 200) {
+    try {
+      await refreshAccessTokenIfExpired();
+      const deleteChannelResponse = await sendDeleteChannel();
+      if (!deleteChannelResponse) {
         isDeleting = false;
+        return;
+      }
+      if (deleteChannelResponse.status == 200) {
         dispatch(clearMultiPartySharing());
       } else {
-        isDeleting = false; // todo display error to user
         dispatch(setMultiPartyEnabled(true));
       }
-    })
-    .catch((err) => {
+    } catch (err) {
+      console.error("failed to delete channel", err);
+      dispatch(setMultiPartyEnabled(true));
+    } finally {
       isDeleting = false;
+    }
+  };
 
-      console.error("deleting channel failed", err);
-    });
+  useEffect(() => {
+    deleteChannel();
+  }, [cookie, doDelete, isDeleting]);
 }
