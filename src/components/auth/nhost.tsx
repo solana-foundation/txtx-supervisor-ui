@@ -21,10 +21,9 @@ export default function NhostAuth() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (authResult?.user) {
-      const auth = {
-        userId: authResult!.user.id,
-      };
+    if (authResult) {
+      const { user, accessToken, refreshToken, accessTokenExp } = authResult;
+      const auth = { user, accessToken, refreshToken, accessTokenExp };
       document.cookie=`${AUTH_COOKIE_KEY}=Bearer=${authResult.accessToken}`;
       dispatch(setMultiPartyAuth(auth));
     }

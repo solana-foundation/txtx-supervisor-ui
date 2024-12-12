@@ -2,7 +2,8 @@ import { Header } from "./components/header/header";
 import { NavGroup } from "./components/sidebar/nav";
 import React, { ReactNode, useRef, useState } from "react";
 import Runbook from "./components/main/runbook";
-import { useAppDispatch, useAppSelector } from "./hooks";
+import { useAppSelector } from "./hooks";
+import useRefreshAccessToken from "./hooks/useRefreshAccessToken";
 import { selectRunbook } from "./reducers/runbooks-slice";
 import useSubscriptions from "./hooks/useSubscriptions";
 import { Modal } from "./components/main/modal";
@@ -27,6 +28,7 @@ const host = devMode ? "localhost:8488" : window.location.host;
 const wsProtocol = protocol === "https:" ? "wss:" : "ws:";
 export const BACKEND_URL = `${protocol}//${host}`;
 export const BACKEND_WS_URL = `${wsProtocol}//${host}`;
+export const ID_SERVICE_URL = process.env.ID_SERVICE_URL || "http://localhost:1235";
 
 enum PageNav {
   Runbook,
@@ -106,6 +108,7 @@ function AppInternal() {
   useSubscriptions();
   // open multiparty channel if it's enabled, authenticated, and hasn't been opened
   useOpenChannel();
+  useRefreshAccessToken();
 
   const panelScrollHandler = (index: any) => {
     window.location.hash = panelRefs.current[index].current.id;

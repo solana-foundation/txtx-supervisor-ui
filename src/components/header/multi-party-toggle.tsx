@@ -12,6 +12,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { classNames } from "../../utils/helpers";
 import useDeleteChannel from "../../hooks/useDeleteChannel";
+import useRefreshAccessToken from "../../hooks/useRefreshAccessToken";
 
 export default function MultiPartyToggle() {
   const enabled = useAppSelector(isMultiPartyEnabled);
@@ -19,12 +20,13 @@ export default function MultiPartyToggle() {
   const instantiated = useAppSelector(isMultiPartyInstantiated);
   const sharing = useAppSelector(selectMultiPartySharing);
   const dispatch = useAppDispatch();
-  const setEnabled = (isEnabled) => {
+  const setEnabled = (isEnabled: boolean) => {
     dispatch(setMultiPartyEnabled(isEnabled));
   };
 
   const doDeleteChannel = !enabled && authenticated && instantiated;
   useDeleteChannel(doDeleteChannel, sharing?.slug || "");
+  useRefreshAccessToken();
 
   return (
     <Switch

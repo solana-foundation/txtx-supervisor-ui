@@ -1,5 +1,4 @@
 import { BACKEND_URL } from "../App";
-import { ChannelOpenResponse } from "../components/main/multi-player-types";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import {
   isMultiPartyAuthenticated,
@@ -7,7 +6,9 @@ import {
   isMultiPartyInstantiated,
   setMultiPartyEnabled,
   setMultiPartySharing,
+  selectIsAccessTokenExpired
 } from "../reducers/multi-party-slice";
+import { useEffect } from "react";
 
 let fetching = false;
 export default function useOpenChannel() {
@@ -15,41 +16,61 @@ export default function useOpenChannel() {
   const enabled = useAppSelector(isMultiPartyEnabled);
   const authenticated = useAppSelector(isMultiPartyAuthenticated);
   const instantiated = useAppSelector(isMultiPartyInstantiated);
+  const accessTokenIsExpired = useAppSelector(selectIsAccessTokenExpired);
 
-  if (!authenticated || instantiated || fetching) return;
+  const getOpenChannel = async () => {
+    return await fetch(`${BACKEND_URL}/api/v1/channels`, {
+      credentials: "include",
+    });
+  };
 
-  fetching = true;
-  fetch(`${BACKEND_URL}/api/v1/channels`, {
-    credentials: "include",
-  }).then((res) => {
-    if (res.status === 200) {
-      res.json().then((response: ChannelOpenResponse) => {
-        if(!enabled) {
-            dispatch(setMultiPartyEnabled(true));
+  const postOpenChannel = async () => {
+    return await fetch(`${BACKEND_URL}/api/v1/channels`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+  };
+
+  const openChannel = async () => {
+    if (!authenticated || instantiated || fetching || accessTokenIsExpired) {
+      return;
+    }
+    fetching = true;
+    try {
+      const getOpenChannelResponse = await getOpenChannel();
+
+      if (getOpenChannelResponse.status === 200) {
+        const channelData = await getOpenChannelResponse.json();
+
+        if (!enabled) {
+          dispatch(setMultiPartyEnabled(true));
         }
-        dispatch(setMultiPartySharing(response));
-      });
-    }
-    else if(enabled) {
-      fetch(`${BACKEND_URL}/api/v1/channels`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      })
-        .then((res) => {
-          res.json().then((response: ChannelOpenResponse) => {
-            dispatch(setMultiPartySharing(response));
-          });
-        })
-        .catch((err) => {
+        dispatch(setMultiPartySharing(channelData));
+      } else if (enabled) {
+        const openChannelResponse = await postOpenChannel();
+
+        if (openChannelResponse.status === 200) {
+          const channelData = await openChannelResponse.json();
+
+          dispatch(setMultiPartySharing(channelData));
+        } else {
+          dispatch(setMultiPartyEnabled(false));
+          const err = await openChannelResponse.text();
           console.error("create channel failed", err);
-        }).finally(() => {
-          fetching = false;
-        });
+        }
+      }
+    } catch (err) {
+      console.error("failed to open channel", err);
+      dispatch(setMultiPartyEnabled(false));
+    } finally {
+      fetching = false;
     }
-  }).finally(() => {
-    fetching = false;
-  });
+  };
+
+  useEffect(() => {
+    openChannel();
+  }, [fetching, authenticated, instantiated, enabled, accessTokenIsExpired]);
 }
