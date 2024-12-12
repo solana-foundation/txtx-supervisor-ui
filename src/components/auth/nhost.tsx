@@ -10,6 +10,7 @@ import useHandleEscapeKey from "../../hooks/useHandleEscapeKey";
 import { Authentication, AuthResult } from "@txtxrun/txtx-ui-kit";
 import { NhostClient } from "@nhost/react";
 import { AUTH_COOKIE_KEY } from "../../hooks/useCookie";
+import { storeCookie } from "../../utils/helpers";
 
 const nhost = new NhostClient({
   subdomain: process.env.NHOST_SUBDOMAIN,
@@ -24,7 +25,7 @@ export default function NhostAuth() {
     if (authResult) {
       const { user, accessToken, refreshToken, accessTokenExp } = authResult;
       const auth = { user, accessToken, refreshToken, accessTokenExp };
-      document.cookie=`${AUTH_COOKIE_KEY}=Bearer=${authResult.accessToken}`;
+      storeCookie(AUTH_COOKIE_KEY, `Bearer=${authResult.accessToken}`);
       dispatch(setMultiPartyAuth(auth));
     }
   }, [authResult]);
