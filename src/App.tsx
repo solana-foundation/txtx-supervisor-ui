@@ -28,7 +28,7 @@ const host = devMode ? "localhost:8488" : window.location.host;
 const wsProtocol = protocol === "https:" ? "wss:" : "ws:";
 export const BACKEND_URL = `${protocol}//${host}`;
 export const BACKEND_WS_URL = `${wsProtocol}//${host}`;
-export const ID_SERVICE_URL = process.env.ID_SERVICE_URL;
+export const ID_SERVICE_URL = process.env.ID_SERVICE_URL || "http://localhost:1235";
 
 enum PageNav {
   Runbook,
