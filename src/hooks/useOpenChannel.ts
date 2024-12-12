@@ -1,14 +1,12 @@
-import { BACKEND_URL, ID_SERVICE_URL } from "../App";
-import { AUTH_COOKIE_KEY } from "../hooks/useCookie";
+import { BACKEND_URL } from "../App";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import {
   isMultiPartyAuthenticated,
   isMultiPartyEnabled,
   isMultiPartyInstantiated,
   setMultiPartyEnabled,
-  setMultiPartyAuth,
   setMultiPartySharing,
-  selectAuth
+  selectIsAccessTokenExpired
 } from "../reducers/multi-party-slice";
 import { useEffect } from "react";
 
@@ -18,35 +16,7 @@ export default function useOpenChannel() {
   const enabled = useAppSelector(isMultiPartyEnabled);
   const authenticated = useAppSelector(isMultiPartyAuthenticated);
   const instantiated = useAppSelector(isMultiPartyInstantiated);
-  const auth = useAppSelector(selectAuth);
-
-  const refreshAccessTokenIfExpired = async () => {
-    if (!auth || !auth.accessTokenExp) return;
-    const nowInSeconds = Math.floor(Date.now()/1000);
-    const accessTokenIsExpired = nowInSeconds > auth.accessTokenExp;
-    if (!accessTokenIsExpired) return;
-
-    const response = await fetch(`${ID_SERVICE_URL}/refresh`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ refreshToken: auth.refreshToken})
-    });
-    if (response.status === 200) {
-      const { accessToken, refreshToken, user, exp } = await response.json();
-      const newAuth = {
-        accessToken,
-        refreshToken,
-        user,
-        accessTokenExp: exp,
-      };
-      document.cookie = `${AUTH_COOKIE_KEY}=Bearer=${newAuth.accessToken}`;
-      dispatch(setMultiPartyAuth(newAuth));
-    } else {
-      console.error("failed to refresh access token", await response.text());
-    }
-  };
+  const accessTokenIsExpired = useAppSelector(selectIsAccessTokenExpired);
 
   const getOpenChannel = async () => {
     return await fetch(`${BACKEND_URL}/api/v1/channels`, {
@@ -65,12 +35,11 @@ export default function useOpenChannel() {
   };
 
   const openChannel = async () => {
-    if (!authenticated || instantiated || fetching) {
+    if (!authenticated || instantiated || fetching || accessTokenIsExpired) {
       return;
     }
     fetching = true;
     try {
-      await refreshAccessTokenIfExpired();
       const getOpenChannelResponse = await getOpenChannel();
 
       if (getOpenChannelResponse.status === 200) {
@@ -103,5 +72,5 @@ export default function useOpenChannel() {
 
   useEffect(() => {
     openChannel();
-  }, [fetching, authenticated, instantiated, enabled]);
+  }, [fetching, authenticated, instantiated, enabled, accessTokenIsExpired]);
 }

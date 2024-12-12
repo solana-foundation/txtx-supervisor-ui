@@ -2,7 +2,8 @@ import { Header } from "./components/header/header";
 import { NavGroup } from "./components/sidebar/nav";
 import React, { ReactNode, useRef, useState } from "react";
 import Runbook from "./components/main/runbook";
-import { useAppDispatch, useAppSelector } from "./hooks";
+import { useAppSelector } from "./hooks";
+import useRefreshAccessToken from "./hooks/useRefreshAccessToken";
 import { selectRunbook } from "./reducers/runbooks-slice";
 import useSubscriptions from "./hooks/useSubscriptions";
 import { Modal } from "./components/main/modal";
@@ -107,6 +108,7 @@ function AppInternal() {
   useSubscriptions();
   // open multiparty channel if it's enabled, authenticated, and hasn't been opened
   useOpenChannel();
+  useRefreshAccessToken();
 
   const panelScrollHandler = (index: any) => {
     window.location.hash = panelRefs.current[index].current.id;
