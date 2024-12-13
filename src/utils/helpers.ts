@@ -1,4 +1,5 @@
 import { NavItem } from "../components/sidebar/nav-item";
+import Cookies from "universal-cookie";
 
 export function sortNavItemsRecursive(a: NavItem, b: NavItem) {
   if (a.children && b.children) {
@@ -52,4 +53,19 @@ export function storePublicKeyInLocalStorage(
       localStorage.setItem(storageKey, JSON.stringify(addressToKeyMap));
     }
   }
+}
+
+export function storeCookie (name: string, value: string) {
+  const cookies = new Cookies(null, { path: '/' });
+  cookies.set(name, value);
+}
+
+export function deleteCookie (name: string) {
+  const cookies = new Cookies(null, { path: '/' });
+  cookies.remove(name);
+}
+
+export function getCookieValue (name: string) {
+  const cookies = new Cookies(null, { path: '/' });
+  return cookies.get(name);
 }
