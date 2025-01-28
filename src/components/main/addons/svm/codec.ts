@@ -1,5 +1,18 @@
-import { Message, MessageArgs, PublicKey, Transaction } from "@solana/web3.js";
+import {
+  Blockhash,
+  Message,
+  MessageArgs,
+  PublicKey,
+  Transaction,
+} from "@solana/web3.js";
 import bs58 from "bs58";
+
+const EMPTY_SIGNATURE = [
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+];
+const EMPTY_SIGNATURE_STRING = bs58.encode(Buffer.from(EMPTY_SIGNATURE));
 
 export class RustSolanaTransaction {
   public message: RustMessage;
@@ -18,11 +31,26 @@ export class RustSolanaTransaction {
     return new RustSolanaTransaction(rawMessage, rawSignatures);
   }
 
-  toTransaction(): Transaction {
+  toTransaction(
+    mostRecentBlockhash: Readonly<{
+      blockhash: Blockhash;
+      lastValidBlockHeight: number;
+    }>,
+  ): Transaction {
+    let isPartiallySigned = false;
     const signatures = RustSolanaTransaction.retrieveShortVecMembers(
       this.signatures,
-    ).map((sig) => bs58.encode(Buffer.from(sig)));
+    ).map((sig) => {
+      const signature = bs58.encode(Buffer.from(sig));
+
+      if (signature !== EMPTY_SIGNATURE_STRING) {
+        isPartiallySigned = true;
+      }
+      return signature;
+    });
+
     const { accountKeys, header, instructions, recentBlockhash } = this.message;
+
     const messageArgs: MessageArgs = {
       accountKeys: RustSolanaTransaction.retrieveShortVecMembers(
         accountKeys,
@@ -39,7 +67,11 @@ export class RustSolanaTransaction {
           programIdIndex: programIdIndex,
         };
       }),
-      recentBlockhash: bs58.encode(Buffer.from(recentBlockhash)),
+      // if this transaction has already been partially signed, we need to use the blockhash provided
+      // in the transaction. If not, we can use the one that was just fetched from the network to make sure it's as recent as possible
+      recentBlockhash: isPartiallySigned
+        ? bs58.encode(Buffer.from(recentBlockhash))
+        : mostRecentBlockhash.blockhash,
     };
     return Transaction.populate(new Message(messageArgs), signatures);
   }
@@ -49,9 +81,9 @@ export class RustSolanaTransaction {
   ): RustSolanaTransaction {
     const message = transaction.compileMessage();
     const signatures: ShortVec<SolSignature> = RustSolanaTransaction.toShortVec(
-      transaction.signatures
-        .filter((sig) => !!sig.signature)
-        .map((sig) => Array.from(sig.signature as Buffer)),
+      transaction.signatures.map((sig) =>
+        sig.signature ? Array.from(sig.signature as Buffer) : EMPTY_SIGNATURE,
+      ),
     );
     const rustEncodedMessage: RustMessage = {
       accountKeys: RustSolanaTransaction.toShortVec(

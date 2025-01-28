@@ -74,7 +74,7 @@ export default class SolanaAddon implements Addon {
       children: withDevnetConnection,
       value: { connection: this.localhostConnection },
     });
-    return withMainnetConnectionProvider;
+    return withLocalhostConnection;
   }
 
   public connectWallet(): void {
@@ -118,6 +118,7 @@ export default class SolanaAddon implements Addon {
     message: string,
   ): Promise<string | AddonError> {
     const wallet = this.solConnect.getWallet();
+
     if (!wallet) {
       return { error: "cannot get address; wallet not connected" };
     }
@@ -149,8 +150,15 @@ export default class SolanaAddon implements Addon {
     }
     if ("signTransaction" in wallet) {
       const rustTx = RustSolanaTransaction.from_hex(txHex);
-      const signed = await wallet.signTransaction(rustTx.toTransaction());
+
+      const connection = this.getConnection(networkId);
+
+      const recentBlockhash = await connection.getLatestBlockhash();
+      let unsignedTx = rustTx.toTransaction(recentBlockhash);
+
+      const signed = await wallet.signTransaction(unsignedTx);
       const signedRustTx = RustSolanaTransaction.fromTransaction(signed);
+
       return signedRustTx.toHex();
     }
     return {
@@ -163,5 +171,19 @@ export default class SolanaAddon implements Addon {
     signerAddress: string,
   ): Promise<string | AddonError> {
     throw new Error("Method not implemented.");
+  }
+
+  private getConnection(networkId: string): Connection {
+    switch (networkId) {
+      case "mainnet":
+        return this.connection;
+      case "testnet":
+        return this.testnetConnection;
+      case "devnet":
+        return this.devnetConnection;
+      case "localhost":
+      default:
+        return this.localhostConnection;
+    }
   }
 }
