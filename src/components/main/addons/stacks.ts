@@ -117,6 +117,7 @@ export default class StacksAddon implements Addon {
   public async signTransaction(
     txHex: string,
     _signerAddress: string,
+    _networkId: string,
   ): Promise<string | AddonError> {
     if ("LeatherProvider" in window) {
       // @ts-ignore

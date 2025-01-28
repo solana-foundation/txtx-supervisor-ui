@@ -141,6 +141,7 @@ export default class SolanaAddon implements Addon {
   public async signTransaction(
     txHex: string,
     signerAddress: string,
+    networkId: string,
   ): Promise<string | AddonError> {
     const wallet = this.solConnect.getWallet();
     if (!wallet) {
