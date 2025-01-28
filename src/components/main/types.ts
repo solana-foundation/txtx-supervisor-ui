@@ -101,7 +101,7 @@ export interface ProgressBarStatus {
   message: string;
   diagnostic?: Diagnostic;
 }
-export type ProgressBarStatusColor = "Green" | "Yellow" | "Red";
+export type ProgressBarStatusColor = "Green" | "Yellow" | "Red" | "Purple";
 export function deserializeBlock<
   T extends ModalBlock<false> | ActionBlock<false> | ErrorBlock<false>,
 >(
@@ -460,6 +460,8 @@ export function formatValueForDisplay(input: Value): DisplayableValue {
         let val = obj[k];
         return { [k]: formatValueForDisplay(val) };
       }),
+      null,
+      2,
     );
   } else {
     const str = value.toString();
