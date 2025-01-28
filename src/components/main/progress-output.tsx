@@ -54,8 +54,8 @@ interface StatusUpdates {
 function StatusUpdates({ statuses }: StatusUpdates) {
   const content = statuses?.map((statusesForConstruct, i) => {
     const idx = statusesForConstruct.length - 1;
-    const status = statusesForConstruct[idx];
-    return <StatusUpdate status={status} key={i} />;
+    const latestStatusForConstruct = statusesForConstruct[idx];
+    return <StatusUpdate status={latestStatusForConstruct} key={i} />;
   }) || <div></div>;
 
   return (
@@ -104,4 +104,3 @@ function StatusUpdate({ status }: StatusUpdate) {
     </div>
   );
 }
-

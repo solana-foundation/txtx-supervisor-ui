@@ -9,7 +9,6 @@ import {
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import CopyIcon from "../icons/copy";
 import { TOTP } from "totp-generator";
-var base32 = require("base32");
 
 export default function MultiPartySharing() {
   const enabled = useAppSelector(isMultiPartyEnabled);
@@ -17,10 +16,6 @@ export default function MultiPartySharing() {
   const instantiated = useAppSelector(isMultiPartyInstantiated);
   const sharingData = useAppSelector(selectMultiPartySharing);
 
-  const dispatch = useAppDispatch();
-  const setEnabled = (isEnabled) => {
-    dispatch(setMultiPartyEnabled(isEnabled));
-  };
   if (!sharingData) return "";
   useEffect(() => {
     if (enabled) {
@@ -61,10 +56,11 @@ interface TotpGenerator {
 
 const TOTP_PERIOD = 60;
 const TOTP_PERIOD_MS = TOTP_PERIOD * 1000;
-const getProgress = (timeLeft) => Math.round((timeLeft / TOTP_PERIOD_MS) * 100);
+const getProgress = (timeLeft: number) =>
+  Math.round((timeLeft / TOTP_PERIOD_MS) * 100);
 
-const getTimeLeft = (expiresAt) => Math.max(expiresAt - Date.now(), 0);
-const generateOTP = (base32Totp) =>
+const getTimeLeft = (expiresAt: number) => Math.max(expiresAt - Date.now(), 0);
+const generateOTP = (base32Totp: string) =>
   TOTP.generate(base32Totp, {
     period: TOTP_PERIOD,
     algorithm: "SHA-256",
