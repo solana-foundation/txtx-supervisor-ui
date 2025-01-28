@@ -117,7 +117,7 @@ export function SendTransactionAction({
         address,
         valueToStringForSignature(payload),
       );
-      if (addressResult.is_err()) {
+      if (sendTxResult.is_err()) {
         // todo: we need a way to set an error state that can be displayed on the page
       } else {
         const txHash = sendTxResult.unwrap();
