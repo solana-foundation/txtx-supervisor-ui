@@ -133,10 +133,13 @@ export const runbooksSlice = createSlice({
           const foundIdx = state.progressBlocks.findIndex(
             (existing) => existing.uuid === newBlock.uuid,
           );
+
           if (foundIdx === -1) {
             state.progressBlocks.push(newBlock);
           } else {
-            state.progressBlocks[foundIdx] = newBlock;
+            if (newBlock.panel.length > 0) {
+              state.progressBlocks[foundIdx] = newBlock;
+            }
           }
         }
       },
@@ -187,6 +190,7 @@ export const runbooksSlice = createSlice({
           (bar) => bar.uuid === progressBarUuid,
         );
         if (progressBarIdx === undefined) return;
+        if (state.progressBlocks[progressBarIdx] === undefined) return;
         state.progressBlocks[progressBarIdx].visible = visible;
       },
     ),
