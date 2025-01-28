@@ -271,7 +271,7 @@ export function SignTransactionRow({
                 isStateDefault ? "text-stone-500" : "",
               )}
             >
-              {description ? `${description} (${title})` : title}
+              {description ? description : title}
             </div>
           </div>
         </div>
