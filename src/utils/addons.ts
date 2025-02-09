@@ -234,7 +234,7 @@ export class AddonManager {
       return Result.err(addonResult.unwrap_err());
     }
     const addon = addonResult.unwrap();
-    const result = await addon.sendTransaction(txHex, address);
+    const result = await addon.sendTransaction(txHex, address, networkId);
     if (typeof result === "object") {
       console.error(result.error);
       phLogOnChainError(namespace, PH_SEND_TRANSACTION, result.error);
@@ -285,5 +285,6 @@ export abstract class Addon {
   public abstract sendTransaction(
     txHex: string,
     signerAddress: string,
+    networkId: string,
   ): Promise<string | AddonError>;
 }

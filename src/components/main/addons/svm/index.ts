@@ -169,6 +169,7 @@ export default class SolanaAddon implements Addon {
   public sendTransaction(
     txHex: string,
     signerAddress: string,
+    _networkId: string,
   ): Promise<string | AddonError> {
     throw new Error("Method not implemented.");
   }
