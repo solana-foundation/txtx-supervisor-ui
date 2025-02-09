@@ -21,6 +21,7 @@ import useOpenChannel from "./hooks/useOpenChannel";
 import useApolloClient from "./hooks/useApolloClient";
 import { SuspensePage } from "./components/pages/suspense";
 import AddonsProvider from "./components/main/addons-provider";
+import ErrorModal from "./components/popup/error-popup";
 
 const devMode = process.env.TXTX_DEV_MODE === "true";
 const protocol = window.location.protocol;
@@ -28,7 +29,8 @@ const host = devMode ? "localhost:8488" : window.location.host;
 const wsProtocol = protocol === "https:" ? "wss:" : "ws:";
 export const BACKEND_URL = `${protocol}//${host}`;
 export const BACKEND_WS_URL = `${wsProtocol}//${host}`;
-export const ID_SERVICE_URL = process.env.ID_SERVICE_URL || "http://localhost:1235";
+export const ID_SERVICE_URL =
+  process.env.ID_SERVICE_URL || "http://localhost:1235";
 
 enum PageNav {
   Runbook,
@@ -192,6 +194,7 @@ function AppInternal() {
             <Nav navGroups={navGroups} />
           )}
         </aside> */}
+      <ErrorModal />
     </div>
   );
 }

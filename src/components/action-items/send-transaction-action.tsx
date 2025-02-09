@@ -18,6 +18,8 @@ import {
   SignTransactionRow,
   valueToStringForSignature,
 } from "./provide-signed-transaction-action";
+import { useAppDispatch } from "../../hooks";
+import { pushError } from "../../reducers/error-slice";
 
 export interface SendTransactionAction {
   actionItem: ActionItemRequest;
@@ -33,6 +35,7 @@ export function SendTransactionAction({
 }: SendTransactionAction) {
   const { id, actionStatus, title, description, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
+  const dispatch = useAppDispatch();
 
   if (actionType.type !== "SendTransaction") {
     throw new Error(
@@ -118,7 +121,7 @@ export function SendTransactionAction({
         valueToStringForSignature(payload),
       );
       if (sendTxResult.is_err()) {
-        // todo: we need a way to set an error state that can be displayed on the page
+        dispatch(pushError(sendTxResult.unwrap_err()));
       } else {
         const txHash = sendTxResult.unwrap();
         const event: ActionItemResponse = {
