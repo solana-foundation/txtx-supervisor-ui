@@ -32,7 +32,7 @@ export function ReviewInputCell({
   // descriptionContainerClass = "bg-emerald-500"; // To-do state version https://tppr.me/xkN4je
 
   let el =
-    typeof value === "string" && value.includes("https://") ? (
+    typeof value === "string" && value.startsWith("https://") ? (
       <a className="text-emerald-500" href={value} target="_blank">
         {value}
       </a>
