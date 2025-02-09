@@ -17,6 +17,7 @@ import storage from "redux-persist/lib/storage";
 import { runbookStepSlice } from "./reducers/runbook-step-slice";
 import { panelRowsSlice } from "./reducers/panel-rows-slice";
 import { MultiPartyMode, multiPartySlice } from "./reducers/multi-party-slice";
+import { errorSlice } from "./reducers/error-slice";
 import { participantAuthSlice } from "./reducers/participant-auth-slice";
 
 const configureReducer = () => {
@@ -55,6 +56,7 @@ const configureReducer = () => {
     activeStep: runbookStepSlice.reducer,
     panelRows: panelRowsSlice.reducer,
     multiPartyMode: multiPartySlice.reducer,
+    errors: errorSlice.reducer,
     participantAuth: persistReducer(
       slugPersistConfig,
       participantAuthSlice.reducer,
