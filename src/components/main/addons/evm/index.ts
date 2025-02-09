@@ -4,7 +4,14 @@ import {
   storePublicKeyInLocalStorage,
 } from "../../../../utils/helpers";
 import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi";
-import { getAccount, sendTransaction, signMessage } from "@wagmi/core";
+import {
+  Config,
+  getAccount,
+  getChainId,
+  sendTransaction,
+  signMessage,
+  switchChain,
+} from "@wagmi/core";
 import {
   Chain,
   parseTransaction,
@@ -29,6 +36,7 @@ const wagmiConfig = defaultWagmiConfig({
   chains: supportedChains,
   projectId,
   metadata,
+  enableInjected: true,
 });
 
 export default class EvmAddon implements Addon {
@@ -39,6 +47,7 @@ export default class EvmAddon implements Addon {
       projectId,
       enableAnalytics: false,
       enableOnramp: false,
+      allowUnsupportedChain: true,
     });
   }
   public injectProvider(inner: any): React.FunctionComponentElement<any> {
@@ -71,7 +80,16 @@ export default class EvmAddon implements Addon {
   }
 
   public getAddress(networkId: string): string | AddonError {
+    let expectedChainId = parseInt(networkId);
+    let foundChain = wagmiConfig.chains.find(
+      (chain) => chain.id === expectedChainId,
+    );
+    if (foundChain == null) {
+      addUnknownChain(expectedChainId);
+    }
+
     const account = getAccount(wagmiConfig);
+
     if (account.address) {
       return account.address;
     }
@@ -112,7 +130,27 @@ export default class EvmAddon implements Addon {
   public async sendTransaction(
     txHex: string,
     signerAddress: string,
+    networkId: string,
   ): Promise<string | AddonError> {
+    const expectedChainId = parseInt(networkId);
+    const connectedChainId = getCurrentlyConnectedChainId(wagmiConfig);
+    if (expectedChainId !== connectedChainId) {
+      let expectedChain = wagmiConfig.chains.find(
+        (chain) => chain.id === expectedChainId,
+      );
+      try {
+        let chain = await switchChain(wagmiConfig, {
+          chainId: expectedChainId,
+        });
+        if (chain?.id !== expectedChainId) {
+          throw new Error("Chain switch failed");
+        }
+      } catch (e) {
+        return {
+          error: `Network id does not match connected network. Change your connected network to '${expectedChain?.name || expectedChainId}' sending the transaction.`,
+        };
+      }
+    }
     const parsedTransaction = parseTransaction(toHexPrefixed(txHex));
 
     let chain = wagmiConfig.chains.find(
@@ -162,4 +200,32 @@ function toHexPrefixed(address: string): HexString {
     address = `0x${address}`;
   }
   return address as HexString;
+}
+
+function getCurrentlyConnectedChainId(config: Config): number {
+  if (config.state.current != null) {
+    let connection = config.state.connections.get(config.state.current);
+    if (connection != null) {
+      return connection.chainId;
+    }
+  }
+  return getChainId(config);
+}
+
+function addUnknownChain(chainId: number) {
+  // @ts-ignore no particularly graceful here, but if this
+  //  is some custom unknown chain id, we need to force wagmi to accept it
+  // since we're not providing an rpc url, it will use the one set in the wallet
+  wagmiConfig.chains.push({
+    id: chainId,
+    name: "Unknown Chain",
+    rpcUrls: {
+      default: "",
+    },
+    nativeCurrency: {
+      name: "Unknown Chain",
+      symbol: "Unknown",
+      decimals: 18,
+    },
+  });
 }

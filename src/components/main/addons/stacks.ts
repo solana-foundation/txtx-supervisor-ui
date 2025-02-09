@@ -146,6 +146,7 @@ export default class StacksAddon implements Addon {
   public async sendTransaction(
     _txHash: string,
     _signerAddress: string,
+    _networkId: string,
   ): Promise<string | AddonError> {
     return { error: "Send Transaction not supported for Stacks" };
   }
