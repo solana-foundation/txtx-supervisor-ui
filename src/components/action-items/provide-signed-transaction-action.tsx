@@ -1,20 +1,19 @@
 import React from "react";
 import {
   ActionItemSubRow,
+  ActionItemTitle,
   ErrorActionItemRow,
 } from "./components/action-item-row";
-import {
-  ActionItemRequest,
-  ActionItemResponse,
-  formatValueForDisplay,
-  Value,
-} from "../main/types";
+import { ActionItemRequest, ActionItemResponse, Value } from "../main/types";
 import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import addonManager from "../../utils/addons-initializer";
 import { classNames } from "../../utils/helpers";
 import { CheckIcon } from "@heroicons/react/20/solid";
+import { useAppDispatch } from "../../hooks";
+import { pushError } from "../../reducers/error-slice";
+import { DisplayValue } from "./components/review-input-cell";
 
 export interface ProvideSignedTransactionAction {
   actionItem: ActionItemRequest;
@@ -30,6 +29,7 @@ export function ProvideSignedTransactionAction({
 }: ProvideSignedTransactionAction) {
   const { id, actionStatus, title, description, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
+  const dispatch = useAppDispatch();
 
   if (actionType.type !== "ProvideSignedTransaction") {
     throw new Error(
@@ -49,19 +49,6 @@ export function ProvideSignedTransactionAction({
       onlyApprovalNeeded,
     },
   } = actionType;
-
-  const txForDisplay = formatValueForDisplay(payload);
-
-  if (txForDisplay == null || typeof txForDisplay !== "string") {
-    throw new Error(
-      `ProvideSignedTransactionAction component requires string payload, received ${actionType.data.payload}`,
-    );
-  }
-  // insert a zero-width space every other character to allow the text to break as needed
-  const displayedValue =
-    formattedPayload ||
-    txForDisplay.match(/(.{1})/g)?.join("​") ||
-    txForDisplay;
 
   const alreadySigned = actionStatus.status === "Success";
   const signatureBlocked = actionStatus.status === "Blocked";
@@ -127,15 +114,8 @@ export function ProvideSignedTransactionAction({
     } else {
       const addressResult = addonManager.getAddress(namespace, networkId);
       if (addressResult.is_err()) {
-        return (
-          <ErrorActionItemRow
-            error={addressResult.unwrap_err()}
-            originalActionItem={actionItem}
-            isFirst={isFirst}
-            isLast={isLast}
-            isCurrent={isCurrent}
-          />
-        );
+        dispatch(pushError(addressResult.unwrap_err()));
+        return;
       }
       const address = addressResult.unwrap();
 
@@ -147,7 +127,7 @@ export function ProvideSignedTransactionAction({
           valueToStringForSignature(payload),
         );
         if (signTxResult.is_err()) {
-          // todo: we need a way to set an error state that can be displayed on the page
+          dispatch(pushError(signTxResult.unwrap_err()));
         } else {
           const result = signTxResult.unwrap();
           const event: ActionItemResponse = {
@@ -177,8 +157,13 @@ export function ProvideSignedTransactionAction({
       isLast={isLast}
       onClick={() => {}}
       subRow={{
-        text: displayedValue,
-        children: (
+        content: (
+          <DisplayValue
+            input={formattedPayload || payload}
+            isCurrent={isCurrent}
+          />
+        ),
+        footer: (
           <div className="justify-end items-end gap-2.5 inline-flex">
             {skippable ? (
               <PanelButton
@@ -231,7 +216,9 @@ export function SignTransactionRow({
   const isStatusSuccess = status === "Success";
   const isStatusError = status === "Error";
   const isStateDefault = !isStatusSuccess && !isCurrent;
-  subRow = isStatusError ? { text: actionStatus.data.message } : subRow;
+  subRow = isStatusError
+    ? { content: <div>{actionStatus.data.message}</div> }
+    : subRow;
 
   return (
     <div className="w-full relative">
@@ -271,7 +258,11 @@ export function SignTransactionRow({
                 isStateDefault ? "text-stone-500" : "",
               )}
             >
-              {description ? description : title}
+              <ActionItemTitle
+                title={title}
+                description={description}
+                isCurrent={isCurrent}
+              />
             </div>
           </div>
         </div>

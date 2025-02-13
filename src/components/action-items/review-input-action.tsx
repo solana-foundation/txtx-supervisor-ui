@@ -42,7 +42,6 @@ export function ReviewInputAction({
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });
   };
-  const value = formatValueForDisplay(actionType.data.value);
   return (
     <ActionItemRow
       actionItem={actionItem}
@@ -52,7 +51,7 @@ export function ReviewInputAction({
       isCurrent={isCurrent}
     >
       <ReviewInputCell
-        value={value}
+        value={actionType.data.value}
         actionStatus={actionStatus}
         isCurrent={isCurrent}
       />

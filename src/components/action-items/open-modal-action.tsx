@@ -1,6 +1,6 @@
 import React from "react";
 import { ActionItemRow, ActionItemSubRow } from "./components/action-item-row";
-import { ActionItemRequest } from "../main/types";
+import { ActionItemRequest, toValue } from "../main/types";
 import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { useAppDispatch } from "../../hooks";
 import { setModalVisibility } from "../../reducers/runbooks-slice";
@@ -37,8 +37,8 @@ export function OpenModalAction({
   let subRow: ActionItemSubRow | undefined = undefined;
   if (actionStatus.status !== "Success") {
     subRow = {
-      text: description || "",
-      children: (
+      content: <div>{description || ""}</div>,
+      footer: (
         <PanelButton
           title={title}
           onClick={onClick}
@@ -53,7 +53,7 @@ export function OpenModalAction({
   const el =
     actionStatus.status === "Success" ? (
       <ReviewInputCell
-        value={actionStatus.data}
+        value={toValue(actionStatus.data, "string")}
         actionStatus={actionStatus}
         isCurrent={isCurrent}
       />
