@@ -1,3 +1,5 @@
+import { ReactElement } from "react";
+
 export interface ClientDiscoveryResponse {
   clientType: "Participant" | "Operator";
   needsCredentials: boolean;
@@ -297,7 +299,7 @@ export interface ProvideSignedTransactionRequest {
   onlyApprovalNeeded: boolean;
   signerUuid: string;
   payload: Value;
-  formattedPayload: string | null;
+  formattedPayload: Value | null;
   namespace: string;
   networkId: string;
 }
@@ -307,7 +309,7 @@ export interface SendTransactionRequest {
   expectedSignerAddress: string | null;
   signerUuid: string;
   payload: Value;
-  formattedPayload: string | null;
+  formattedPayload: Value | null;
   namespace: string;
   networkId: string;
 }
@@ -451,7 +453,11 @@ export function formatValueForDisplay(input: Value): DisplayableValue {
   } else if (type === "null") {
     return "";
   } else if (type === "array" && Array.isArray(value)) {
-    return JSON.stringify(value.map((v) => formatValueForDisplay(v)));
+    return JSON.stringify(
+      value.map((v) => formatValueForDisplay(v)),
+      null,
+      2,
+    );
   } else if (type === "object" && typeof value === "object") {
     let obj = value as ObjectType;
     const keys = Object.keys(obj);

@@ -1,4 +1,4 @@
-import { ActionItemRequest, formatValueForDisplay } from "../main/types";
+import { ActionItemRequest } from "../main/types";
 import { ActionItemRow } from "./components/action-item-row";
 import { ReviewInputCell } from "./components/review-input-cell";
 import React from "react";
@@ -24,37 +24,19 @@ export function DisplayOutputAction({
   }
 
   const onClick = () => {};
-  const displayValue = formatValueForDisplay(actionType.data.value);
-  if (displayValue === undefined) {
-    throw new Error(
-      `DisplayOutputAction component only supports displaying Primitive values, got ${actionType.data.value}`,
-    );
-  }
-  const subRow =
-    displayValue &&
-    typeof displayValue === "string" &&
-    displayValue?.length > 50
-      ? { text: displayValue }
-      : undefined;
-  const el = subRow ? (
-    <div></div>
-  ) : (
-    <ReviewInputCell
-      value={displayValue?.toString() || ""}
-      actionStatus={actionStatus}
-      isCurrent={isCurrent}
-    />
-  );
   return (
     <ActionItemRow
       actionItem={actionItem}
       isFirst={isFirst}
       isLast={isLast}
       onClick={onClick}
-      subRow={subRow}
-      isCurrent={isCurrent}
+      isCurrent={false}
     >
-      {el}
+      <ReviewInputCell
+        value={actionType.data.value}
+        actionStatus={actionStatus}
+        isCurrent={false}
+      />
     </ActionItemRow>
   );
 }

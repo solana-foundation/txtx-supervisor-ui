@@ -3,7 +3,7 @@ import {
   ActionItemRow,
   ErrorActionItemRow,
 } from "./components/action-item-row";
-import { ActionItemRequest, ActionItemResponse } from "../main/types";
+import { ActionItemRequest, ActionItemResponse, toValue } from "../main/types";
 import { ReviewInputCell } from "./components/review-input-cell";
 import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
@@ -81,8 +81,8 @@ export function ProvidePublicKeyAction({
         isLast={isLast}
         onClick={() => {}}
         subRow={{
-          text: message,
-          children: (
+          content: <div>{message}</div>,
+          footer: (
             <PanelButton
               title="Connect Wallet"
               onClick={onClick}
@@ -160,8 +160,8 @@ export function ProvidePublicKeyAction({
             isLast={isLast}
             onClick={() => {}}
             subRow={{
-              text: message,
-              children: (
+              content: <div>{message}</div>,
+              footer: (
                 <PanelButton
                   title="Provide Public Key"
                   onClick={onClick}
@@ -198,7 +198,7 @@ export function ProvidePublicKeyAction({
             isCurrent={isCurrent}
           >
             <ReviewInputCell
-              value={address}
+              value={toValue(address, "string")}
               actionStatus={actionItem.actionStatus}
               isCurrent={isCurrent}
             />
@@ -216,7 +216,7 @@ export function ProvidePublicKeyAction({
           isCurrent={isCurrent}
         >
           <ReviewInputCell
-            value={address}
+            value={toValue(address, "string")}
             actionStatus={actionItem.actionStatus}
             isCurrent={isCurrent}
           />
@@ -234,8 +234,8 @@ export function ProvidePublicKeyAction({
           isLast={isLast}
           onClick={() => {}}
           subRow={{
-            text: statusData.message,
-            children: (
+            content: <div>{statusData.message}</div>,
+            footer: (
               <PanelButton
                 title="Disconnect Wallet"
                 onClick={onClick}
@@ -250,7 +250,7 @@ export function ProvidePublicKeyAction({
           isCurrent={isCurrent}
         >
           <ReviewInputCell
-            value={address}
+            value={toValue(address, "string")}
             actionStatus={actionItem.actionStatus}
             isCurrent={isCurrent}
           />

@@ -4,7 +4,7 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 module.exports = {
   content: [
     "./src/**/*.{html,js,ts,jsx,tsx}",
-    "./node_modules/@txtxrun/txtx-ui-kit/**/*.{html,js,ts,jsx,tsx}"
+    "./node_modules/@txtxrun/txtx-ui-kit/**/*.{html,js,ts,jsx,tsx}",
   ],
   theme: {
     colors: {
@@ -32,7 +32,13 @@ module.exports = {
       },
       fuchsia: { 500: "fuchsia" },
       green: { 600: "#33d398" },
-      gray: { 400: "#B7BBBC", 700: "#313131", 800: "#2C3335", 950: "#060F11" },
+      gray: {
+        400: "#B7BBBC",
+        500: "#b7bbbccc",
+        700: "#313131",
+        800: "#2C3335",
+        950: "#060F11",
+      },
       indigo: { 500: "indigo" },
       lime: { 300: "lime" },
       neutral: {
@@ -45,7 +51,7 @@ module.exports = {
       pink: { 500: "pink" },
       purple: { 400: "#9f74d7", 500: "#9747FF" },
       red: { 600: "#FB7185" },
-      rose: { 350: "#fe889f", 400: "#FB6D88" },
+      rose: { 350: "#fe889f", 400: "#FB6D88", 500: "#FB6D88CC" },
       sky: { 500: "sky" },
       slate: {
         500: "#6c7375",

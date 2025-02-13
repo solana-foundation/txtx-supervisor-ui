@@ -2,6 +2,7 @@ import React from "react";
 import { classNames } from "../../../utils/helpers";
 import { ActionItemRequest, errorDiagnostic } from "../../main/types";
 import { CheckIcon } from "@heroicons/react/20/solid";
+import { InfoToolTip } from "../../buttons/info-tool-tip";
 
 export interface ActionItemRow {
   actionItem: ActionItemRequest;
@@ -31,7 +32,8 @@ export function ActionItemRow({
 
   subRow =
     !subRow && status === "Error"
-      ? { text: actionStatus.data.message }
+      ? // todo: should ref err component
+        { content: <div>{actionStatus.data.message}</div> }
       : subRow;
   const isStatusError = status === "Error";
   const isStatusSuccess = status === "Success";
@@ -76,7 +78,11 @@ export function ActionItemRow({
                 isStatusError ? "text-rose-400" : "",
               )}
             >
-              {description ? `${description} (${title})` : title}
+              <ActionItemTitle
+                title={title}
+                description={description}
+                isCurrent={isCurrent}
+              />
             </div>
           </div>
         </div>
@@ -92,37 +98,55 @@ export function ActionItemRow({
     </div>
   );
 }
+
+export interface ActionItemTitle {
+  title: string;
+  description?: string;
+  isCurrent: boolean;
+}
+export function ActionItemTitle({
+  title,
+  description,
+  isCurrent,
+}: ActionItemTitle) {
+  if (description && title) {
+    return (
+      <div className="self-stretch py-3.5 md:py-[18px] justify-start flex items-center gap-1">
+        <span>{description}</span>
+        <InfoToolTip
+          text={`This is derived from the \`${title}\` action`}
+          isCurrent={isCurrent}
+        />
+      </div>
+    );
+  } else if (description) {
+    return <div>{description}</div>;
+  } else {
+    return <div>{title}</div>;
+  }
+}
+
 export interface ActionItemSubRow {
-  text: string;
+  content: JSX.Element;
   isError?: boolean;
-  children?: JSX.Element;
+  footer?: JSX.Element;
 }
 export function ActionItemSubRow({
-  text,
-  children,
+  content,
+  footer,
   isError = false,
 }: ActionItemSubRow) {
-  let el = children ? (
+  let footerEl = footer ? (
     <div className="absolute bottom-4 right-4 self-stretch justify-end items-end gap-2.5 inline-flex">
-      {children}
+      {footer}
     </div>
   ) : null;
-
-  let textEl = !text ? (
-    "N/A"
-  ) : text.includes("https://") ? (
-    <a className="text-emerald-500" href={text} target="_blank">
-      {text}
-    </a>
-  ) : (
-    <pre className="mb-12">{text}</pre>
-  );
 
   return (
     <div
       className={classNames(
         "max-h-60 overflow-auto w-full p-3 justify-start items-start inline-flex bg-black",
-        children ? "min-h-20" : "",
+        footer ? "min-h-20" : "",
         // todo, investigate why scrollbar styling isn't working
         "scrollbar-thin scrollbar-h-1",
       )}
@@ -130,7 +154,7 @@ export function ActionItemSubRow({
       <div
         className={classNames(
           "grow shrink basis-0 flex-col justify-start items-start inline-flex",
-          children ? "gap-2.5" : "",
+          footer ? "gap-2.5" : "",
         )}
       >
         <div
@@ -142,10 +166,10 @@ export function ActionItemSubRow({
           {/* weird rendering bug I can't figure out: whenever the text here is an empty string
             there's an unstyled gap. so just insert a zero-width string here
         */}
-          {textEl}
+          {content}
         </div>
       </div>
-      {el}
+      {footerEl}
     </div>
   );
 }

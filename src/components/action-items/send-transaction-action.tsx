@@ -1,25 +1,17 @@
 import React from "react";
-import {
-  ActionItemSubRow,
-  ErrorActionItemRow,
-} from "./components/action-item-row";
-import {
-  ActionItemRequest,
-  ActionItemResponse,
-  formatValueForDisplay,
-} from "../main/types";
+import { ErrorActionItemRow } from "./components/action-item-row";
+import { ActionItemRequest, ActionItemResponse } from "../main/types";
 import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import addonManager from "../../utils/addons-initializer";
-import { classNames } from "../../utils/helpers";
-import { CheckIcon } from "@heroicons/react/20/solid";
 import {
   SignTransactionRow,
   valueToStringForSignature,
 } from "./provide-signed-transaction-action";
 import { useAppDispatch } from "../../hooks";
 import { pushError } from "../../reducers/error-slice";
+import { DisplayValue } from "./components/review-input-cell";
 
 export interface SendTransactionAction {
   actionItem: ActionItemRequest;
@@ -53,19 +45,6 @@ export function SendTransactionAction({
       expectedSignerAddress,
     },
   } = actionType;
-
-  const txForDisplay = formatValueForDisplay(payload);
-
-  if (txForDisplay == null || typeof txForDisplay !== "string") {
-    throw new Error(
-      `SignTransaction component requires string payload, received ${actionType.data.payload}`,
-    );
-  }
-  // insert a zero-width space every other character to allow the text to break as needed
-  const displayedValue =
-    formattedPayload ||
-    txForDisplay.match(/(.{1})/g)?.join("​") ||
-    txForDisplay;
 
   const alreadySigned = actionStatus.status === "Success";
   const signatureBlocked = actionStatus.status === "Blocked";
@@ -101,15 +80,8 @@ export function SendTransactionAction({
   } else {
     const addressResult = addonManager.getAddress(namespace, networkId);
     if (addressResult.is_err()) {
-      return (
-        <ErrorActionItemRow
-          error={addressResult.unwrap_err()}
-          originalActionItem={actionItem}
-          isFirst={isFirst}
-          isLast={isLast}
-          isCurrent={isCurrent}
-        />
-      );
+      dispatch(pushError(addressResult.unwrap_err()));
+      return;
     }
     const address = addressResult.unwrap();
 
@@ -150,8 +122,13 @@ export function SendTransactionAction({
       onClick={() => {}}
       isCurrent={isCurrent}
       subRow={{
-        text: displayedValue,
-        children: (
+        content: (
+          <DisplayValue
+            input={formattedPayload || payload}
+            isCurrent={isCurrent}
+          />
+        ),
+        footer: (
           <div className="justify-end items-end gap-2.5 inline-flex">
             <PanelButton
               title={primaryButtonTitle}
