@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client";
 import { ActionItemRequest, ActionItemResponse } from "../main/types";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
-import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
+import { Button } from "@txtxrun/txtx-ui-kit";
 import { classNames } from "../../utils/helpers";
 import { useAppDispatch } from "../../hooks";
 import {
@@ -43,13 +43,6 @@ export function ValidateModalAction({
     isDisabled = true;
   }
 
-  const color =
-    index === 0
-      ? ButtonColor.Emerald
-      : index === 1
-        ? ButtonColor.Black
-        : ButtonColor.Amber;
-
   const orderClass =
     index === 0
       ? "order-last ml-8 "
@@ -58,13 +51,15 @@ export function ValidateModalAction({
         : "grow clear-left float-left order-first";
   return (
     <div className={classNames(" ", orderClass)}>
-      <PanelButton
-        title={title}
+      <Button
+        disabled={isDisabled}
         onClick={onClick}
-        isDisabled={isDisabled}
-        size={ElementSize.L}
-        color={color}
-      />
+        className="uppercase w-full"
+        size={Button.ButtonSizes.l}
+        variant={index === 1 ? Button.ButtonVariants.secondary : Button.ButtonVariants.primary}
+      >
+        {title}
+      </Button>
     </div>
   );
 }

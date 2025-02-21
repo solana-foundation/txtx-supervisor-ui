@@ -5,7 +5,7 @@ import {
 } from "./components/action-item-row";
 import { ActionItemRequest, ActionItemResponse, toValue } from "../main/types";
 import { ReviewInputCell } from "./components/review-input-cell";
-import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
+import { Button } from "@txtxrun/txtx-ui-kit";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import {
@@ -83,15 +83,14 @@ export function ProvidePublicKeyAction({
         subRow={{
           content: <div>{message}</div>,
           footer: (
-            <PanelButton
-              title="Connect Wallet"
+            <Button
               onClick={onClick}
-              isDisabled={false}
-              size={ElementSize.L}
-              color={
-                isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
-              }
-            />
+              className="uppercase w-full"
+              size={Button.ButtonSizes.l}
+              variant={Button.ButtonVariants.primary}
+            >
+              Connect Wallet
+            </Button>
           ),
         }}
         isCurrent={isCurrent}
@@ -162,15 +161,14 @@ export function ProvidePublicKeyAction({
             subRow={{
               content: <div>{message}</div>,
               footer: (
-                <PanelButton
-                  title="Provide Public Key"
+                <Button
                   onClick={onClick}
-                  isDisabled={false}
-                  size={ElementSize.L}
-                  color={
-                    isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
-                  }
-                />
+                  className="uppercase w-full"
+                  size={Button.ButtonSizes.l}
+                  variant={Button.ButtonVariants.primary}
+                >
+                  Provide Public Key
+                </Button>
               ),
             }}
             isCurrent={isCurrent}
@@ -236,15 +234,14 @@ export function ProvidePublicKeyAction({
           subRow={{
             content: <div>{statusData.message}</div>,
             footer: (
-              <PanelButton
-                title="Disconnect Wallet"
+              <Button
                 onClick={onClick}
-                isDisabled={false}
-                size={ElementSize.L}
-                color={
-                  isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
-                }
-              />
+                className="uppercase w-full"
+                size={Button.ButtonSizes.l}
+                variant={Button.ButtonVariants.primary}
+              >
+                Disconnect Wallet
+              </Button>
             ),
           }}
           isCurrent={isCurrent}

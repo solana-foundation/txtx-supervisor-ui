@@ -4,3 +4,7 @@ dist
 .env
 .idea
 .DS_Store
+.vscode
+
+# Yalc storage
+.yalc

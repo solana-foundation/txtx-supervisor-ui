@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppDispatch } from "../../hooks";
 import { setModalVisibility } from "../../reducers/runbooks-slice";
-import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
+import { Button } from "@txtxrun/txtx-ui-kit";
 
 export interface CloseModalAction {
   modalUuid: string;
@@ -17,17 +17,17 @@ export function CloseModalAction({ modalUuid }: CloseModalAction) {
     isDisabled = true;
   }
 
-  const color = ButtonColor.Black;
-
   return (
     <div>
-      <PanelButton
-        title="Cancel"
+      <Button
+        disabled={isDisabled}
         onClick={onClick}
-        isDisabled={isDisabled}
-        size={ElementSize.L}
-        color={color}
-      />
+        className="uppercase w-full"
+        size={Button.ButtonSizes.l}
+        variant={Button.ButtonVariants.secondary}
+      >
+        CANCEL
+      </Button>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import {
   ErrorActionItemRow,
 } from "./components/action-item-row";
 import { ActionItemRequest, ActionItemResponse, Value } from "../main/types";
-import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
+import { Button } from "@txtxrun/txtx-ui-kit";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import addonManager from "../../utils/addons-initializer";
@@ -166,23 +166,25 @@ export function ProvideSignedTransactionAction({
         footer: (
           <div className="justify-end items-end gap-2.5 inline-flex">
             {skippable ? (
-              <PanelButton
-                title="Skip Signature"
+              <Button
                 onClick={onSkipSignature}
-                isDisabled={skippableButtonIsDisabled}
-                size={ElementSize.L}
-                color={ButtonColor.Black}
-              />
+                className="uppercase w-full"
+                size={Button.ButtonSizes.l}
+                disabled={skippableButtonIsDisabled}
+                variant={Button.ButtonVariants.secondary}
+              >
+                Skip Signature
+              </Button>
             ) : undefined}
-            <PanelButton
-              title={primaryButtonTitle}
+            <Button
+              disabled={primaryButtonIsDisabled}
               onClick={onClick}
-              isDisabled={primaryButtonIsDisabled}
-              size={ElementSize.L}
-              color={
-                isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
-              }
-            />
+              className="uppercase w-full"
+              size={Button.ButtonSizes.l}
+              variant={Button.ButtonVariants.primary}
+            >
+              {primaryButtonTitle}
+            </Button>
           </div>
         ),
       }}

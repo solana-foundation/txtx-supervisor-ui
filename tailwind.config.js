@@ -4,7 +4,7 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 module.exports = {
   content: [
     "./src/**/*.{html,js,ts,jsx,tsx}",
-    "./node_modules/@txtxrun/txtx-ui-kit/**/*.{html,js,ts,jsx,tsx}",
+    "!./node_modules/@txtxrun/txtx-ui-kit/dist/styles.css",
   ],
   theme: {
     colors: {

@@ -1,7 +1,7 @@
 import React from "react";
 import { ActionItemRow, ActionItemSubRow } from "./components/action-item-row";
 import { ActionItemRequest, toValue } from "../main/types";
-import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
+import { Button } from "@txtxrun/txtx-ui-kit";
 import { useAppDispatch } from "../../hooks";
 import { setModalVisibility } from "../../reducers/runbooks-slice";
 import { ReviewInputCell } from "./components/review-input-cell";
@@ -39,13 +39,14 @@ export function OpenModalAction({
     subRow = {
       content: <div>{description || ""}</div>,
       footer: (
-        <PanelButton
-          title={title}
+        <Button
           onClick={onClick}
-          isDisabled={false}
-          size={ElementSize.M}
-          color={isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald}
-        />
+          className="uppercase w-full"
+          size={Button.ButtonSizes.m}
+          variant={Button.ButtonVariants.primary}
+        >
+          {title}
+        </Button>
       ),
     };
   }
