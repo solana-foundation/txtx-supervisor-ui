@@ -1,7 +1,7 @@
 import React from "react";
 import { ErrorActionItemRow } from "./components/action-item-row";
 import { ActionItemRequest, ActionItemResponse } from "../main/types";
-import { ButtonColor, ElementSize, PanelButton } from "../buttons/panel-button";
+import { Button } from "@txtxrun/txtx-ui-kit";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client";
 import addonManager from "../../utils/addons-initializer";
@@ -130,15 +130,15 @@ export function SendTransactionAction({
         ),
         footer: (
           <div className="justify-end items-end gap-2.5 inline-flex">
-            <PanelButton
-              title={primaryButtonTitle}
+            <Button
+              disabled={primaryButtonIsDisabled}
               onClick={onClick}
-              isDisabled={primaryButtonIsDisabled}
-              size={ElementSize.L}
-              color={
-                isCurrent ? ButtonColor.ActiveEmerald : ButtonColor.Emerald
-              }
-            />
+              className="uppercase w-full"
+              size={Button.ButtonSizes.l}
+              variant={Button.ButtonVariants.primary}
+            >
+              {primaryButtonTitle}
+            </Button>
           </div>
         ),
       }}
