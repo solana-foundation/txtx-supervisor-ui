@@ -12,7 +12,7 @@ export interface AddonsProviderProps {
 
 const ADDONS: { [key: string]: () => Promise<any> } = {
   evm: () => import("./addons/evm"),
-  stacks: () => import("./addons/stacks"),
+  // stacks: () => import("./addons/stacks"),
   svm: () => import("./addons/svm"),
 };
 

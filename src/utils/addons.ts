@@ -1,4 +1,4 @@
-import { phLogOnChainError, phLogOnChainSuccess } from "../posthog";
+// import { phLogOnChainError, phLogOnChainSuccess } from "../posthog";
 import { Result } from "./result";
 
 export enum AddonErrorType {
@@ -167,12 +167,12 @@ export class AddonManager {
     const result = await addon.getPublicKey(networkId, address, message);
     if (typeof result === "object") {
       console.error(result.error);
-      phLogOnChainError(namespace, PH_GET_PUBLIC_KEY, result.error);
+      // phLogOnChainError(namespace, PH_GET_PUBLIC_KEY, result.error);
       return Result.err(
         `Failed to get ${namespace} public key: ${result.error}`,
       );
     } else {
-      phLogOnChainSuccess(namespace, PH_GET_PUBLIC_KEY);
+      // phLogOnChainSuccess(namespace, PH_GET_PUBLIC_KEY);
       return Result.ok(result);
     }
   }
@@ -191,10 +191,10 @@ export class AddonManager {
     const result = await addon.signMessage(networkId, address, message);
     if (typeof result === "object") {
       console.error(result.error);
-      phLogOnChainError(namespace, PH_SIGN_MESSAGE, result.error);
+      // phLogOnChainError(namespace, PH_SIGN_MESSAGE, result.error);
       return Result.err(`Failed to sign ${namespace} message: ${result.error}`);
     } else {
-      phLogOnChainSuccess(namespace, PH_SIGN_MESSAGE);
+      // phLogOnChainSuccess(namespace, PH_SIGN_MESSAGE);
       return Result.ok(result);
     }
   }
@@ -213,12 +213,12 @@ export class AddonManager {
     const result = await addon.signTransaction(txHex, address, networkId);
     if (typeof result === "object") {
       console.error(result.error);
-      phLogOnChainError(namespace, PH_SIGN_TRANSACTION, result.error);
+      // phLogOnChainError(namespace, PH_SIGN_TRANSACTION, result.error);
       return Result.err(
         `Failed to sign ${namespace} transaction: ${result.error}`,
       );
     } else {
-      phLogOnChainSuccess(namespace, PH_SIGN_TRANSACTION);
+      // phLogOnChainSuccess(namespace, PH_SIGN_TRANSACTION);
       return Result.ok(result);
     }
   }
@@ -237,12 +237,12 @@ export class AddonManager {
     const result = await addon.sendTransaction(txHex, address, networkId);
     if (typeof result === "object") {
       console.error(result.error);
-      phLogOnChainError(namespace, PH_SEND_TRANSACTION, result.error);
+      // phLogOnChainError(namespace, PH_SEND_TRANSACTION, result.error);
       return Result.err(
         `Failed to send ${namespace} transaction: ${result.error}`,
       );
     } else {
-      phLogOnChainSuccess(namespace, PH_SEND_TRANSACTION);
+      // phLogOnChainSuccess(namespace, PH_SEND_TRANSACTION);
       return Result.ok(result);
     }
   }

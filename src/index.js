@@ -4,10 +4,10 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
-import initializePosthog from "./posthog";
+// import initializePosthog from "./posthog";
 import { BrowserRouter } from "react-router-dom";
 
-initializePosthog();
+// initializePosthog();
 
 const container = document.getElementById("app");
 const root = createRoot(container);

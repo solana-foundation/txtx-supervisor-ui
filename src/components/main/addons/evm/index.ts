@@ -174,7 +174,7 @@ export default class EvmAddon implements Addon {
     _signerAddress: string,
     _networkId: string,
   ): Promise<string | AddonError> {
-    return { error: "Sign Transaction not supported for Stacks" };
+    return { error: "Sign Transaction not supported for EVM" };
   }
 }
 
