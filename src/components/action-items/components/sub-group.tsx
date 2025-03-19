@@ -13,6 +13,7 @@ import { ProvideSignedMessageAction } from "../provide-signed-message-action";
 import { OpenModalAction } from "../open-modal-action";
 import { classNames } from "../../../utils/helpers";
 import { DisplayErrorLogAction } from "../display-error-log-action";
+import { DisplayInfoAction } from "../display-info-action";
 
 interface SubGroup {
   subGroup: ActionSubGroup;
@@ -130,6 +131,19 @@ export function SubGroup({ subGroup }: SubGroup) {
       accumulator.push(
         <DisplayErrorLogAction actionItem={actionItem} key={id} />,
       );
+    } else if (type === "BeginFlow") {
+      const text = `Beginning execution of flow '${actionType.data.name}'.`;
+      accumulator.push(
+        <DisplayInfoAction
+          text={text}
+          bottomBorder={!!actionType.data.description}
+          key={`${id}-0`}
+        />,
+      );
+      if (actionType.data.description) {
+        const text = `Flow description: '${actionType.data.description}'.`;
+        accumulator.push(<DisplayInfoAction text={text} key={`${id}-1`} />);
+      }
     }
     return accumulator;
   }, [] as JSX.Element[]);

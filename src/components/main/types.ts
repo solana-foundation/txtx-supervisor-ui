@@ -127,6 +127,12 @@ export function deserializeBlock<
   };
 }
 
+export interface BeginFlowData {
+  index: number;
+  name: string;
+  description: string | undefined;
+}
+
 function deserializeGroup(group: ActionGroup<false>): ActionGroup<true> {
   return {
     ...group,
@@ -220,7 +226,8 @@ export type ActionItemRequestType =
   | DisplayErrorLogActionItemRequest
   | ValidateBlockActionItemRequest
   | ValidateModalActionItemRequest
-  | OpenModalActionItemRequest;
+  | OpenModalActionItemRequest
+  | BeginFlowActionItemRequest;
 
 export type ReviewInputActionItemRequest = {
   type: "ReviewInput";
@@ -261,6 +268,10 @@ export type DisplayErrorLogActionItemRequest = {
 export type OpenModalActionItemRequest = {
   type: "OpenModal";
   data: OpenModalRequest;
+};
+export type BeginFlowActionItemRequest = {
+  type: "BeginFlow";
+  data: BeginFlowData;
 };
 export type ValidateBlockActionItemRequest = { type: "ValidateBlock" };
 export type ValidateModalActionItemRequest = { type: "ValidateModal" };
