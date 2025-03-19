@@ -109,7 +109,6 @@ export const runbooksSlice = createSlice({
     ),
     setModalBlocks: create.reducer(
       (state, action: PayloadAction<ModalBlock<false>[]>) => {
-        console.log("setting modal block count", action.payload.length);
         let modalBlocks: ModalBlock[] = state.modalBlocks;
         action.payload.forEach((serializedBlock) => {
           const block = deserializeBlock(serializedBlock);
