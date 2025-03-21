@@ -445,18 +445,30 @@ export function toValue(input: any, type: Type): Value {
   }
 }
 
-export type DisplayableValue = string | number | boolean;
-export function formatValueForDisplay(input: Value): DisplayableValue {
+export type DisplayableValue =
+  | string
+  | number
+  | boolean
+  | object
+  | Array<DisplayableValue>;
+export function valueToJson(input: Value): DisplayableValue {
   const { type, value } = input;
   if (value == null) {
     return "";
   }
   if (type === "buffer" || type === "string") {
+    // uncomment to make things like contract ABI pretty.
+    // the problem here is performance - the ABI is huge and takes a long time to render
+    // try {
+    //   const result = JSON.parse(value);
+    //   return result;
+    // } catch {
     if (value.length > 100) {
       return value.slice(0, 100) + "...";
     } else {
       return value;
     }
+    // }
   } else if (type === "bool") {
     return value.toString();
   } else if (type === "integer") {
@@ -464,24 +476,17 @@ export function formatValueForDisplay(input: Value): DisplayableValue {
   } else if (type === "null") {
     return "";
   } else if (type === "array" && Array.isArray(value)) {
-    return JSON.stringify(
-      value.map((v) => formatValueForDisplay(v)),
-      null,
-      2,
-    );
+    return value.map((v) => valueToJson(v));
   } else if (type === "object" && typeof value === "object") {
     let obj = value as ObjectType;
     const keys = Object.keys(obj);
-    return JSON.stringify(
-      keys.map((k) => {
-        let val = obj[k];
-        return { [k]: formatValueForDisplay(val) };
-      }),
-      null,
-      2,
-    );
+    return keys.map((k) => {
+      let val = obj[k];
+      return { [k]: valueToJson(val) };
+    });
   } else {
     const str = value.toString();
+
     if (str.length > 100) {
       return str.slice(0, 100) + "...";
     } else {

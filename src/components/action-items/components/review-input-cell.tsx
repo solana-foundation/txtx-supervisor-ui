@@ -3,7 +3,7 @@ import { classNames } from "../../../utils/helpers";
 import {
   ActionItemStatus,
   DisplayableValue,
-  formatValueForDisplay,
+  valueToJson,
   ObjectType,
   Value,
 } from "../../main/types";
@@ -113,7 +113,7 @@ export function DisplayValue({ input, isCurrent }: DisplayValue): ReactElement {
         language="json"
         isCurrent={isCurrent}
         codeString={JSON.stringify(
-          value.map((v) => formatValueForDisplay(v)),
+          value.map((v) => valueToJson(v)),
           null,
           2,
         )}
@@ -124,7 +124,7 @@ export function DisplayValue({ input, isCurrent }: DisplayValue): ReactElement {
     const keys = Object.keys(obj);
     let res = {} as { [k: string]: DisplayableValue };
     keys.forEach((k) => {
-      res[k] = formatValueForDisplay(obj[k]);
+      res[k] = valueToJson(obj[k]);
     });
     return (
       <SyntaxHighlighterInput

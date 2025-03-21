@@ -1,9 +1,5 @@
 import { useMutation } from "@apollo/client";
-import {
-  ActionItemRequest,
-  ActionItemResponse,
-  formatValueForDisplay,
-} from "../main/types";
+import { ActionItemRequest, ActionItemResponse } from "../main/types";
 import { ActionItemRow } from "./components/action-item-row";
 import { ReviewInputCell } from "./components/review-input-cell";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";

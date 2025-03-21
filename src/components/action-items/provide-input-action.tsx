@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client";
 import {
   ActionItemRequest,
   ActionItemResponse,
-  formatValueForDisplay,
+  valueToJson,
   toValue,
 } from "../main/types";
 import { ActionItemRow } from "./components/action-item-row";
@@ -70,9 +70,7 @@ export function ProvideInputAction({
         actionItem={actionItem}
         onChange={onChange}
         defaultValue={
-          defaultValue !== undefined
-            ? formatValueForDisplay(defaultValue)
-            : undefined
+          defaultValue !== undefined ? valueToJson(defaultValue) : undefined
         }
       />
     </ActionItemRow>
