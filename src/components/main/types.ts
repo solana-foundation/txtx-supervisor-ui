@@ -172,6 +172,7 @@ export interface ActionGroup<Deserialized = true> {
 export interface ActionSubGroup<Deserialized = true> {
   actionItems: ActionItemRequest<Deserialized>[];
   allowBatchCompletion: boolean;
+  title: string | null;
 }
 
 export interface ActionItemRequest<Deserialized = true> {
@@ -221,6 +222,7 @@ export type ActionItemRequestType =
   | ProvidePublicKeyActionItemRequest
   | ProvideSignedMessageActionItemRequest
   | ProvideSignedTransactionActionItemRequest
+  | VerifyThirdPartySignatureActionItemRequest
   | SendTransactionActionItemRequest
   | DisplayOutputActionItemRequest
   | DisplayErrorLogActionItemRequest
@@ -252,6 +254,10 @@ export type ProvideSignedMessageActionItemRequest = {
 export type ProvideSignedTransactionActionItemRequest = {
   type: "ProvideSignedTransaction";
   data: ProvideSignedTransactionRequest;
+};
+export type VerifyThirdPartySignatureActionItemRequest = {
+  type: "VerifyThirdPartySignature";
+  data: VerifyThirdPartySignatureRequest;
 };
 export type SendTransactionActionItemRequest = {
   type: "SendTransaction";
@@ -315,6 +321,18 @@ export interface ProvideSignedTransactionRequest {
   networkId: string;
 }
 
+export interface VerifyThirdPartySignatureRequest {
+  checkExpectationActionUuid: string | null;
+  signerUuid: string;
+  namespace: string;
+  networkId: string;
+  payload: Value;
+  formattedPayload: Value | null;
+  signerName: string;
+  thirdPartyName: string;
+  url: string;
+}
+
 export interface SendTransactionRequest {
   checkExpectationActionUuid: string | null;
   expectedSignerAddress: string | null;
@@ -357,6 +375,10 @@ type ActionItemResponseType =
   | { type: "ProvidePublicKey"; data: ProvidePublicKeyResponse }
   | { type: "ProvideSignedMessage"; data: ProvideSignedMessageResponse }
   | { type: "ProvideSignedTransaction"; data: ProvideSignedTransactionResponse }
+  | {
+      type: "VerifyThirdPartySignature";
+      data: VerifyThirdPartySignatureResponse;
+    }
   | { type: "SendTransaction"; data: SendTransactionResponse }
   | { type: "ValidateBlock" }
   | { type: "ValidateModal" };
@@ -385,6 +407,10 @@ export interface ProvideSignedTransactionResponse {
   signedTransactionBytes: string | null;
   signerUuid: string;
   signatureApproved: boolean | null;
+}
+export interface VerifyThirdPartySignatureResponse {
+  signerUuid: string;
+  signatureComplete: boolean;
 }
 export interface SendTransactionResponse {
   transactionHash: string;
