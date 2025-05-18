@@ -14,6 +14,7 @@ import { OpenModalAction } from "../open-modal-action";
 import { classNames } from "../../../utils/helpers";
 import { DisplayErrorLogAction } from "../display-error-log-action";
 import { DisplayInfoAction } from "../display-info-action";
+import { VerifyThirdPartySignatureAction } from "../verify-third-party-signature-action";
 
 interface SubGroup {
   subGroup: ActionSubGroup;
@@ -144,6 +145,16 @@ export function SubGroup({ subGroup }: SubGroup) {
         const text = `Flow description: '${actionType.data.description}'.`;
         accumulator.push(<DisplayInfoAction text={text} key={`${id}-1`} />);
       }
+    } else if (type === "VerifyThirdPartySignature") {
+      accumulator.push(
+        <VerifyThirdPartySignatureAction
+          actionItem={actionItem}
+          isFirst={isFirst}
+          isLast={isLast}
+          key={id}
+          isCurrent={isCurrent}
+        />,
+      );
     }
     return accumulator;
   }, [] as JSX.Element[]);

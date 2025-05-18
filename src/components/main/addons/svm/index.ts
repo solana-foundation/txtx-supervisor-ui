@@ -150,15 +150,19 @@ export default class SolanaAddon implements Addon {
     }
     if ("signTransaction" in wallet) {
       const rustTx = RustSolanaTransaction.from_hex(txHex);
+      console.log("rustTx", rustTx);
 
       const connection = this.getConnection(networkId);
 
       const recentBlockhash = await connection.getLatestBlockhash();
       let unsignedTx = rustTx.toTransaction(recentBlockhash);
+      console.log("unsignedTx", unsignedTx);
 
       const signed = await wallet.signTransaction(unsignedTx);
-      const signedRustTx = RustSolanaTransaction.fromTransaction(signed);
+      console.log("signed", signed);
 
+      const signedRustTx = RustSolanaTransaction.fromTransaction(signed);
+      console.log("signedRustTx", signedRustTx);
       return signedRustTx.toHex();
     }
     return {

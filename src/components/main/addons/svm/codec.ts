@@ -38,9 +38,7 @@ export class RustSolanaTransaction {
     }>,
   ): Transaction {
     let isPartiallySigned = false;
-    const signatures = RustSolanaTransaction.retrieveShortVecMembers(
-      this.signatures,
-    ).map((sig) => {
+    const signatures = ShortVecUtils.fromVec(this.signatures).map((sig) => {
       const signature = bs58.encode(Buffer.from(sig));
 
       if (signature !== EMPTY_SIGNATURE_STRING) {
@@ -52,21 +50,19 @@ export class RustSolanaTransaction {
     const { accountKeys, header, instructions, recentBlockhash } = this.message;
 
     const messageArgs: MessageArgs = {
-      accountKeys: RustSolanaTransaction.retrieveShortVecMembers(
-        accountKeys,
-      ).map((key) => new PublicKey(bs58.encode(Buffer.from(key)))),
+      accountKeys: ShortVecUtils.fromVec(accountKeys).map(
+        (key) => new PublicKey(bs58.encode(Buffer.from(key))),
+      ),
       header: header,
-      instructions: RustSolanaTransaction.retrieveShortVecMembers(
-        instructions,
-      ).map(({ accounts, data, programIdIndex }) => {
-        return {
-          accounts: RustSolanaTransaction.retrieveShortVecMembers(accounts),
-          data: bs58.encode(
-            Buffer.from(RustSolanaTransaction.retrieveShortVecMembers(data)),
-          ),
-          programIdIndex: programIdIndex,
-        };
-      }),
+      instructions: ShortVecUtils.fromVec(instructions).map(
+        ({ accounts, data, programIdIndex }) => {
+          return {
+            accounts: ShortVecUtils.fromVec(accounts),
+            data: bs58.encode(Buffer.from(ShortVecUtils.fromVec(data))),
+            programIdIndex: programIdIndex,
+          };
+        },
+      ),
       // if this transaction has already been partially signed, we need to use the blockhash provided
       // in the transaction. If not, we can use the one that was just fetched from the network to make sure it's as recent as possible
       recentBlockhash: isPartiallySigned
@@ -80,13 +76,13 @@ export class RustSolanaTransaction {
     transaction: Transaction,
   ): RustSolanaTransaction {
     const message = transaction.compileMessage();
-    const signatures: ShortVec<SolSignature> = RustSolanaTransaction.toShortVec(
+    const signatures: ShortVec<SolSignature> = ShortVecUtils.toShortVec(
       transaction.signatures.map((sig) =>
         sig.signature ? Array.from(sig.signature as Buffer) : EMPTY_SIGNATURE,
       ),
     );
     const rustEncodedMessage: RustMessage = {
-      accountKeys: RustSolanaTransaction.toShortVec(
+      accountKeys: ShortVecUtils.toShortVec(
         message.accountKeys.map((key) => Array.from(key.toBytes())),
       ),
       header: {
@@ -94,11 +90,11 @@ export class RustSolanaTransaction {
         numReadonlySignedAccounts: message.header.numReadonlySignedAccounts,
         numReadonlyUnsignedAccounts: message.header.numReadonlyUnsignedAccounts,
       },
-      instructions: RustSolanaTransaction.toShortVec(
+      instructions: ShortVecUtils.toShortVec(
         message.instructions.map((instruction) => {
           return {
-            accounts: RustSolanaTransaction.toShortVec(instruction.accounts),
-            data: RustSolanaTransaction.toShortVec(
+            accounts: ShortVecUtils.toShortVec(instruction.accounts),
+            data: ShortVecUtils.toShortVec(
               Array.from(bs58.decode(instruction.data)),
             ),
             programIdIndex: instruction.programIdIndex,
@@ -113,18 +109,48 @@ export class RustSolanaTransaction {
 
   public toHex(): string {
     const str = JSON.stringify(this.toJSON());
+    console.log("str", str);
     const hex = Buffer.from(str).toString("hex");
     return hex;
   }
   public toJSON(): Object {
     return { message: this.message, signatures: this.signatures };
   }
+}
 
-  static retrieveShortVecMembers<T>(shortVec: ShortVec<T>): T[] {
+class ShortVecUtils {
+  static fromVec<T>(shortVec: ShortVec<T>): T[] {
+    // Return the elements of the ShortVec
     return shortVec.slice(1) as T[];
   }
+
   static toShortVec<T>(members: T[]): ShortVec<T> {
-    return [[members.length], ...members];
+    // Encode the length of the array using the short-vec encoding format
+    const encodedLength = ShortVecUtils.encodeLength(members.length);
+
+    // Combine the encoded length and the array elements into a ShortVec
+    return [encodedLength, ...members];
+  }
+
+  private static encodeLength(length: number): number[] {
+    const encoded: number[] = [];
+    if (length === 0) {
+      return [0];
+    }
+    let remaining = length;
+
+    while (remaining > 0) {
+      let byte = remaining & 0x7f; // Take the lower 7 bits
+      remaining >>= 7; // Shift right by 7 bits
+
+      if (remaining > 0) {
+        byte |= 0x80; // Set the continuation bit
+      }
+
+      encoded.push(byte);
+    }
+
+    return encoded;
   }
 }
 
