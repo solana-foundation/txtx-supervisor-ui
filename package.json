@@ -8,7 +8,7 @@
     "restart": "npm run clean && npm i && npm run dev",
     "clean": "rm -rf .parcel-cache & rm -rf dist",
     "build": "parcel build --no-scope-hoist --no-source-maps",
-    "rebuild": "npm run clean && npm run build",
+    "rebuild": "npm run clean && npm run i && npm run build",
     "i": "dotenv npm i"
   },
   "keywords": [],
@@ -61,7 +61,6 @@
     "react-syntax-highlighter": "^15.6.1",
     "redux-persist": "^6.0.0",
     "solana-connect": "^0.1.10",
-    "totp-generator": "^1.0.0",
     "viem": "^2.21.6",
     "wagmi": "^2.12.11"
   },

@@ -3,21 +3,14 @@ import { NavGroup } from "./components/sidebar/nav";
 import React, { ReactNode, useRef, useState } from "react";
 import Runbook from "./components/main/runbook";
 import { useAppSelector } from "./hooks";
-import useRefreshAccessToken from "./hooks/useRefreshAccessToken";
 import { selectRunbook } from "./reducers/runbooks-slice";
 import useSubscriptions from "./hooks/useSubscriptions";
 import { Modal } from "./components/main/modal";
 import useQueries from "./hooks/useQueries";
-import {
-  isMultiPartyAuthenticated,
-  isMultiPartyEnabled,
-} from "./reducers/multi-party-slice";
-import NhostAuth from "./components/auth/nhost";
 import { Navigate, Route, Routes, useParams } from "react-router-dom";
 import { useParticipantAuth } from "./hooks/useParticipantAuth";
 import Login from "./components/login";
 import { ApolloProvider } from "@apollo/client";
-import useOpenChannel from "./hooks/useOpenChannel";
 import useApolloClient from "./hooks/useApolloClient";
 import { SuspensePage } from "./components/pages/suspense";
 import AddonsProvider from "./components/main/addons-provider";
@@ -102,15 +95,10 @@ function AppInternal() {
   const panelRefs = useRef<any[]>([]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { modalBlocks } = useAppSelector(selectRunbook);
-  const multiPartyEnabled = useAppSelector(isMultiPartyEnabled);
-  const multiPartyAuthenticated = useAppSelector(isMultiPartyAuthenticated);
 
   const { loading } = useQueries();
   // subscribe to new block events, action item updates, etc
   useSubscriptions();
-  // open multiparty channel if it's enabled, authenticated, and hasn't been opened
-  useOpenChannel();
-  useRefreshAccessToken();
 
   const panelScrollHandler = (index: any) => {
     window.location.hash = panelRefs.current[index].current.id;
@@ -162,11 +150,6 @@ function AppInternal() {
           onClick={() => setModalVisible(!modalVisible)}
         >
           <div className="flex justify-center py-9">
-            {loading ? undefined : multiPartyEnabled &&
-              !multiPartyAuthenticated ? (
-              <NhostAuth />
-            ) : undefined}
-
             {loading
               ? undefined
               : modalBlocks.map((block, i) => (

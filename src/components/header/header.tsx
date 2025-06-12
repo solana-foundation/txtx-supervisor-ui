@@ -2,13 +2,6 @@ import React from "react";
 import { useAppSelector } from "../../hooks";
 import RunbookStatusBar from "./runbook-status-bar";
 import { selectRunbook, setMetadata } from "../../reducers/runbooks-slice";
-import MultiPartyToggle from "./multi-party-toggle";
-import {
-  isMultiPartyAuthenticated,
-  isMultiPartyEnabled,
-  isMultiPartyInstantiated,
-} from "../../reducers/multi-party-slice";
-import MultiPartySharing from "./multi-party-sharing";
 import { selectIsOperator } from "../../reducers/participant-auth-slice";
 
 export interface HeaderProps {
@@ -17,10 +10,6 @@ export interface HeaderProps {
   loading: boolean;
 }
 export function Header({ title, panelScrollHandler, loading }: HeaderProps) {
-  const multiPartyEnabled = useAppSelector(isMultiPartyEnabled);
-  const authenticated = useAppSelector(isMultiPartyAuthenticated);
-  const multiPartyInstantiated = useAppSelector(isMultiPartyInstantiated);
-  const clientIsOperator = useAppSelector(selectIsOperator);
   const { metadata } = useAppSelector(selectRunbook);
 
   const name = loading ? "Loading" : metadata.name;
@@ -52,15 +41,7 @@ export function Header({ title, panelScrollHandler, loading }: HeaderProps) {
         {/* <span className="font-bold dark:text-slate-500">Protocol Runbook</span> */}
       </div>
       <div className="z-50 h-20 flex-1 flex justify-end flex-col gap-1 justify-end">
-        {clientIsOperator ? <div></div> : <div></div>}
-        {loading ? (
-          ""
-        ) : multiPartyEnabled && authenticated && multiPartyInstantiated ? (
-          // <MultiPartySharing />
-          <div></div>
-        ) : (
-          <div className="h-[45px]"></div>
-        )}
+        <div className="h-[45px]"></div>
       </div>
     </div>
   );
