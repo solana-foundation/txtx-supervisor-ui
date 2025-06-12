@@ -52,11 +52,12 @@ export function Header({ title, panelScrollHandler, loading }: HeaderProps) {
         {/* <span className="font-bold dark:text-slate-500">Protocol Runbook</span> */}
       </div>
       <div className="z-50 h-20 flex-1 flex justify-end flex-col gap-1 justify-end">
-        {clientIsOperator ? <MultiPartyToggle /> : <div></div>}
+        {clientIsOperator ? <div></div> : <div></div>}
         {loading ? (
           ""
         ) : multiPartyEnabled && authenticated && multiPartyInstantiated ? (
-          <MultiPartySharing />
+          // <MultiPartySharing />
+          <div></div>
         ) : (
           <div className="h-[45px]"></div>
         )}
