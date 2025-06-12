@@ -5,6 +5,7 @@ import { Panel } from "./panel";
 import ProgressOutput from "./progress-output";
 import { ErrorPanel } from "./error";
 import RunbookComplete from "./runbook-complete";
+import { RunbookLogs } from "./runbook-logs";
 
 export interface RunbookProps {
   panelScrollHandler: any;
@@ -44,6 +45,7 @@ export default function Runbook({
         <ProgressOutput />
         <RunbookComplete />
       </div>
+      <RunbookLogs />
     </div>
   );
 }

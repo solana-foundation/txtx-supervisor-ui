@@ -315,6 +315,7 @@ export const runbooksSlice = createSlice({
   }),
   selectors: {
     selectRunbook: (state) => state,
+    selectProgressBlocks: (state) => state.progressBlocks,
     selectVisibleProgressBlock: createSelector(
       [(state) => state.progressBlocks],
       (progressBlocks: ProgressBlock[]) =>
@@ -409,4 +410,5 @@ export const {
   selectIsSomeProgressBlockVisible,
   selectRunbookComplete,
   selectActiveActionId,
+  selectProgressBlocks,
 } = runbooksSlice.selectors;
