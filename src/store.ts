@@ -31,6 +31,7 @@ const configureReducer = () => {
   const generalPersistConfig = {
     key: "runbooks",
     storage,
+    whitelist: [],
   };
 
   const rootReducer = combineReducers({
