@@ -145,7 +145,7 @@ export function ActionItemSubRow({
   return (
     <div
       className={classNames(
-        "max-h-60 overflow-auto w-full p-3 justify-start items-start inline-flex bg-black",
+        "overflow-auto w-full p-3 justify-start items-start inline-flex bg-black",
         footer ? "min-h-20" : "",
         // todo, investigate why scrollbar styling isn't working
         "scrollbar-thin scrollbar-h-1",

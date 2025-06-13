@@ -37,7 +37,7 @@ export function SyntaxHighlighterInput({
       </div>
       {/* add "Expand/Collapse" button if it's a lot of code */}
       {lineCount > 12 ? (
-        <div className="items-right flex justify-end text-white bg-gray-950 pb-2">
+        <div className="items-left flex justify-start text-white bg-gray-950 pb-2">
           <button
             onClick={(e) => {
               e.stopPropagation();
