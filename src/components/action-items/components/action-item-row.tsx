@@ -44,7 +44,7 @@ export function ActionItemRow({
       <div
         onClick={onClick}
         className={classNames(
-          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap",
+          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap rounded",
           isCurrent ? "bg-emerald-950" : "bg-gray-950",
         )}
       >
@@ -68,7 +68,7 @@ export function ActionItemRow({
         </div>
 
         <div className="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
-          <div className="self-stretch py-3.5 md:py-[18px] justify-start items-start inline-flex">
+          <div className="self-stretch py-3.5 md:py-[18px] justify-start items-start inline-flex rounded">
             <div
               className={classNames(
                 "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
@@ -145,7 +145,7 @@ export function ActionItemSubRow({
   return (
     <div
       className={classNames(
-        "overflow-auto w-full p-3 justify-start items-start inline-flex bg-black",
+        "overflow-auto w-full p-3 justify-start items-start inline-flex bg-black rounded-b",
         footer ? "min-h-20" : "",
         // todo, investigate why scrollbar styling isn't working
         "scrollbar-thin scrollbar-h-1",

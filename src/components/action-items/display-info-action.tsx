@@ -13,7 +13,7 @@ export function DisplayInfoAction({
 }: DisplayInfoAction) {
   return (
     <div className="overflow-auto scrollbar-thin self-stretch flex-col justify-start items-start flex">
-      <div className="w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap bg-gray-950">
+      <div className="w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap bg-gray-950 rounded">
         <div
           className={classNames(
             "w-full p-4 bg-black bg-opacity-0 justify-start items-start inline-flex",

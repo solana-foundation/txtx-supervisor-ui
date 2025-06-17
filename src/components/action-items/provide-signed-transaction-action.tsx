@@ -228,7 +228,7 @@ export function SignTransactionRow({
       <div
         onClick={onClick}
         className={classNames(
-          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap",
+          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap rounded-t",
           isCurrent ? "bg-emerald-950" : "bg-gray-950",
         )}
       >
