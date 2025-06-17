@@ -10,12 +10,28 @@ export interface InfoToolTipProps {
 
 export function InfoToolTip({ text, isCurrent = false }: InfoToolTipProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [delayHandler, setDelayHandler] = useState<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (delayHandler) {
+      clearTimeout(delayHandler);
+      setDelayHandler(null);
+    }
+    setIsOpen(true);
+  };
+  const handleMouseLeave = () => {
+    setDelayHandler(
+      setTimeout(() => {
+        setIsOpen(false);
+      }, 200),
+    );
+  };
 
   return (
     <Popover className="relative flex items-center">
       <PopoverButton
-        onMouseEnter={() => setIsOpen(true)}
-        onMouseLeave={() => setIsOpen(false)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         className={classNames(
           "flex items-center justify-center w-6 h-6 rounded-full transition-colors outline-none focus:outline-none",
           isCurrent
@@ -28,9 +44,9 @@ export function InfoToolTip({ text, isCurrent = false }: InfoToolTipProps) {
       {isOpen && (
         <PopoverPanel
           static
-          onMouseEnter={() => setIsOpen(true)}
-          onMouseLeave={() => setIsOpen(false)}
-          className="absolute left-8 min-w-48 z-10 p-2 text-sm text-gray-400 bg-gray-700 rounded-lg shadow-lg"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          className="absolute left-8 min-w-48 z-100 p-2 text-sm text-gray-400 bg-gray-700 rounded-lg shadow-lg hover:bg-gray-600 transition-colors"
         >
           {text}
         </PopoverPanel>
