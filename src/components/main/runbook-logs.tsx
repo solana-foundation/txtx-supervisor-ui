@@ -59,7 +59,7 @@ export const RunbookLogs: React.FC = () => {
         className={classNames(
           "w-[28rem] min-w-md w-full bg-gray-950 shadow-xl border-t border-neutral-800 rounded-t-lg transition-all duration-300 ease-in-out overflow-hidden",
           isOpen
-            ? "h-96 shadow-[0_0_20px_rgba(0,0,0,0.3)] ring-1 ring-neutral-300/30"
+            ? "h-full max-h-[calc(100vh-3rem)] shadow-[0_0_20px_rgba(0,0,0,0.3)] ring-1 ring-neutral-300/30"
             : "h-12",
         )}
       >
@@ -109,11 +109,18 @@ const RunbookLogEntry: React.FC<ProgressBarStatus> = ({
         : "text-emerald-400";
 
   return (
-    <div className="flex items-center gap-2 p-2 text-sm">
-      <span className={classNames("font-semibold pr-2", colorClass)}>
+    <div className="flex items-start gap-2 p-2 text-sm">
+      <span
+        className={classNames(
+          "self-center font-semibold w-[72px] shrink-0",
+          colorClass,
+        )}
+      >
         {status}
       </span>
-      <span className="text-gray-400">{message}</span>
+      <span className="text-gray-400 break-words whitespace-pre-wrap">
+        {message}
+      </span>
     </div>
   );
 };
