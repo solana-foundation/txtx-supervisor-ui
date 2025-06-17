@@ -1,25 +1,33 @@
-import debounce from "debounce";
-import React from "react";
+import React, { useState } from "react";
 import { ActionItemRequest, DisplayableValue } from "../../main/types";
 import { classNames } from "../../../utils/helpers";
-import { XMarkIcon } from "@heroicons/react/20/solid";
 import Pencil from "../../icons/pencil";
+import UpdateInputPopup from "../../popup/update-input-popup";
 
 export interface ProvideInputCell {
   actionItem: ActionItemRequest;
   onChange: any;
   defaultValue?: DisplayableValue;
+  isCurrent: boolean;
 }
 export function ProvideInputCell({
   actionItem,
   onChange,
   defaultValue,
+  isCurrent,
 }: ProvideInputCell) {
-  const { id, actionStatus } = actionItem;
+  let [popupOpen, setPopupOpen] = useState(false);
+  let [defaultInputValue, setDefaultInputValue] = useState(
+    typeof defaultValue === "boolean" ? defaultValue.toString() : defaultValue,
+  );
+  const { id, actionStatus, title, description } = actionItem;
   const { status } = actionStatus;
+  const isStatusError = status === "Error";
+  const isStatusSuccess = status === "Success";
+  const isStateDefault = !isStatusSuccess && !isStatusError && !isCurrent;
 
   // todo: handle other statuses
-  let inputClass;
+  let inputClass = "";
   if (status === "Todo") {
     inputClass = "bg-neutral-800 text-gray-400";
   } else if (status === "Success") {
@@ -28,9 +36,20 @@ export function ProvideInputCell({
     inputClass = "bg-stone-900 text-rose-400";
   }
 
-  const debouncedOnChange = debounce(onChange, 500);
-  let defaultInputValue =
-    typeof defaultValue === "boolean" ? defaultValue.toString() : defaultValue;
+  let onPencilClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    setPopupOpen(true);
+  };
+  let closePopup = () => {
+    setPopupOpen(false);
+  };
+
+  let confirmAction = (value: string | number | object) => {
+    setDefaultInputValue(value);
+    onChange(value);
+    setPopupOpen(false);
+  };
+
   return (
     <div className="grow shrink self-stretch flex-col justify-center items-start inline-flex basis-full md:basis-0">
       <div className="self-stretch pr-3 pb-3 pl-3 md:pt-3 justify-end items-start inline-flex">
@@ -39,45 +58,48 @@ export function ProvideInputCell({
             id={id}
             className={classNames(
               "grow text-sm font-normal font-gt leading-[18.20px] text-right",
-              "border-gray-800 rounded-l-sm",
-              "focus:outline-none focus:ring-0 ring-0 focus:border-emerald-500",
-              inputClass,
+              " rounded-l-sm",
+              isStatusSuccess ? "bg-neutral-800 text-emerald-500" : "",
+              isCurrent
+                ? "bg-neutral-800 text-emerald-500 border-emerald-500/50"
+                : "border-gray-800",
+              isStatusError ? "bg-stone-900 text-rose-400" : "",
+              isStateDefault ? "bg-neutral-800 text-gray-400" : "",
             )}
             defaultValue={defaultInputValue}
             key={defaultInputValue}
-            onChange={debouncedOnChange}
+            disabled={true}
           />
-          <div className="w-[32px] bg-neutral-800 flex items-center justify-center rounded-r-sm border-gray-800 border border-l-0">
+          <div
+            className={classNames(
+              "w-[32px] bg-neutral-800 flex items-center justify-center rounded-r-sm  border border-l-0",
+              isCurrent ? "border-emerald-500/50" : "border-gray-800",
+            )}
+            onClick={onPencilClick}
+          >
             <Pencil
-              className={
-                status === "Success" ? "text-emerald-500" : "text-gray-400"
-              }
+              className={classNames(
+                isStatusSuccess ? "bg-neutral-800 text-emerald-500" : "",
+                isCurrent
+                  ? "bg-neutral-800 text-emerald-500"
+                  : "border-gray-800",
+                isStatusError ? "bg-stone-900 text-rose-400" : "",
+                isStateDefault ? "bg-neutral-800 text-gray-400" : "",
+              )}
             />
           </div>
         </div>
       </div>
 
-      {/* Item edition https://tppr.me/CgrAR5 */}
-      {/* <div className="relative w-[320px] border border-zinc-700 bg-zinc-200 text-gray-400 rounded-[16px] text-center p-6">
-        <div className="text-emerald-500 text-base font-normal font-gt uppercase mb-2">
-          Update input
-        </div>
-        <div className={"text-sm text-gray-400 px-6 leading-[17px]"}>
-          Stx to burn when preordering the BNS name
-        </div>
-        <input
-          className={classNames(
-            "grow text-sm font-normal font-gt leading-[18.20px] my-[20px] w-full",
-            "border-gray-800 rounded-sm",
-            "focus:outline-none focus:ring-0 ring-0 focus:border-emerald-500",
-            inputClass,
-          )}
-        />
-        <button className="transition duration-200 px-4 py-2 rounded flex-col justify-center items-center gap-2.5 inline-flex text-center text-xs font-normal font-gt uppercase leading-none tracking-wide h-[42px] w-full bg-emerald-550 text-black hover:bg-emerald-500">
-          Confirm
-        </button>
-        <XMarkIcon className="absolute top-[10px] right-[10px] w-[20px]" />
-      </div> */}
+      <UpdateInputPopup
+        actionStatus={actionStatus}
+        defaultInputValue={defaultInputValue}
+        confirmAction={confirmAction}
+        closePopup={closePopup}
+        title={title}
+        description={description}
+        visible={popupOpen}
+      />
     </div>
   );
 }
