@@ -45,17 +45,28 @@ export function ProvideInputAction({
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });
   };
-  const onChange = (e: any) => {
+  const onChange = (value: string | number | object) => {
     const { inputName, typing } = actionType.data;
     const event: ActionItemResponse = {
       actionItemId: id,
       type: "ProvideInput",
       data: {
         inputName,
-        updatedValue: toValue(e.target.value, typing),
+        updatedValue: toValue(value, typing),
       },
     };
     updateActionItem({ variables: { event: JSON.stringify(event) } });
+
+    const reviewEvent: ActionItemResponse = {
+      actionItemId: id,
+      type: "ReviewInput",
+      data: {
+        inputName,
+        valueChecked: true,
+        forceExecution: false,
+      },
+    };
+    updateActionItem({ variables: { event: JSON.stringify(reviewEvent) } });
   };
   const defaultValue = actionType.data.defaultValue;
   return (
@@ -72,6 +83,7 @@ export function ProvideInputAction({
         defaultValue={
           defaultValue !== undefined ? valueToJson(defaultValue) : undefined
         }
+        isCurrent={isCurrent}
       />
     </ActionItemRow>
   );

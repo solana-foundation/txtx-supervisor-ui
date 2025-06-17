@@ -20,7 +20,7 @@ export function ModalWrapper({ children, visible, onClick }: ModalWrapper) {
   return (
     <Transition show={visible} afterLeave={() => {}} appear>
       <Dialog
-        className="modal-close-click-target relative z-40"
+        className="modal-close-click-target relative z-40 absolute"
         onClose={() => {}}
       >
         <TransitionChild
@@ -31,11 +31,11 @@ export function ModalWrapper({ children, visible, onClick }: ModalWrapper) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="modal-close-click-target fixed inset-0 bg-gray-500 backdrop-blur-sm bg-opacity-25 transition-opacity" />
+          <div className="modal-close-click-target fixed inset-0 backdrop-blur-lg bg-opacity-25 transition-opacity" />
         </TransitionChild>
 
         <div
-          className="modal-close-click-target fixed inset-0 z-10 w-screen overflow-y-auto py-4 sm:py-6 md:py-20"
+          className="modal-close-click-target fixed inset-0 z-10 w-screen overflow-y-auto py-4 sm:py-6 md:py-20 w-full h-full flex items-center justify-center"
           onClick={modalCloseOnClick}
         >
           <TransitionChild
@@ -50,7 +50,7 @@ export function ModalWrapper({ children, visible, onClick }: ModalWrapper) {
               <div className="modal-close-click-target w-full justify-center flex flex-col items-center">
                 <div
                   onClick={modalCloseOnClick}
-                  className="modal-close-click-target w-[1024px] max-w-full min-h-full px-6 pt-16 justify-center flex flex-col inline-flex gap-8"
+                  className="modal-close-click-target max-w-[1024px] min-h-full justify-center flex flex-col inline-flex gap-8"
                 >
                   {children}
                 </div>
