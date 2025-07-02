@@ -6,9 +6,14 @@ import { classNames } from "../../utils/helpers";
 export interface InfoToolTipProps {
   text: string;
   isCurrent?: boolean;
+  className?: string;
 }
 
-export function InfoToolTip({ text, isCurrent = false }: InfoToolTipProps) {
+export function InfoToolTip({
+  text,
+  isCurrent = false,
+  className = "",
+}: InfoToolTipProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [delayHandler, setDelayHandler] = useState<NodeJS.Timeout | null>(null);
 
@@ -28,7 +33,7 @@ export function InfoToolTip({ text, isCurrent = false }: InfoToolTipProps) {
   };
 
   return (
-    <Popover className="relative flex items-center">
+    <Popover className={classNames("relative flex items-center", className)}>
       <PopoverButton
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -46,7 +51,7 @@ export function InfoToolTip({ text, isCurrent = false }: InfoToolTipProps) {
           static
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          className="absolute left-8 min-w-48 z-100 p-2 text-sm text-gray-400 bg-gray-700 rounded-lg shadow-lg hover:bg-gray-600 transition-colors"
+          className="absolute right-full mr-1 min-w-48 z-50 p-2 text-sm text-gray-400 bg-black rounded-lg shadow-lg transition-colors shadow-md"
         >
           {text}
         </PopoverPanel>
