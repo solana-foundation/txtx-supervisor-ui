@@ -27,7 +27,7 @@ export function ProvideSignedTransactionAction({
   isLast,
   isCurrent,
 }: ProvideSignedTransactionAction) {
-  const { id, actionStatus, title, description, actionType } = actionItem;
+  const { id, actionStatus, actionType } = actionItem;
   const [updateActionItem, {}] = useMutation(UPDATE_ACTION_ITEM);
   const dispatch = useAppDispatch();
 

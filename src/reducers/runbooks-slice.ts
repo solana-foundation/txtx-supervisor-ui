@@ -238,7 +238,7 @@ export const runbooksSlice = createSlice({
                   if (matchingUpdate) {
                     return {
                       ...actionItem,
-                      title: matchingUpdate.title || actionItem.title,
+                      constructInstanceName: matchingUpdate.title || actionItem.constructInstanceName,
                       description:
                         matchingUpdate.description || actionItem.description,
                       actionStatus:
@@ -269,7 +269,7 @@ export const runbooksSlice = createSlice({
                   if (matchingUpdate) {
                     return {
                       ...actionItem,
-                      title: matchingUpdate.title || actionItem.title,
+                      constructInstanceName: matchingUpdate.title || actionItem.constructInstanceName,
                       description:
                         matchingUpdate.description || actionItem.description,
                       actionStatus:

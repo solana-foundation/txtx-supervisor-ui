@@ -16,7 +16,7 @@ export default function PickInputOptionCell({
   setSelected,
 }: PickInputOptionCell) {
   const actionType = actionItem.actionType as PickInputOptionActionItemRequest;
-  const { title, description } = actionItem;
+  const { constructInstanceName, description } = actionItem;
   const { options, selected: selectedOption } = actionType.data;
   let [popupOpen, setPopupOpen] = useState(false);
   const [selected, setSelectedState] = useState(selectedOption);
@@ -55,7 +55,7 @@ export default function PickInputOptionCell({
         currentSelection={selected}
         closePopup={closePopup}
         onSubmit={onSubmit}
-        title={title}
+        title={constructInstanceName}
         description={description}
         visible={popupOpen}
       />
