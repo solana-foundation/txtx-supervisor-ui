@@ -183,6 +183,7 @@ export interface ActionItemRequest<Deserialized = true> {
   internalKey: string;
   description?: string;
   metaDescription?: string;
+  markdown?: string;
   actionStatus: Deserialized extends true ? ActionItemStatus : string;
   actionType: Deserialized extends true ? ActionItemRequestType : string;
 }

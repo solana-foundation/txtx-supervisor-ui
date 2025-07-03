@@ -212,7 +212,13 @@ export function SignTransactionRow({
   subRow,
   isCurrent,
 }: SignTransactionRow & { children: React.ReactNode }) {
-  const { index, title, description, actionStatus } = actionItem;
+  const {
+    constructInstanceName,
+    description,
+    actionStatus,
+    metaDescription,
+    internalKey,
+  } = actionItem;
   const { status } = actionStatus;
 
   const isStatusSuccess = status === "Success";
@@ -232,39 +238,43 @@ export function SignTransactionRow({
           isCurrent ? "bg-emerald-950" : "bg-gray-950",
         )}
       >
-        <div className="w-[46px] flex items-center justify-center self-stretch">
-          <div
-            className={classNames(
-              "w-[20px] aspect-square border border-emerald-500 rounded-full flex items-center justify-center transition-colors hover:border-emerald-500",
-              isStatusSuccess ? "border-emerald-500 bg-emerald-500" : "",
-              isCurrent ? "border-emerald-500" : "",
-              isStateDefault ? "border-zinc-600" : "",
-            )}
-          >
-            <CheckIcon
-              className={classNames(
-                "w-[16px] aspect-square transition-opacity",
-                !isStatusSuccess ? "opacity-0" : "",
-              )}
-            />
-          </div>
-        </div>
-
-        <div className="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
-          <div className="self-stretch py-3.5 md:py-[18px] justify-start items-start inline-flex">
+        <div className="w-full self-stretch justify-start items-start inline-flex">
+          <div className="w-[46px] flex items-center justify-center self-stretch">
             <div
               className={classNames(
-                "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
-                isStatusSuccess ? "text-emerald-620" : "",
-                isCurrent ? "text-emerald-500" : "",
-                isStateDefault ? "text-stone-500" : "",
+                "w-[20px] aspect-square border border-emerald-500 rounded-full flex items-center justify-center transition-colors hover:border-emerald-500",
+                isStatusSuccess ? "border-emerald-500 bg-emerald-500" : "",
+                isCurrent ? "border-emerald-500" : "",
+                isStateDefault ? "border-zinc-600" : "",
               )}
             >
-              <ActionItemTitle
-                title={title}
-                description={description}
-                isCurrent={isCurrent}
+              <CheckIcon
+                className={classNames(
+                  "w-[16px] aspect-square transition-opacity",
+                  !isStatusSuccess ? "opacity-0" : "",
+                )}
               />
+            </div>
+          </div>
+
+          <div className="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
+            <div className="self-stretch py-3.5 md:py-[18px] justify-start items-start inline-flex">
+              <div
+                className={classNames(
+                  "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
+                  isStatusSuccess ? "text-emerald-620" : "",
+                  isCurrent ? "text-emerald-500" : "",
+                  isStateDefault ? "text-stone-500" : "",
+                )}
+              >
+                <ActionItemTitle
+                  constructInstanceName={constructInstanceName}
+                  description={description}
+                  metaDescription={metaDescription}
+                  internalKey={internalKey}
+                  isCurrent={isCurrent}
+                />
+              </div>
             </div>
           </div>
         </div>

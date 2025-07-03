@@ -20,7 +20,7 @@ export function ProvideInputCell({
   let [defaultInputValue, setDefaultInputValue] = useState(
     typeof defaultValue === "boolean" ? defaultValue.toString() : defaultValue,
   );
-  const { id, actionStatus, title, description } = actionItem;
+  const { id, actionStatus, constructInstanceName, description } = actionItem;
   const { status } = actionStatus;
   const isStatusError = status === "Error";
   const isStatusSuccess = status === "Success";
@@ -96,7 +96,7 @@ export function ProvideInputCell({
         defaultInputValue={defaultInputValue}
         confirmAction={confirmAction}
         closePopup={closePopup}
-        title={title}
+        title={constructInstanceName}
         description={description}
         visible={popupOpen}
       />

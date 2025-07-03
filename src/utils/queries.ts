@@ -34,6 +34,7 @@ export const GET_ACTION_BLOCKS = gql`
               internalKey
               description
               metaDescription
+              markdown
               actionStatus
               actionType
             }
@@ -63,6 +64,7 @@ export const GET_MODAL_BLOCKS = gql`
               internalKey
               description
               metaDescription
+              markdown
               actionStatus
               actionType
             }
@@ -92,6 +94,7 @@ export const GET_ERROR_BLOCKS = gql`
               internalKey
               description
               metaDescription
+              markdown
               actionStatus
               actionType
             }
@@ -156,6 +159,7 @@ export const ACTION_BLOCK_EVENT_SUBSCRIPTION = gql`
               internalKey
               description
               metaDescription
+              markdown
               actionStatus
               actionType
             }
@@ -185,6 +189,7 @@ export const MODAL_BLOCK_EVENT_SUBSCRIPTION = gql`
               internalKey
               description
               metaDescription
+              markdown
               actionStatus
               actionType
             }
@@ -214,6 +219,7 @@ export const ERROR_BLOCK_EVENT_SUBSCRIPTION = gql`
               internalKey
               description
               metaDescription
+              markdown
               actionStatus
               actionType
             }

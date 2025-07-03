@@ -3,6 +3,7 @@ import { classNames } from "../../../utils/helpers";
 import { ActionItemRequest, errorDiagnostic } from "../../main/types";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { InfoToolTip } from "../../buttons/info-tool-tip";
+import MarkdownDescriptionPopup from "../../popup/markdown-description-popup";
 
 export interface ActionItemRow {
   actionItem: ActionItemRequest;
@@ -12,6 +13,7 @@ export interface ActionItemRow {
   subRow?: ActionItemSubRow;
   isCurrent: boolean;
 }
+
 export function ActionItemRow({
   actionItem,
   isFirst,
@@ -21,7 +23,14 @@ export function ActionItemRow({
   subRow,
   isCurrent,
 }: ActionItemRow & { children: React.ReactNode }) {
-  const { index, title, description, actionStatus } = actionItem;
+  const {
+    constructInstanceName,
+    description,
+    metaDescription,
+    actionStatus,
+    internalKey,
+    markdown,
+  } = actionItem;
   const { status } = actionStatus;
   // todo: handle other statuses
   let checkClass;
@@ -68,7 +77,7 @@ export function ActionItemRow({
         </div>
 
         <div className="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
-          <div className="self-stretch py-3.5 md:py-[18px] justify-start items-start inline-flex rounded">
+          <div className="self-stretch py-2.5 md:py-[12px] justify-start items-start inline-flex rounded">
             <div
               className={classNames(
                 "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
@@ -79,9 +88,12 @@ export function ActionItemRow({
               )}
             >
               <ActionItemTitle
-                title={title}
+                constructInstanceName={constructInstanceName}
                 description={description}
                 isCurrent={isCurrent}
+                metaDescription={metaDescription}
+                internalKey={internalKey}
+                markdown={markdown}
               />
             </div>
           </div>
@@ -100,30 +112,136 @@ export function ActionItemRow({
 }
 
 export interface ActionItemTitle {
-  title: string;
+  constructInstanceName: string;
+  internalKey: string;
   description?: string;
+  metaDescription?: string;
+  markdown?: string;
   isCurrent: boolean;
 }
 export function ActionItemTitle({
-  title,
+  constructInstanceName,
+  internalKey,
   description,
+  metaDescription,
+  markdown,
   isCurrent,
 }: ActionItemTitle) {
-  if (description && title) {
-    return (
-      <div className="self-stretch py-3.5 md:py-[18px] justify-start flex items-center gap-1">
-        <span>{description}</span>
-        <InfoToolTip
-          text={`This is derived from the \`${title}\` action`}
-          isCurrent={isCurrent}
-        />
-      </div>
+  const [showMarkdown, setShowMarkdown] = React.useState(false);
+  const hasDescription = !!description;
+  const hasMarkdown = !!markdown;
+  const hasNeitherDescriptionNorMarkdown = !hasDescription && !hasMarkdown;
+  const internalKeySkipDescription = internalKey === "env";
+  const showDescription = !internalKeySkipDescription;
+
+  const primary = metaDescription ? metaDescription : constructInstanceName;
+  let secondary = null;
+
+  const descriptionTextColor = isCurrent ? "text-blue-400" : "";
+
+  const markdownButtonColor = isCurrent ? "text-emerald-500" : "";
+
+  const showMarkdownButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowMarkdown(true);
+  };
+  const hideMarkdown = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setShowMarkdown(false);
+  };
+
+  if (hasDescription && hasMarkdown) {
+    secondary = (
+      <span className="font-inter text-xs font-semibold">
+        <span className={classNames(descriptionTextColor)}>{description}</span>
+        <span
+          className={classNames(
+            "uppercase font-bold ml-2 hover:brightness-150",
+            markdownButtonColor,
+          )}
+          onClick={showMarkdownButtonClick}
+        >
+          more
+        </span>
+      </span>
     );
-  } else if (description) {
-    return <div>{description}</div>;
+  } else if (hasDescription && !hasMarkdown) {
+    secondary = (
+      <span
+        className={classNames(
+          "font-gt text-xs font-semibold",
+          descriptionTextColor,
+        )}
+      >
+        {description}
+      </span>
+    );
+  } else if (!hasDescription && hasMarkdown) {
+    secondary = (
+      <span
+        className={classNames(
+          "uppercase font-gt text-xs font-semibold hover:brightness-150",
+          markdownButtonColor,
+        )}
+        onClick={showMarkdownButtonClick}
+      >
+        read documentation
+      </span>
+    );
   } else {
-    return <div>{title}</div>;
+    secondary = (
+      <span
+        className={classNames(
+          "font-gt text-xs font-semibold",
+          isCurrent ? "text-amber-400" : "",
+        )}
+      >
+        ⚠ No description provided
+      </span>
+    );
   }
+
+  const descriptionEl = showDescription ? (
+    <div className="flex flex-col gap-0.5">
+      {primary}
+      {secondary}
+    </div>
+  ) : (
+    <span>{metaDescription}</span>
+  );
+
+  const tooltipText = internalKeySkipDescription
+    ? "This action is available by default when your `txtx.yml` has multiple environments"
+    : `This is derived from the \`${constructInstanceName}\` construct`;
+
+  // console.groupCollapsed(constructInstanceName);
+  // console.log("internalKey", internalKey);
+  // console.log("metaDescription", metaDescription);
+  // console.log("description", description);
+  // console.log("markdown", markdown);
+  // console.groupEnd();
+
+  return (
+    <div className="w-full self-stretch justify-start flex flex-col items-start">
+      <div className="w-full flex items-center justify-between">
+        {descriptionEl}
+        <InfoToolTip
+          text={tooltipText}
+          isCurrent={isCurrent}
+          className="mr-4"
+        />
+        {markdown ? (
+          <MarkdownDescriptionPopup
+            title="Description"
+            subTitle={`Markdown description for the '${constructInstanceName}' construct.`}
+            markdown={markdown}
+            closePopup={hideMarkdown}
+            visible={showMarkdown}
+          />
+        ) : undefined}
+      </div>
+    </div>
+  );
 }
 
 export interface ActionItemSubRow {
@@ -137,7 +255,7 @@ export function ActionItemSubRow({
   isError = false,
 }: ActionItemSubRow) {
   let footerEl = footer ? (
-    <div className="absolute bottom-4 right-4 self-stretch justify-end items-end gap-2.5 inline-flex">
+    <div className="absolute bottom-4 right-4 self-stretch justify-end items-end gap-2.5 inline-flex ">
       {footer}
     </div>
   ) : null;
@@ -145,7 +263,7 @@ export function ActionItemSubRow({
   return (
     <div
       className={classNames(
-        "overflow-auto w-full p-3 justify-start items-start inline-flex bg-black rounded-b",
+        "overflow-auto w-full p-3 pb-0 justify-start items-start inline-flex bg-black rounded-b",
         footer ? "min-h-20" : "",
         // todo, investigate why scrollbar styling isn't working
         "scrollbar-thin scrollbar-h-1",

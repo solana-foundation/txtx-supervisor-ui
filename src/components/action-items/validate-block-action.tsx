@@ -16,7 +16,7 @@ export function ValidateBlockAction({
   actionItem,
   index,
 }: ValidateBlockAction) {
-  const { id, title, actionStatus } = actionItem;
+  const { id, constructInstanceName, actionStatus } = actionItem;
   const { status } = actionStatus;
   const clientIsOperator = useAppSelector(selectIsOperator);
   const validationReady = useAppSelector((state: any) =>
@@ -52,9 +52,13 @@ export function ValidateBlockAction({
         onClick={onClick}
         className="uppercase w-full"
         size={Button.ButtonSizes.l}
-        variant={index === 1 ? Button.ButtonVariants.secondary : Button.ButtonVariants.primary}
+        variant={
+          index === 1
+            ? Button.ButtonVariants.secondary
+            : Button.ButtonVariants.primary
+        }
       >
-        {title}
+        {constructInstanceName}
       </Button>
     </div>
   );
