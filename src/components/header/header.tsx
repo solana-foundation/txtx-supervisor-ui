@@ -27,7 +27,7 @@ export function Header({ title, panelScrollHandler, loading }: HeaderProps) {
     setShowMarkdown(false);
   };
 
-  const descriptionIsMultiline = description.includes("\n");
+  const descriptionIsMultiline = description?.includes("\n");
   const descriptionEl = descriptionIsMultiline ? (
     <div
       className="uppercase font-bold self-stretch text-sm font-gt text-center text-emerald-500 cursor-pointer hover:brightness-150"
