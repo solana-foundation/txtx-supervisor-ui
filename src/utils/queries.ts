@@ -30,8 +30,11 @@ export const GET_ACTION_BLOCKS = gql`
             actionItems {
               id
               index
-              title
+              constructInstanceName
+              internalKey
               description
+              metaDescription
+              markdown
               actionStatus
               actionType
             }
@@ -57,8 +60,11 @@ export const GET_MODAL_BLOCKS = gql`
             actionItems {
               id
               index
-              title
+              constructInstanceName
+              internalKey
               description
+              metaDescription
+              markdown
               actionStatus
               actionType
             }
@@ -84,8 +90,11 @@ export const GET_ERROR_BLOCKS = gql`
             actionItems {
               id
               index
-              title
+              constructInstanceName
+              internalKey
               description
+              metaDescription
+              markdown
               actionStatus
               actionType
             }
@@ -146,8 +155,11 @@ export const ACTION_BLOCK_EVENT_SUBSCRIPTION = gql`
             actionItems {
               id
               index
-              title
+              constructInstanceName
+              internalKey
               description
+              metaDescription
+              markdown
               actionStatus
               actionType
             }
@@ -173,8 +185,11 @@ export const MODAL_BLOCK_EVENT_SUBSCRIPTION = gql`
             actionItems {
               id
               index
-              title
+              constructInstanceName
+              internalKey
               description
+              metaDescription
+              markdown
               actionStatus
               actionType
             }
@@ -200,8 +215,11 @@ export const ERROR_BLOCK_EVENT_SUBSCRIPTION = gql`
             actionItems {
               id
               index
-              title
+              constructInstanceName
+              internalKey
               description
+              metaDescription
+              markdown
               actionStatus
               actionType
             }

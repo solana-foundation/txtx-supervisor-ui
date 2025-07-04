@@ -162,7 +162,7 @@ export function SubGroup({ subGroup }: SubGroup) {
   return (
     <div
       className={classNames(
-        "self-stretch flex-col justify-start items-start inline-flex border rounded overflow-hidden",
+        "self-stretch flex-col justify-start items-start inline-flex border rounded",
         isCurrentSubGroup && !isErrorSubGroup
           ? "border-emerald-650"
           : "border-gray-800",

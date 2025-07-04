@@ -179,8 +179,11 @@ export interface ActionItemRequest<Deserialized = true> {
   id: string;
   constructUuid: string | null;
   index: number;
-  title: string;
+  constructInstanceName: string;
+  internalKey: string;
   description?: string;
+  metaDescription?: string;
+  markdown?: string;
   actionStatus: Deserialized extends true ? ActionItemStatus : string;
   actionType: Deserialized extends true ? ActionItemRequestType : string;
 }

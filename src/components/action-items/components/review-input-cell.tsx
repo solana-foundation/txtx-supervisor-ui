@@ -56,7 +56,7 @@ export function ReviewInputCell({
         >
           <div
             className={classNames(
-              "text-sm font-normal font-gt uppercase leading-[18.20px] break-all",
+              "text-sm font-normal font-gt leading-[18.20px] break-all",
               isStatusSuccess ? "text-emerald-500" : "",
               isCurrent ? "text-gray-950" : "",
               isStatusError ? "text-rose-400" : "",
