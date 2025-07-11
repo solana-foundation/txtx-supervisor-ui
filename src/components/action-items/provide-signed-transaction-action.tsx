@@ -218,6 +218,7 @@ export function SignTransactionRow({
     actionStatus,
     metaDescription,
     internalKey,
+    markdown,
   } = actionItem;
   const { status } = actionStatus;
 
@@ -273,6 +274,7 @@ export function SignTransactionRow({
                   metaDescription={metaDescription}
                   internalKey={internalKey}
                   isCurrent={isCurrent}
+                  markdown={markdown}
                 />
               </div>
             </div>
