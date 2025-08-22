@@ -82,7 +82,7 @@ export function VerifyThirdPartySignatureAction({
                   variant={Button.ButtonVariants.primary}
                   className={classNames(
                     "uppercase",
-                    linkOpened ? "brightness-125" : "",
+                    linkOpened ? "brightness-125" : "brightness-75",
                   )}
                 >
                   Check Signature Completion
@@ -95,7 +95,7 @@ export function VerifyThirdPartySignatureAction({
                 variant={Button.ButtonVariants.primary}
                 className={classNames(
                   "uppercase",
-                  linkOpened ? "" : "brightness-125",
+                  linkOpened ? "brightness-75" : "brightness-125",
                 )}
               >{`Open ${thirdPartyName}`}</Button>
               <div></div>
