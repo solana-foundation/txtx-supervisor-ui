@@ -128,7 +128,7 @@ export function ActionItemTitle({
   isCurrent,
 }: ActionItemTitle) {
   const [showMarkdown, setShowMarkdown] = React.useState(false);
-  const hasDescription = !!description;
+  const hasDescription = description != null;
   const hasMarkdown = !!markdown;
   const hasNeitherDescriptionNorMarkdown = !hasDescription && !hasMarkdown;
   const internalKeySkipDescription = internalKey === "env";
