@@ -13,7 +13,12 @@ export interface RunbookMetadata {
   name: string;
   description: string;
   uuid: string;
-  registeredAddons: string[];
+  addonData: AddonData[];
+}
+
+export interface AddonData {
+  addonName: string;
+  rpcApiUrl: string | null;
 }
 
 export interface UpdateActionItemEvent<Deserialized = true> {

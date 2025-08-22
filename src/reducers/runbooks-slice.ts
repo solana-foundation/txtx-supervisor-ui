@@ -28,7 +28,7 @@ const initialState: Runbook = {
   metadata: {
     name: "",
     description: "",
-    registeredAddons: [],
+    addonData: [],
     uuid: "",
   },
   actionBlocks: [],
@@ -238,7 +238,9 @@ export const runbooksSlice = createSlice({
                   if (matchingUpdate) {
                     return {
                       ...actionItem,
-                      constructInstanceName: matchingUpdate.title || actionItem.constructInstanceName,
+                      constructInstanceName:
+                        matchingUpdate.title ||
+                        actionItem.constructInstanceName,
                       description:
                         matchingUpdate.description || actionItem.description,
                       actionStatus:
@@ -269,7 +271,9 @@ export const runbooksSlice = createSlice({
                   if (matchingUpdate) {
                     return {
                       ...actionItem,
-                      constructInstanceName: matchingUpdate.title || actionItem.constructInstanceName,
+                      constructInstanceName:
+                        matchingUpdate.title ||
+                        actionItem.constructInstanceName,
                       description:
                         matchingUpdate.description || actionItem.description,
                       actionStatus:
@@ -315,6 +319,7 @@ export const runbooksSlice = createSlice({
   }),
   selectors: {
     selectRunbook: (state) => state,
+    selectActiveFlowData: (state: Runbook) => state.metadata.addonData,
     selectProgressBlocks: (state) => state.progressBlocks,
     selectVisibleProgressBlock: createSelector(
       [(state) => state.progressBlocks],
@@ -411,4 +416,5 @@ export const {
   selectRunbookComplete,
   selectActiveActionId,
   selectProgressBlocks,
+  selectActiveFlowData,
 } = runbooksSlice.selectors;

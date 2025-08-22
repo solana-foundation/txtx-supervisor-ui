@@ -13,12 +13,6 @@ import { RustSolanaTransaction } from "./codec";
 
 const SOLANA_WALLET_STORAGE_KEY = "txtx_solana_wallet";
 const NAMESPACE = "svm";
-
-const localhostEndpoint = "http://127.0.0.1:8899";
-const devnet = WalletAdapterNetwork.Devnet;
-const devnetEndpoint = clusterApiUrl(devnet);
-const testnet = WalletAdapterNetwork.Testnet;
-const testnetEndpoint = clusterApiUrl(testnet);
 const mainnet = WalletAdapterNetwork.Mainnet;
 const mainnetEndpoint = clusterApiUrl(mainnet);
 
@@ -33,11 +27,8 @@ const storeSelectedSolanaWallet = (wallet: Adapter | null) => {
 export default class SolanaAddon implements Addon {
   private solConnect: SolanaConnect;
   private connection: Connection;
-  private testnetConnection: Connection;
-  private devnetConnection: Connection;
-  private localhostConnection: Connection;
 
-  constructor() {
+  constructor(rpcApiUrl: string) {
     this.solConnect = new SolanaConnect();
 
     this.solConnect.onWalletChange(storeSelectedSolanaWallet);
@@ -47,37 +38,25 @@ export default class SolanaAddon implements Addon {
       this.solConnect.activeWallet = wallet;
       this.solConnect.getWallet()?.connect();
     }
-
-    this.connection = new Connection(mainnetEndpoint);
-    this.testnetConnection = new Connection(testnetEndpoint);
-    this.devnetConnection = new Connection(devnetEndpoint);
-    this.localhostConnection = new Connection(localhostEndpoint);
+    this.connection = new Connection(rpcApiUrl);
   }
 
   public injectProvider(inner: any): React.FunctionComponentElement<any> {
-    const withMainnetConnectionProvider = createElement(
-      ConnectionContext.Provider,
-      {
-        children: inner,
-        value: { connection: this.connection },
-      },
-    );
-    const withTestnetConnection = createElement(ConnectionContext.Provider, {
-      children: withMainnetConnectionProvider,
-      value: { connection: this.testnetConnection },
+    const connectionProvider = createElement(ConnectionContext.Provider, {
+      children: inner,
+      value: { connection: this.connection },
     });
-    const withDevnetConnection = createElement(ConnectionContext.Provider, {
-      children: withTestnetConnection,
-      value: { connection: this.devnetConnection },
-    });
-    const withLocalhostConnection = createElement(ConnectionContext.Provider, {
-      children: withDevnetConnection,
-      value: { connection: this.localhostConnection },
-    });
-    return withLocalhostConnection;
+    return connectionProvider;
   }
 
   public connectWallet(): void {
+    const wallet = this.solConnect.getWallet();
+
+    if (wallet) {
+      if (wallet.connected) {
+        return;
+      }
+    }
     this.solConnect.openMenu();
   }
 
@@ -152,13 +131,39 @@ export default class SolanaAddon implements Addon {
       const rustTx = RustSolanaTransaction.from_hex(txHex);
       console.log("rustTx", rustTx);
 
-      const connection = this.getConnection(networkId);
+      const connection = this.connection;
 
-      const recentBlockhash = await connection.getLatestBlockhash();
+      let recentBlockhash;
+      try {
+        recentBlockhash = await connection.getLatestBlockhash();
+      } catch (error) {
+        const normalizedMainnetEndpoint = mainnetEndpoint.endsWith("/")
+          ? mainnetEndpoint.slice(0, -1)
+          : mainnetEndpoint;
+
+        const normalizedRpcEndpoint = this.connection.rpcEndpoint.endsWith("/")
+          ? this.connection.rpcEndpoint.slice(0, -1)
+          : this.connection.rpcEndpoint;
+
+        if (normalizedRpcEndpoint === normalizedMainnetEndpoint) {
+          return {
+            error: `Failed to get latest blockhash. The default RPC endpoint (${mainnetEndpoint}) does not allow requests from localhost. Configure your runbook manifest (txtx.yml) with an alternate RPC endpoint for mainnet deployments.`,
+          };
+        } else {
+          return {
+            error: "Failed to get latest blockhash; RPC error: " + error,
+          };
+        }
+      }
       let unsignedTx = rustTx.toTransaction(recentBlockhash);
       console.log("unsignedTx", unsignedTx);
 
-      const signed = await wallet.signTransaction(unsignedTx);
+      let signed;
+      try {
+        signed = await wallet.signTransaction(unsignedTx);
+      } catch (error) {
+        return { error: "Failed to sign transaction: " + error };
+      }
       console.log("signed", signed);
 
       const signedRustTx = RustSolanaTransaction.fromTransaction(signed);
@@ -176,19 +181,5 @@ export default class SolanaAddon implements Addon {
     _networkId: string,
   ): Promise<string | AddonError> {
     throw new Error("Method not implemented.");
-  }
-
-  private getConnection(networkId: string): Connection {
-    switch (networkId) {
-      case "mainnet":
-        return this.connection;
-      case "testnet":
-        return this.testnetConnection;
-      case "devnet":
-        return this.devnetConnection;
-      case "localhost":
-      default:
-        return this.localhostConnection;
-    }
   }
 }
