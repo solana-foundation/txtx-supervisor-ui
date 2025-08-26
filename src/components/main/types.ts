@@ -1,5 +1,3 @@
-import { ReactElement } from "react";
-
 export interface ClientDiscoveryResponse {
   clientType: "Participant" | "Operator";
   needsCredentials: boolean;
@@ -20,6 +18,21 @@ export interface AddonData {
   addonName: string;
   rpcApiUrl: string | null;
 }
+
+export interface LogEvent {
+  type: LogType;
+  uuid: string;
+  summary: string;
+  message: string;
+  level: LogLevel;
+  status: LogStatus | null;
+}
+
+export type LogType = "Static" | "Transient";
+
+export type LogLevel = "trace" | "debug" | "info" | "warn" | "error";
+
+export type LogStatus = "Pending" | "Success" | "Failure";
 
 export interface UpdateActionItemEvent<Deserialized = true> {
   id: string;
@@ -61,12 +74,6 @@ export interface ErrorBlock<Deserialized = true> {
   visible: boolean;
   panel: ErrorPanelData<Deserialized>;
 }
-export interface ProgressBlock {
-  type: "ProgressBar";
-  uuid: string;
-  visible: boolean;
-  panel: ConstructProgressBarStatuses[];
-}
 
 export interface ActionPanelData<Deserialized = true> {
   title: string;
@@ -86,29 +93,6 @@ export interface ErrorPanelData<Deserialized = true> {
   groups: ActionGroup<Deserialized>[];
 }
 
-export interface ConstructProgressBarStatuses {
-  constructDid: string;
-  statuses: ProgressBarStatus[];
-}
-
-export interface ProgressBarStatusUpdate {
-  progressBarUuid: string;
-  constructDid: string;
-  newStatus: ProgressBarStatus;
-}
-
-export interface ProgressBarVisibilityUpdate {
-  progressBarUuid: string;
-  visible: boolean;
-}
-
-export interface ProgressBarStatus {
-  status: string;
-  statusColor: ProgressBarStatusColor;
-  message: string;
-  diagnostic?: Diagnostic;
-}
-export type ProgressBarStatusColor = "Green" | "Yellow" | "Red" | "Purple";
 export function deserializeBlock<
   T extends ModalBlock<false> | ActionBlock<false> | ErrorBlock<false>,
 >(

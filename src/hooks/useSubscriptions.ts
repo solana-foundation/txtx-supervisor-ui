@@ -3,31 +3,24 @@ import {
   ACTION_BLOCK_EVENT_SUBSCRIPTION,
   CLEAR_BLOCKS_EVENT_SUBSCRIPTION,
   ERROR_BLOCK_EVENT_SUBSCRIPTION,
+  LOG_EVENT_SUBSCRIPTION,
   MODAL_BLOCK_EVENT_SUBSCRIPTION,
-  PROGRESS_BLOCK_EVENT_SUBSCRIPTION,
   RUNBOOK_COMPLETED_EVENT_SUBSCRIPTION,
   UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION,
-  UPDATE_PROGRESS_BAR_STATUS_SUBSCRIPTION,
-  UPDATE_PROGRESS_BAR_VISIBILITY_SUBSCRIPTION,
 } from "../utils/queries";
 import { useEffect } from "react";
 import {
   ActionBlock,
   ErrorBlock,
   ModalBlock,
-  ProgressBarStatusUpdate,
-  ProgressBarVisibilityUpdate,
-  ProgressBlock,
   UpdateActionItemEvent,
 } from "../components/main/types";
 import {
   clearBlocks,
-  pushProgressBlockStatus,
+  pushLogEvent,
   setActionBlocks,
   setErrorBlocks,
   setModalBlocks,
-  setProgressBlockVisibility,
-  setProgressBlocks,
   setRunbookComplete,
   updateActionItems,
 } from "../reducers/runbooks-slice";
@@ -47,10 +40,6 @@ export default function useSubscriptions() {
     ERROR_BLOCK_EVENT_SUBSCRIPTION,
     {},
   );
-  const { data: progressBlockEvent } = useSubscription(
-    PROGRESS_BLOCK_EVENT_SUBSCRIPTION,
-    {},
-  );
   const { data: updateActionItemsEvent } = useSubscription(
     UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION,
     {},
@@ -59,18 +48,12 @@ export default function useSubscriptions() {
     CLEAR_BLOCKS_EVENT_SUBSCRIPTION,
     {},
   );
-  const { data: updateProgressBarStatusEvent } = useSubscription(
-    UPDATE_PROGRESS_BAR_STATUS_SUBSCRIPTION,
-    {},
-  );
-  const { data: updateProgressBarVisibilityEvent } = useSubscription(
-    UPDATE_PROGRESS_BAR_VISIBILITY_SUBSCRIPTION,
-    {},
-  );
   const { data: runbookCompletedEvent } = useSubscription(
     RUNBOOK_COMPLETED_EVENT_SUBSCRIPTION,
     {},
   );
+
+  const { data: logEvent } = useSubscription(LOG_EVENT_SUBSCRIPTION, {});
 
   useEffect(() => {
     if (actionBlockEvent !== undefined) {
@@ -94,13 +77,6 @@ export default function useSubscriptions() {
   }, [errorBlockEvent]);
 
   useEffect(() => {
-    if (progressBlockEvent !== undefined) {
-      const block: ProgressBlock = progressBlockEvent.progressBlockEvent;
-      dispatch(setProgressBlocks([block]));
-    }
-  }, [progressBlockEvent]);
-
-  useEffect(() => {
     if (clearBlocksEvent !== undefined) {
       dispatch(clearBlocks("ActionPanel"));
     }
@@ -115,24 +91,14 @@ export default function useSubscriptions() {
   }, [updateActionItemsEvent]);
 
   useEffect(() => {
-    if (updateProgressBarStatusEvent !== undefined) {
-      const update: ProgressBarStatusUpdate =
-        updateProgressBarStatusEvent.updateProgressBarStatusEvent;
-      dispatch(pushProgressBlockStatus(update));
-    }
-  }, [updateProgressBarStatusEvent]);
-
-  useEffect(() => {
-    if (updateProgressBarVisibilityEvent !== undefined) {
-      const update: ProgressBarVisibilityUpdate =
-        updateProgressBarVisibilityEvent.updateProgressBarVisibilityEvent;
-      dispatch(setProgressBlockVisibility(update));
-    }
-  }, [updateProgressBarVisibilityEvent]);
-
-  useEffect(() => {
     if (runbookCompletedEvent !== undefined) {
       dispatch(setRunbookComplete(runbookCompletedEvent));
     }
   }, [runbookCompletedEvent]);
+
+  useEffect(() => {
+    if (logEvent !== undefined) {
+      dispatch(pushLogEvent(logEvent.logEvent));
+    }
+  }, [logEvent]);
 }

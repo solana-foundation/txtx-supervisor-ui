@@ -7,12 +7,10 @@ import {
   BlockType,
   ActionBlock,
   ModalBlock,
-  ProgressBlock,
   deserializeActionItemEvent,
-  ProgressBarStatusUpdate,
-  ProgressBarVisibilityUpdate,
   ErrorBlock,
   ActionItemRequest,
+  LogEvent,
 } from "../components/main/types";
 
 export interface Runbook {
@@ -20,7 +18,7 @@ export interface Runbook {
   actionBlocks: ActionBlock[];
   modalBlocks: ModalBlock[];
   errorBlocks: ErrorBlock[];
-  progressBlocks: ProgressBlock[];
+  logEvents: LogEvent[];
   namespacedNetworks: { [key: string]: string[] };
   runbookComplete: boolean;
 }
@@ -34,7 +32,7 @@ const initialState: Runbook = {
   actionBlocks: [],
   modalBlocks: [],
   errorBlocks: [],
-  progressBlocks: [],
+  logEvents: [],
   namespacedNetworks: {},
   runbookComplete: false,
 };
@@ -125,84 +123,12 @@ export const runbooksSlice = createSlice({
         });
       },
     ),
-    setProgressBlocks: create.reducer(
-      (state, action: PayloadAction<ProgressBlock[]>) => {
-        const newBlocks = action.payload;
-        for (const newBlock of newBlocks) {
-          const foundIdx = state.progressBlocks.findIndex(
-            (existing) => existing.uuid === newBlock.uuid,
-          );
-
-          if (foundIdx === -1) {
-            state.progressBlocks.push(newBlock);
-          } else {
-            if (newBlock.panel.length > 0) {
-              state.progressBlocks[foundIdx] = newBlock;
-            }
-          }
-        }
-      },
-    ),
-    pushProgressBlockStatus: create.reducer(
-      (state, action: PayloadAction<ProgressBarStatusUpdate>) => {
-        const { progressBarUuid, constructDid, newStatus } = action.payload;
-
-        const progressBarIdx = state.progressBlocks.findIndex(
-          (bar) => bar.uuid === progressBarUuid,
-        );
-        if (progressBarIdx === -1) {
-          state.progressBlocks.push({
-            type: "ProgressBar",
-            uuid: progressBarUuid,
-            visible: false,
-            panel: [
-              {
-                constructDid,
-                statuses: [newStatus],
-              },
-            ],
-          });
-          return;
-        }
-        const progressBar = state.progressBlocks[progressBarIdx];
-        const constructStatusesIdx = progressBar.panel.findIndex(
-          (p) => p.constructDid === constructDid,
-        );
-        if (constructStatusesIdx === -1) {
-          state.progressBlocks[progressBarIdx].panel.push({
-            constructDid: constructDid,
-            statuses: [newStatus],
-          });
-        } else {
-          const constructStatuses = progressBar.panel[constructStatusesIdx];
-          constructStatuses.statuses.push(newStatus);
-          state.progressBlocks[progressBarIdx].panel[constructStatusesIdx] =
-            constructStatuses;
-        }
-      },
-    ),
-    setProgressBlockVisibility: create.reducer(
-      (state, action: PayloadAction<ProgressBarVisibilityUpdate>) => {
-        const { progressBarUuid, visible } = action.payload;
-
-        const progressBarIdx = state.progressBlocks.findIndex(
-          (bar) => bar.uuid === progressBarUuid,
-        );
-        if (progressBarIdx === undefined) return;
-        if (state.progressBlocks[progressBarIdx] === undefined) return;
-        state.progressBlocks[progressBarIdx].visible = visible;
-      },
-    ),
-    // appendBlock: create.reducer(
-    //   (state, action: PayloadAction<Block<false>>) => {
-    //     const block: Block = deserializeBlock(action.payload);
-    //     if (block.type === "ActionPanel") {
-    //       state.actionBlocks.push(block);
-    //     } else if (block.type === "ModalPanel") {
-    //       state.modalPanels.push(block);
-    //     }
-    //   },
-    // ),
+    setLogEvents: create.reducer((state, action: PayloadAction<LogEvent[]>) => {
+      state.logEvents = action.payload || [];
+    }),
+    pushLogEvent: create.reducer((state, action: PayloadAction<LogEvent>) => {
+      state.logEvents.push(action.payload);
+    }),
     clearBlocks: create.reducer((state, action: PayloadAction<BlockType>) => {
       if (action.payload === "ActionPanel") {
         return {
@@ -320,16 +246,36 @@ export const runbooksSlice = createSlice({
   selectors: {
     selectRunbook: (state) => state,
     selectActiveFlowData: (state: Runbook) => state.metadata.addonData,
-    selectProgressBlocks: (state) => state.progressBlocks,
-    selectVisibleProgressBlock: createSelector(
-      [(state) => state.progressBlocks],
-      (progressBlocks: ProgressBlock[]) =>
-        progressBlocks.find((block) => block.visible),
-    ),
-    selectIsSomeProgressBlockVisible: createSelector(
-      [(state) => state.progressBlocks],
-      (progressBlocks: ProgressBlock[]) =>
-        progressBlocks.some((block) => block.visible),
+    selectLogs: (state: Runbook) => state.logEvents,
+    selectActiveTransientLogs: createSelector(
+      [(state) => state.logEvents],
+      (logEvents: LogEvent[]) => {
+        if (logEvents.length === 0) return [];
+        // Get the Uuid of all LogEvents that are transient and pending
+        // For each of those Uuids, check to see if the latest log event
+        // associated with it is Pending, Successful, or Failure
+        // if Pending - it is "active" (aka spinner still spinning, map still showing)
+        // if other status - is is inactive
+        const transientPendingEventUuids = logEvents
+          .filter(
+            (event) => event.type === "Transient" && event.status === "Pending",
+          )
+          .map((event) => event.uuid);
+        const uniqueTransientPendingEventUuids = Array.from(
+          new Set(transientPendingEventUuids),
+        );
+        let activeTransientLogs = [];
+        for (let uuid of uniqueTransientPendingEventUuids) {
+          const eventsForUuid = logEvents.filter(
+            (event) => event.uuid === uuid,
+          );
+          const latestEventForUuid = eventsForUuid[eventsForUuid.length - 1];
+          if (latestEventForUuid.status === "Pending") {
+            activeTransientLogs.push(latestEventForUuid);
+          }
+        }
+        return activeTransientLogs;
+      },
     ),
     selectPanelValidationReady: createSelector(
       [(state) => state.actionBlocks, (_, buttonUuid: string) => buttonUuid],
@@ -396,25 +342,22 @@ export const {
   setActionBlocks,
   setModalBlocks,
   setErrorBlocks,
-  setProgressBlocks,
-  // appendBlock,
+  setLogEvents,
+  pushLogEvent,
   setMetadata,
   clearBlocks,
   updateActionItems,
   setModalVisibility,
-  pushProgressBlockStatus,
-  setProgressBlockVisibility,
   setRunbookComplete,
 } = runbooksSlice.actions;
 
 export const {
   selectRunbook,
-  selectVisibleProgressBlock,
   selectPanelValidationReady,
   selectModalValidationReady,
-  selectIsSomeProgressBlockVisible,
   selectRunbookComplete,
   selectActiveActionId,
-  selectProgressBlocks,
   selectActiveFlowData,
+  selectLogs,
+  selectActiveTransientLogs,
 } = runbooksSlice.selectors;
