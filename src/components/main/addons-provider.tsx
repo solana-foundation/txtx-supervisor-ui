@@ -1,10 +1,11 @@
 import { useEffect, useState, ReactNode } from "react";
 import addonManager from "../../utils/addons-initializer";
-import { selectRunbook } from "../../reducers/runbooks-slice";
+import { selectActiveFlowData } from "../../reducers/runbooks-slice";
 import { useAppSelector } from "../../hooks";
 import React from "react";
 import { Result } from "../../utils/result";
 import useRunbookMetadata from "../../hooks/useRunbookMetadata";
+import { AddonData } from "./types";
 
 export interface AddonsProviderProps {
   children: ReactNode;
@@ -17,11 +18,9 @@ const ADDONS: { [key: string]: () => Promise<any> } = {
 };
 
 export default function AddonsProvider({ children }: AddonsProviderProps) {
-  const { metadata } = useAppSelector(selectRunbook);
-  const { registeredAddons } = metadata;
+  const addonData = useAppSelector(selectActiveFlowData);
   const [loading, setLoading] = useState(true);
   const [WrappedApp, setWrappedApp] = useState(null as any);
-
 
   const { loading: metadataLoading } = useRunbookMetadata();
 
@@ -31,10 +30,10 @@ export default function AddonsProvider({ children }: AddonsProviderProps) {
   // and we can call `setWrappedApp` only once.
 
   useEffect(() => {
-    const loadAddons = async (registeredAddons: string[]) => {
+    const loadAddons = async (addonData: AddonData[]) => {
       const injections: InjectorCaller[] = [];
-      for (const addon of registeredAddons) {
-        const addonImport = ADDONS[addon];
+      for (const { addonName, rpcApiUrl } of addonData) {
+        const addonImport = ADDONS[addonName];
         if (!addonImport) {
           continue;
         }
@@ -44,14 +43,17 @@ export default function AddonsProvider({ children }: AddonsProviderProps) {
           if (!addonModule || !addonModule.default) {
             continue;
           }
-          addonManager.registerAddon(addon, new addonModule.default());
+          addonManager.registerAddon(
+            addonName,
+            new addonModule.default(rpcApiUrl),
+          );
 
           injections.push((input: any) => {
             return ((addon: string) =>
-              addonManager.injectProvider(addon, input))(addon);
+              addonManager.injectProvider(addon, input))(addonName);
           });
         } catch (error) {
-          console.error("Failed to load addon", addon, error);
+          console.error("Failed to load addon", addonName, error);
         }
       }
 
@@ -70,9 +72,9 @@ export default function AddonsProvider({ children }: AddonsProviderProps) {
     };
     setLoading(true);
     if (!metadataLoading) {
-      loadAddons(registeredAddons);
+      loadAddons(addonData);
     }
-  }, [registeredAddons, metadataLoading]);
+  }, [addonData, metadataLoading]);
 
   if (loading || WrappedApp === null) {
     return <div>Loading...</div>;
@@ -83,4 +85,3 @@ export default function AddonsProvider({ children }: AddonsProviderProps) {
 type InjectorCaller = (
   inner: any,
 ) => Result<React.FunctionComponentElement<any>, string>;
-

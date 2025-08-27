@@ -9,12 +9,12 @@ export default function useRunbookMetadata(): {
   const dispatch = useAppDispatch();
   const { loading } = useQuery(GET_RUNBOOK_METADATA, {
     onCompleted: (result) => {
-      const { name, description, registeredAddons } = result.runbook;
+      const { name, description, addonData } = result.runbook;
       const metadata = {
         name,
         description,
         uuid: "",
-        registeredAddons,
+        addonData,
       };
       dispatch(setMetadata(metadata));
       return metadata;
