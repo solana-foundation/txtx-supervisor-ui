@@ -104,21 +104,15 @@ export const GET_ERROR_BLOCKS = gql`
     }
   }
 `;
-export const GET_PROGRESS_BLOCKS = gql`
-  query GetProgressBlocks {
-    progressBlocks {
+export const GET_LOG_EVENTS = gql`
+  query GetLogEvents {
+    logs {
       type
       uuid
-      visible
-      panel {
-        constructDid
-        statuses {
-          status
-          statusColor
-          message
-          diagnostic
-        }
-      }
+      summary
+      message
+      level
+      status
     }
   }
 `;
@@ -130,7 +124,7 @@ export const GET_RUNBOOK_METADATA = gql`
       description
       addonData {
         addonName
-        rpcApiUrl      
+        rpcApiUrl
       }
     }
   }
@@ -232,24 +226,6 @@ export const ERROR_BLOCK_EVENT_SUBSCRIPTION = gql`
     }
   }
 `;
-export const PROGRESS_BLOCK_EVENT_SUBSCRIPTION = gql`
-  subscription OnProgressBlockEvent {
-    progressBlockEvent {
-      type
-      uuid
-      visible
-      panel {
-        constructDid
-        statuses {
-          status
-          statusColor
-          message
-          diagnostic
-        }
-      }
-    }
-  }
-`;
 
 export const CLEAR_BLOCKS_EVENT_SUBSCRIPTION = gql`
   subscription OnClearBlockEvent {
@@ -267,32 +243,21 @@ export const UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION = gql`
   }
 `;
 
-export const UPDATE_PROGRESS_BAR_STATUS_SUBSCRIPTION = gql`
-  subscription OnProgressBarUpdateEvent {
-    updateProgressBarStatusEvent {
-      progressBarUuid
-      constructDid
-      newStatus {
-        status
-        statusColor
-        message
-        diagnostic
-      }
-    }
-  }
-`;
-
-export const UPDATE_PROGRESS_BAR_VISIBILITY_SUBSCRIPTION = gql`
-  subscription OnProgressBarVisibilityUpdate {
-    updateProgressBarVisibilityEvent {
-      progressBarUuid
-      visible
-    }
-  }
-`;
-
 export const RUNBOOK_COMPLETED_EVENT_SUBSCRIPTION = gql`
   subscription OnRunbookCompleted {
     runbookCompleteEvent
+  }
+`;
+
+export const LOG_EVENT_SUBSCRIPTION = gql`
+  subscription OnLogEvent {
+    logEvent {
+      type
+      uuid
+      summary
+      message
+      level
+      status
+    }
   }
 `;
