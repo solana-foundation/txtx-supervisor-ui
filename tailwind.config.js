@@ -10,6 +10,7 @@ module.exports = {
     colors: {
       amber: {
         400: "#FFB615",
+        800: "#BF8B00",
       },
       black: "#000000",
       blue: {

@@ -4,21 +4,21 @@ import {
   GET_ACTION_BLOCKS,
   GET_ERROR_BLOCKS,
   GET_MODAL_BLOCKS,
-  GET_PROGRESS_BLOCKS,
+  GET_LOG_EVENTS,
   GET_RUNBOOK_METADATA,
 } from "../utils/queries";
 import {
   ActionBlock,
   ErrorBlock,
   ModalBlock,
-  ProgressBlock,
+  LogEvent,
 } from "../components/main/types";
 import {
   setActionBlocks,
   setErrorBlocks,
   setMetadata,
   setModalBlocks,
-  setProgressBlocks,
+  setLogEvents,
 } from "../reducers/runbooks-slice";
 
 export default function useQueries(): { loading: boolean } {
@@ -41,10 +41,10 @@ export default function useQueries(): { loading: boolean } {
       dispatch(setErrorBlocks(blocks));
     },
   });
-  const { loading: progressBlocksLoading } = useQuery(GET_PROGRESS_BLOCKS, {
+  const { loading: logEventsLoading } = useQuery(GET_LOG_EVENTS, {
     onCompleted: (data) => {
-      const blocks: ProgressBlock[] = data.progressBlocks;
-      dispatch(setProgressBlocks(blocks));
+      const blocks: LogEvent[] = data.logs;
+      dispatch(setLogEvents(blocks));
     },
   });
 
@@ -52,7 +52,7 @@ export default function useQueries(): { loading: boolean } {
     loading:
       actionBlocksLoading ||
       modalBlocksLoading ||
-      progressBlocksLoading ||
-      errorBlocksLoading
+      logEventsLoading ||
+      errorBlocksLoading,
   };
 }

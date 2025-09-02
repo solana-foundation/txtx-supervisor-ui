@@ -1,32 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../../hooks";
-import { selectVisibleProgressBlock } from "../../reducers/runbooks-slice";
+import { selectActiveTransientLogs } from "../../reducers/runbooks-slice";
 import ProgressAnimation from "../animations/progress-animation";
 import { classNames } from "../../utils/helpers";
-import { ProgressBarStatus } from "./types";
+import { LogEvent } from "./types";
 
 export default function ProgressOutput() {
-  const progressBlock = useAppSelector(selectVisibleProgressBlock);
-  const [statuses, setStatuses] = useState<ProgressBarStatus[][]>([]);
+  const activeTransientLogs = useAppSelector(selectActiveTransientLogs);
   const [doScroll, setDoScroll] = useState<boolean>(true);
-  const height = progressBlock === undefined ? "h-0" : "h-auto";
+  const height = activeTransientLogs === undefined ? "h-0" : "h-auto";
 
+  console.log("active transient logs", activeTransientLogs);
+  const isEmpty =
+    activeTransientLogs === undefined || activeTransientLogs.length === 0;
+
+  const [debouncedIsEmpty, setDebouncedIsEmpty] = useState(isEmpty);
+
+  // debounce to avoid flickering of state changes
   useEffect(() => {
-    if (progressBlock === undefined) {
-      setDoScroll(true);
-      setStatuses([]);
+    if (!isEmpty) {
+      const timeout = setTimeout(() => {
+        setDebouncedIsEmpty(false);
+      }, 300);
+      return () => clearTimeout(timeout);
     } else {
-      setStatuses(
-        progressBlock.panel.map(
-          (statusesForConstruct) => statusesForConstruct.statuses,
-        ),
-      );
+      const timeout = setTimeout(() => {
+        setDebouncedIsEmpty(true);
+      }, 300);
+      return () => clearTimeout(timeout);
     }
-  }, [progressBlock]);
+  }, [isEmpty]);
 
-  if (progressBlock === undefined) {
+  // reset scrolling when emptied
+  useEffect(() => {
+    if (debouncedIsEmpty) {
+      setDoScroll(true);
+    }
+  }, [debouncedIsEmpty]);
+
+  if (debouncedIsEmpty) {
     return <div></div>;
   }
+
   setTimeout(() => {
     if (doScroll) {
       document
@@ -42,20 +57,18 @@ export default function ProgressOutput() {
     >
       <div className="relative mx-auto w-[1024px] max-w-full min-h-full px-6 justify-center flex flex-col inline-flex gap-8">
         <ProgressAnimation />
-        <StatusUpdates statuses={statuses} />
+        <ActiveTransientLogsList logs={activeTransientLogs} />
       </div>
     </div>
   );
 }
 
-interface StatusUpdates {
-  statuses: ProgressBarStatus[][];
+interface ActiveTransientLogsList {
+  logs: LogEvent[];
 }
-function StatusUpdates({ statuses }: StatusUpdates) {
-  const content = statuses?.map((statusesForConstruct, i) => {
-    const idx = statusesForConstruct.length - 1;
-    const latestStatusForConstruct = statusesForConstruct[idx];
-    return <StatusUpdate status={latestStatusForConstruct} key={i} />;
+function ActiveTransientLogsList({ logs }: ActiveTransientLogsList) {
+  const content = logs?.map((log) => {
+    return <ActiveTransientLogLine log={log} key={log.uuid} />;
   }) || <div></div>;
 
   return (
@@ -63,7 +76,7 @@ function StatusUpdates({ statuses }: StatusUpdates) {
       <div
         className={classNames(
           "transition-opacity ease-in-out w-[370px] bg-black bg-opacity-50 rounded-lg p-4 float-right mr-6",
-          statuses.length ? "opacity-100" : "opacity-0",
+          logs.length ? "opacity-100" : "opacity-0",
         )}
       >
         {content}
@@ -72,17 +85,19 @@ function StatusUpdates({ statuses }: StatusUpdates) {
   );
 }
 
-interface StatusUpdate {
-  status: ProgressBarStatus;
+interface ActiveTransientLogLine {
+  log: LogEvent;
 }
-function StatusUpdate({ status }: StatusUpdate) {
-  const { status: statusStr, message, statusColor } = status;
+function ActiveTransientLogLine({ log }: ActiveTransientLogLine) {
+  const { status, summary, message } = log;
   const color =
-    statusColor === "Yellow"
+    status === "Pending"
       ? "text-amber-400"
-      : statusColor === "Red"
+      : status === "Failure"
         ? "text-rose-400"
         : "text-emerald-400";
+
+  const isSpinning = status === "Pending";
 
   return (
     <div className="w-full self-stretch justify-between items-start inline-flex">
@@ -96,11 +111,30 @@ function StatusUpdate({ status }: StatusUpdate) {
       </div>
       <div className="w-1/5 self-stretch flex-col justify-between items-start inline-flex">
         <div
-          className={classNames("text-right text-xs font-gt uppercase", color)}
+          className={classNames(
+            "text-right text-xs font-gt uppercase flex items-center justify-end gap-1",
+            color,
+          )}
         >
-          {statusStr}
+          {summary}
+          {isSpinning && <Spinner loading={isSpinning} />}
         </div>
       </div>
     </div>
   );
 }
+
+const Spinner: React.FC<{ loading: boolean }> = ({ loading }) => {
+  if (loading) {
+    return (
+      <span className="inline-flex items-center ml-1 align-middle">
+        <span className="relative flex h-2 w-2">
+          {/* Gradient ring */}
+          <span className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-800 animate-spin"></span>
+          {/* Inner circle for pulsing */}
+          <span className="absolute inset-[2px] rounded-full bg-black animate-pulse"></span>
+        </span>
+      </span>
+    );
+  }
+};
