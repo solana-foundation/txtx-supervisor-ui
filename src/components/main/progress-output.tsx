@@ -10,7 +10,6 @@ export default function ProgressOutput() {
   const [doScroll, setDoScroll] = useState<boolean>(true);
   const height = activeTransientLogs === undefined ? "h-0" : "h-auto";
 
-  console.log("active transient logs", activeTransientLogs);
   const isEmpty =
     activeTransientLogs === undefined || activeTransientLogs.length === 0;
 
