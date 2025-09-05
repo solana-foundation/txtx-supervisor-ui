@@ -21,12 +21,12 @@ export default function ProgressOutput() {
     if (!isEmpty) {
       const timeout = setTimeout(() => {
         setDebouncedIsEmpty(false);
-      }, 300);
+      }, 500);
       return () => clearTimeout(timeout);
     } else {
       const timeout = setTimeout(() => {
         setDebouncedIsEmpty(true);
-      }, 300);
+      }, 500);
       return () => clearTimeout(timeout);
     }
   }, [isEmpty]);
