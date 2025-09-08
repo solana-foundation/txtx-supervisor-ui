@@ -5,7 +5,6 @@ import { store } from "./store";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 // import initializePosthog from "./posthog";
-import { BrowserRouter } from "react-router-dom";
 
 // initializePosthog();
 
@@ -16,9 +15,7 @@ let persistor = persistStore(store);
 root.render(
   <Provider store={store}>
     <PersistGate persistor={persistor}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <App />
     </PersistGate>
   </Provider>,
 );

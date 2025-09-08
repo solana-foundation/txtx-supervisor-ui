@@ -2,16 +2,13 @@ import React from "react";
 import { useAppSelector } from "../../hooks";
 import RunbookStatusBar from "./runbook-status-bar";
 import { selectRunbook, setMetadata } from "../../reducers/runbooks-slice";
-import { selectIsOperator } from "../../reducers/participant-auth-slice";
 import { classNames } from "../../utils/helpers";
 import MarkdownDescriptionPopup from "../popup/markdown-description-popup";
 
 export interface HeaderProps {
-  title: string;
-  panelScrollHandler: any;
   loading: boolean;
 }
-export function Header({ title, panelScrollHandler, loading }: HeaderProps) {
+export function Header({ loading }: HeaderProps) {
   const [showMarkdown, setShowMarkdown] = React.useState(false);
   const { metadata } = useAppSelector(selectRunbook);
 

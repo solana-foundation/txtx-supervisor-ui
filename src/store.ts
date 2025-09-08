@@ -16,18 +16,8 @@ import storage from "redux-persist/lib/storage";
 import { runbookStepSlice } from "./reducers/runbook-step-slice";
 import { panelRowsSlice } from "./reducers/panel-rows-slice";
 import { errorSlice } from "./reducers/error-slice";
-import { participantAuthSlice } from "./reducers/participant-auth-slice";
 
 const configureReducer = () => {
-  // we want some reducers persisted at a slug-specific level
-  const path = window.location.pathname;
-  const match = path.match(/^\/c\/([^/]+)/);
-  const slug = match ? match[1] : "default";
-  const slugPersistConfig = {
-    key: `${slug}`,
-    storage,
-  };
-
   const generalPersistConfig = {
     key: "runbooks",
     storage,
@@ -39,10 +29,6 @@ const configureReducer = () => {
     activeStep: runbookStepSlice.reducer,
     panelRows: panelRowsSlice.reducer,
     errors: errorSlice.reducer,
-    participantAuth: persistReducer(
-      slugPersistConfig,
-      participantAuthSlice.reducer,
-    ),
   });
 
   const persistedReducer = persistReducer(generalPersistConfig, rootReducer);

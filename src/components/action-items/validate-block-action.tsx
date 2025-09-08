@@ -4,7 +4,6 @@ import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
 import { classNames } from "../../utils/helpers";
 import { selectPanelValidationReady } from "../../reducers/runbooks-slice";
-import { selectIsOperator } from "../../reducers/participant-auth-slice";
 import { useAppSelector } from "../../hooks";
 import { Button } from "@txtxrun/txtx-ui-kit";
 
@@ -18,7 +17,6 @@ export function ValidateBlockAction({
 }: ValidateBlockAction) {
   const { id, constructInstanceName, actionStatus } = actionItem;
   const { status } = actionStatus;
-  const clientIsOperator = useAppSelector(selectIsOperator);
   const validationReady = useAppSelector((state: any) =>
     selectPanelValidationReady(state, id),
   );
@@ -33,9 +31,6 @@ export function ValidateBlockAction({
   };
   let isDisabled = !validationReady;
   if (status === "Success") {
-    isDisabled = true;
-  }
-  if (!clientIsOperator) {
     isDisabled = true;
   }
 

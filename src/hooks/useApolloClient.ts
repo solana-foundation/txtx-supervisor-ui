@@ -1,4 +1,9 @@
-import { ApolloClient, InMemoryCache, HttpLink, ApolloLink } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  HttpLink,
+  ApolloLink,
+} from "@apollo/client";
 import { Defer20220824Handler } from "@apollo/client/incremental";
 import { LocalState } from "@apollo/client/local-state";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
@@ -7,13 +12,7 @@ import { createClient } from "graphql-ws";
 import { setContext } from "@apollo/client/link/context";
 import { BACKEND_URL, BACKEND_WS_URL } from "../App";
 
-export default function useApolloClient(
-  tokenNeeded: boolean,
-  token: string | undefined,
-) {
-  if (tokenNeeded && token === undefined) return;
-  const authHeader = tokenNeeded && token ? `Bearer ${token}` : "";
-
+export default function useApolloClient() {
   const httpLink = new HttpLink({
     uri: `${BACKEND_URL}/gql/v1/graphql`,
   });
@@ -22,7 +21,6 @@ export default function useApolloClient(
     return {
       headers: {
         ...headers,
-        authorization: authHeader,
       },
     };
   });
@@ -30,11 +28,6 @@ export default function useApolloClient(
   const wsLink = new GraphQLWsLink(
     createClient({
       url: `${BACKEND_WS_URL}/gql/v1/subscriptions`,
-      connectionParams: {
-        headers: {
-          authorization: authHeader,
-        },
-      },
     }),
   );
 
@@ -68,7 +61,7 @@ export default function useApolloClient(
     If you are not using the `@defer` directive in your application,
     you can safely remove this option.
     */
-    incrementalHandler: new Defer20220824Handler()
+    incrementalHandler: new Defer20220824Handler(),
   });
   return apolloClient;
 }
@@ -78,7 +71,6 @@ Start: Inserted by Apollo Client 3->4 migration codemod.
 Copy the contents of this block into a `.d.ts` file in your project to enable correct response types in your custom links.
 If you do not use the `@defer` directive in your application, you can safely remove this block.
 */
-
 
 import "@apollo/client";
 import { Defer20220824Handler } from "@apollo/client/incremental";
@@ -90,4 +82,3 @@ declare module "@apollo/client" {
 /*
 End: Inserted by Apollo Client 3->4 migration codemod.
 */
-
