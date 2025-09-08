@@ -7,7 +7,7 @@ import {
 import { ActionItemRequest, ActionItemResponse, Value } from "../main/types";
 import { Button } from "@txtxrun/txtx-ui-kit";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import addonManager from "../../utils/addons-initializer";
 import { classNames } from "../../utils/helpers";
 import { CheckIcon } from "@heroicons/react/20/solid";

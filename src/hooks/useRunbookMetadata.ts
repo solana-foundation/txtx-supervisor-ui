@@ -1,15 +1,16 @@
-import { useQuery } from "@apollo/client";
+import { useEffect } from "react";
+import { useQuery } from "@apollo/client/react";
 import { useAppDispatch } from "../hooks";
 import { GET_RUNBOOK_METADATA } from "../utils/queries";
 import { setMetadata } from "../reducers/runbooks-slice";
 
-export default function useRunbookMetadata(): {
-  loading: boolean;
-} {
+export default function useRunbookMetadata(): { loading: boolean } {
   const dispatch = useAppDispatch();
-  const { loading } = useQuery(GET_RUNBOOK_METADATA, {
-    onCompleted: (result) => {
-      const { name, description, addonData } = result.runbook;
+  const { data, loading } = useQuery<any>(GET_RUNBOOK_METADATA);
+
+  useEffect(() => {
+    if (data?.runbook) {
+      const { name, description, addonData } = data.runbook;
       const metadata = {
         name,
         description,
@@ -17,9 +18,8 @@ export default function useRunbookMetadata(): {
         addonData,
       };
       dispatch(setMetadata(metadata));
-      return metadata;
-    },
-  });
+    }
+  }, [data, dispatch]);
 
   return {
     loading,

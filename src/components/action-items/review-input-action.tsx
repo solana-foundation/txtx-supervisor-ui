@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { ActionItemRequest, ActionItemResponse } from "../main/types";
 import { ActionItemRow } from "./components/action-item-row";
 import { ReviewInputCell } from "./components/review-input-cell";

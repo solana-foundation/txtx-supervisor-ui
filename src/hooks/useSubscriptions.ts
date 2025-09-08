@@ -1,4 +1,4 @@
-import { useSubscription } from "@apollo/client";
+import { useSubscription } from "@apollo/client/react";
 import {
   ACTION_BLOCK_EVENT_SUBSCRIPTION,
   CLEAR_BLOCKS_EVENT_SUBSCRIPTION,
@@ -28,77 +28,71 @@ import { useAppDispatch } from "../hooks";
 
 export default function useSubscriptions() {
   const dispatch = useAppDispatch();
-  const { data: actionBlockEvent } = useSubscription(
-    ACTION_BLOCK_EVENT_SUBSCRIPTION,
-    {},
-  );
-  const { data: modalBlockEvent } = useSubscription(
-    MODAL_BLOCK_EVENT_SUBSCRIPTION,
-    {},
-  );
-  const { data: errorBlockEvent } = useSubscription(
-    ERROR_BLOCK_EVENT_SUBSCRIPTION,
-    {},
-  );
-  const { data: updateActionItemsEvent } = useSubscription(
-    UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION,
-    {},
-  );
-  const { data: clearBlocksEvent } = useSubscription(
-    CLEAR_BLOCKS_EVENT_SUBSCRIPTION,
-    {},
-  );
-  const { data: runbookCompletedEvent } = useSubscription(
-    RUNBOOK_COMPLETED_EVENT_SUBSCRIPTION,
-    {},
-  );
 
-  const { data: logEvent } = useSubscription(LOG_EVENT_SUBSCRIPTION, {});
+  const { data: actionBlockEvent } = useSubscription<any>(
+    ACTION_BLOCK_EVENT_SUBSCRIPTION,
+  );
+  const { data: modalBlockEvent } = useSubscription<any>(
+    MODAL_BLOCK_EVENT_SUBSCRIPTION,
+  );
+  const { data: errorBlockEvent } = useSubscription<any>(
+    ERROR_BLOCK_EVENT_SUBSCRIPTION,
+  );
+  const { data: updateActionItemsEvent } = useSubscription<any>(
+    UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION,
+  );
+  const { data: clearBlocksEvent } = useSubscription<any>(
+    CLEAR_BLOCKS_EVENT_SUBSCRIPTION,
+  );
+  const { data: runbookCompletedEvent } = useSubscription<any>(
+    RUNBOOK_COMPLETED_EVENT_SUBSCRIPTION,
+  );
+  const { data: logEvent } = useSubscription<any>(LOG_EVENT_SUBSCRIPTION);
 
   useEffect(() => {
-    if (actionBlockEvent !== undefined) {
+    if (actionBlockEvent) {
       const block: ActionBlock<false> = actionBlockEvent.actionBlockEvent;
       dispatch(setActionBlocks([block]));
     }
-  }, [actionBlockEvent]);
+  }, [actionBlockEvent, dispatch]);
 
   useEffect(() => {
-    if (modalBlockEvent !== undefined) {
+    if (modalBlockEvent) {
       const block: ModalBlock<false> = modalBlockEvent.modalBlockEvent;
       dispatch(setModalBlocks([block]));
     }
-  }, [modalBlockEvent]);
+  }, [modalBlockEvent, dispatch]);
 
   useEffect(() => {
-    if (errorBlockEvent !== undefined) {
+    if (errorBlockEvent) {
       const block: ErrorBlock<false> = errorBlockEvent.errorBlockEvent;
       dispatch(setErrorBlocks([block]));
     }
-  }, [errorBlockEvent]);
+  }, [errorBlockEvent, dispatch]);
 
   useEffect(() => {
-    if (clearBlocksEvent !== undefined) {
+    if (clearBlocksEvent) {
       dispatch(clearBlocks("ActionPanel"));
     }
-  }, [clearBlocksEvent]);
+  }, [clearBlocksEvent, dispatch]);
 
   useEffect(() => {
-    if (updateActionItemsEvent !== undefined) {
+    if (updateActionItemsEvent) {
       const updates: UpdateActionItemEvent<false>[] =
         updateActionItemsEvent.updateActionItemsEvent;
       dispatch(updateActionItems(updates));
     }
-  }, [updateActionItemsEvent]);
+  }, [updateActionItemsEvent, dispatch]);
 
   useEffect(() => {
-    if (runbookCompletedEvent !== undefined) {
+    if (runbookCompletedEvent) {
       dispatch(setRunbookComplete(runbookCompletedEvent.runbookCompleteEvent));
     }
-  }, [runbookCompletedEvent]);
+  }, [runbookCompletedEvent, dispatch]);
 
   useEffect(() => {
-    if (logEvent !== undefined) {
+    if (logEvent) {
       dispatch(pushLogEvent(logEvent.logEvent));
     }
-  }, [logEvent]);
+  }, [logEvent, dispatch]);
 }

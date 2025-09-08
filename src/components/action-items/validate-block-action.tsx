@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { ActionItemRequest, ActionItemResponse } from "../main/types";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";

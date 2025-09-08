@@ -10,7 +10,7 @@ import useQueries from "./hooks/useQueries";
 import { Navigate, Route, Routes, useParams } from "react-router-dom";
 import { useParticipantAuth } from "./hooks/useParticipantAuth";
 import Login from "./components/login";
-import { ApolloProvider } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
 import useApolloClient from "./hooks/useApolloClient";
 import { SuspensePage } from "./components/pages/suspense";
 import AddonsProvider from "./components/main/addons-provider";

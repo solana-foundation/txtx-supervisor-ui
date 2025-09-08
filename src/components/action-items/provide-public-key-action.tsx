@@ -7,7 +7,7 @@ import { ActionItemRequest, ActionItemResponse, toValue } from "../main/types";
 import { ReviewInputCell } from "./components/review-input-cell";
 import { Button } from "@txtxrun/txtx-ui-kit";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import {
   getPublicKeyFromLocalStorage,
   getStorageKey,
