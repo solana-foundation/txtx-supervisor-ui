@@ -11,6 +11,7 @@ import {
   ErrorBlock,
   ActionItemRequest,
   LogEvent,
+  RunbookCompletedEvent,
 } from "../components/main/types";
 
 export interface Runbook {
@@ -21,6 +22,7 @@ export interface Runbook {
   logEvents: LogEvent[];
   namespacedNetworks: { [key: string]: string[] };
   runbookComplete: boolean;
+  runbookCleanupInfo?: RunbookCompletedEvent[];
 }
 const initialState: Runbook = {
   metadata: {
@@ -238,8 +240,9 @@ export const runbooksSlice = createSlice({
       },
     ),
     setRunbookComplete: create.reducer(
-      (state, action: PayloadAction<boolean>) => {
-        state.runbookComplete = action.payload;
+      (state, action: PayloadAction<RunbookCompletedEvent[]>) => {
+        state.runbookComplete = true;
+        state.runbookCleanupInfo = action.payload;
       },
     ),
   }),
@@ -293,6 +296,7 @@ export const runbooksSlice = createSlice({
       },
     ),
     selectRunbookComplete: (state) => state.runbookComplete,
+    selectRunbookCleanupInfo: (state) => state.runbookCleanupInfo,
     selectActiveActionId: createSelector(
       [
         selectActiveErrorActionId,
@@ -356,6 +360,7 @@ export const {
   selectPanelValidationReady,
   selectModalValidationReady,
   selectRunbookComplete,
+  selectRunbookCleanupInfo,
   selectActiveActionId,
   selectActiveFlowData,
   selectLogs,

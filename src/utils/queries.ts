@@ -245,7 +245,12 @@ export const UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION = gql`
 
 export const RUNBOOK_COMPLETED_EVENT_SUBSCRIPTION = gql`
   subscription OnRunbookCompleted {
-    runbookCompleteEvent
+    runbookCompleteEvent {
+      constructDid
+      constructName
+      title
+      details
+    }
   }
 `;
 

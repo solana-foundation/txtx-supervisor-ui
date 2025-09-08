@@ -92,7 +92,7 @@ export default function useSubscriptions() {
 
   useEffect(() => {
     if (runbookCompletedEvent !== undefined) {
-      dispatch(setRunbookComplete(runbookCompletedEvent));
+      dispatch(setRunbookComplete(runbookCompletedEvent.runbookCompleteEvent));
     }
   }, [runbookCompletedEvent]);
 

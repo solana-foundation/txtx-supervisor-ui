@@ -523,3 +523,10 @@ function toHexString(byteArray: string) {
 export function formatDiagnosticForDisplay(input: Diagnostic) {
   return input.message;
 }
+
+export interface RunbookCompletedEvent {
+  constructDid: string;
+  constructName: string;
+  title: string;
+  details: string;
+}
