@@ -9,7 +9,8 @@
     "clean": "rm -rf .parcel-cache & rm -rf dist",
     "build": "parcel build --no-scope-hoist --no-source-maps",
     "rebuild": "npm run clean && npm run i && npm run build",
-    "i": "dotenv npm i"
+    "i": "dotenv npm i",
+    "ci": "dotenv npm ci"
   },
   "keywords": [],
   "author": "",
