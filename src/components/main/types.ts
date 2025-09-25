@@ -113,6 +113,7 @@ export function deserializeBlock<
 
 export interface BeginFlowData {
   index: number;
+  totalFlows: number;
   name: string;
   description: string | undefined;
 }

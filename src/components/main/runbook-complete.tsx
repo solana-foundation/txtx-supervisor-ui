@@ -26,8 +26,18 @@ export default function RunbookComplete() {
       confetti.stop();
     }, 2500);
   }
+
+  setTimeout(() => {
+    document
+      .getElementById("runbook-complete")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 200);
+
   return (
-    <div className="w-full min-h-32 p-4 md:p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex">
+    <div
+      className="w-full min-h-32 p-4 md:p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex"
+      id="runbook-complete"
+    >
       <div className="self-stretch justify-start items-start inline-flex mb-4">
         <div className="scroll-mt-44 grow shrink basis-0 text-emerald-500 text-base font-normal font-gt uppercase">
           Runbook Complete
