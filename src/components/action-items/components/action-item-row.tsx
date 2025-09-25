@@ -12,6 +12,7 @@ export interface ActionItemRow {
   onClick: any;
   subRow?: ActionItemSubRow;
   isCurrent: boolean;
+  displayStatus?: boolean;
 }
 
 export function ActionItemRow({
@@ -22,6 +23,7 @@ export function ActionItemRow({
   onClick,
   subRow,
   isCurrent,
+  displayStatus = true,
 }: ActionItemRow & { children: React.ReactNode }) {
   const {
     constructInstanceName,
@@ -57,22 +59,32 @@ export function ActionItemRow({
           isCurrent ? "bg-emerald-950" : "bg-gray-950",
         )}
       >
-        <div className="w-[46px] flex items-center justify-center self-stretch">
+        <div
+          className={classNames(
+            "flex items-center justify-center self-stretch",
+            displayStatus ? "w-[46px]" : "w-0 pl-4",
+          )}
+        >
           <div
             className={classNames(
-              "w-[20px] aspect-square border border-emerald-500 rounded-full flex items-center justify-center transition-colors hover:border-emerald-500",
+              "flex items-center justify-center",
+              displayStatus
+                ? "w-[20px] aspect-square border border-emerald-500 rounded-full transition-colors hover:border-emerald-500"
+                : "w-0",
               isStatusSuccess ? "border-emerald-500 bg-emerald-500" : "",
               isCurrent ? "border-emerald-500" : "",
               isStateDefault ? "border-zinc-600" : "",
               isStatusError ? "border-rose-400" : "",
             )}
           >
-            <CheckIcon
-              className={classNames(
-                "w-[16px] aspect-square transition-opacity",
-                !isStatusSuccess ? "opacity-0" : "",
-              )}
-            />
+            {displayStatus && (
+              <CheckIcon
+                className={classNames(
+                  "w-[16px] aspect-square transition-opacity",
+                  !isStatusSuccess ? "opacity-0" : "",
+                )}
+              />
+            )}
           </div>
         </div>
 
