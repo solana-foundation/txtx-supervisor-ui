@@ -103,7 +103,68 @@ export const runbooksSlice = createSlice({
         let actionBlocks: ActionBlock[] = state.actionBlocks;
         action.payload.forEach((serializedBlock) => {
           const block = deserializeBlock(serializedBlock);
-          actionBlocks.push(block);
+          let blockExists = false;
+          // loop over all existing action blocks to see if a block with all of the same actions+action ids exists
+          for (const existingBlock of actionBlocks) {
+            if (existingBlock.type !== block.type) continue;
+            if (existingBlock.panel.groups.length !== block.panel.groups.length)
+              continue;
+            let allGroupsMatch = true;
+            for (let i = 0; i < existingBlock.panel.groups.length; i++) {
+              const existingGroup = existingBlock.panel.groups[i];
+              const newGroup = block.panel.groups[i];
+              if (
+                existingGroup.subGroups.length !== newGroup.subGroups.length
+              ) {
+                allGroupsMatch = false;
+                break;
+              }
+
+              let allSubGroupsMatch = true;
+              for (let j = 0; j < existingGroup.subGroups.length; j++) {
+                const existingSubGroup = existingGroup.subGroups[j];
+                const newSubGroup = newGroup.subGroups[j];
+                if (
+                  existingSubGroup.actionItems.length !==
+                  newSubGroup.actionItems.length
+                ) {
+                  allSubGroupsMatch = false;
+                  allGroupsMatch = false;
+                  break;
+                }
+
+                let allItemsMatch = true;
+                for (let k = 0; k < existingSubGroup.actionItems.length; k++) {
+                  if (
+                    existingSubGroup.actionItems[k].id !==
+                    newSubGroup.actionItems[k].id
+                  ) {
+                    allItemsMatch = false;
+                    break;
+                  }
+                }
+                if (!allItemsMatch) {
+                  allSubGroupsMatch = false;
+                  allGroupsMatch = false;
+                  break;
+                }
+              }
+            }
+            if (!allGroupsMatch) continue;
+            blockExists = true;
+            break;
+          }
+          if (blockExists) {
+            console.warn(
+              `Action block with uuid ${block.uuid} already exists, replacing it.`,
+            );
+            // if the block already exists, replace it
+            actionBlocks = actionBlocks.map((b) =>
+              b.uuid === block.uuid ? block : b,
+            );
+          } else {
+            actionBlocks.push(block);
+          }
         });
       },
     ),

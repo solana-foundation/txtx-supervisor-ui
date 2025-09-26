@@ -1,13 +1,33 @@
 /** @type {import('tailwindcss').Config} */
 const defaultTheme = require("tailwindcss/defaultTheme");
 
+const primaryGreen = "#00D992";
+
 module.exports = {
   content: [
     "./src/**/*.{html,js,ts,jsx,tsx}",
-    "!./node_modules/@txtxrun/txtx-ui-kit/dist/styles.css",
+    "./node_modules/@txtxrun/txtx-ui-kit/dist/styles.css",
   ],
+  darkMode: "class",
   theme: {
     colors: {
+      buttonPrimaryBorder: "#102924",
+      buttonPrimaryHover: "#10372C",
+
+      buttonSecondary: "#000000",
+      buttonSecondaryHover: "#313131",
+
+      buttonGhostBg: "#ffffff",
+      buttonGhostBorder: "#000000",
+      buttonGhostBorderHover: "#F1FCFB",
+
+      buttonWhiteBg: "#F1FCFB",
+      buttonWhiteBgHover: "#EEF8FF",
+
+      textButtonPrimary: primaryGreen,
+      textButtonSecondary: "#A9ADAE",
+      textButtonGhost: "#000000",
+      textButtonWhite: "#000000",
       amber: {
         400: "#FFB615",
         800: "#BF8B00",
@@ -24,7 +44,7 @@ module.exports = {
         300: "#6ACF9B",
         350: "#44edc2",
         400: "#34d399",
-        500: "#00D992",
+        500: primaryGreen,
         550: "#04B179",
         600: "#059669",
         620: "#31715A",

@@ -31,6 +31,7 @@ export function DisplayOutputAction({
       isLast={isLast}
       onClick={onClick}
       isCurrent={false}
+      displayStatus={false}
     >
       <ReviewInputCell
         value={actionType.data.value}
