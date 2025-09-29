@@ -63,7 +63,7 @@
     "redux-persist": "6.0.0",
     "remark-gfm": "4.0.1",
     "solana-connect": "0.1.10",
-    "viem": "2.21.6",
+    "viem": "^2.37.8",
     "wagmi": "2.16.9"
   },
   "overrides": {
