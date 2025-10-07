@@ -68,8 +68,9 @@ export default function Runbook({
           } else {
             const isFirstIncompletePanel =
               firstNotSuccessUuidBlock === block.uuid;
-            const wasPreviousBlockFlow =
-              extractBeginFlowActions(actionBlocks[i - 1]).length > 0;
+            const wasPreviousBlockFlow = actionBlocks[i - 1]
+              ? extractBeginFlowActions(actionBlocks[i - 1]).length > 0
+              : false;
             const doScrollIntoView =
               isFirstIncompletePanel &&
               !wasPreviousBlockFlow &&
