@@ -159,10 +159,22 @@ export default class EvmAddon implements Addon {
     if (!chain) {
       return { error: `Chain id ${parsedTransaction.chainId} not supported.` };
     }
+
+    const client = wagmiConfig.getClient({chainId: chain.id});
+    if (!client.account) {
+      return { error: "No connected account found in wagmi client." };
+    }
+    const getNonce = client.account.getNonce;
+    if (!getNonce) {
+      return { error: "getNonce function not available on account." };
+    }
+    const noncePls = await getNonce();
+
     let sendTransactionParams = toSendTransactionParams(
       parsedTransaction,
       signerAddress,
       chain,
+      noncePls
     );
 
     const txHash = await sendTransaction(wagmiConfig, sendTransactionParams);
@@ -182,6 +194,7 @@ function toSendTransactionParams(
   tx: TransactionSerializable,
   signerAddress: string,
   chain: Chain,
+  nonce: bigint
 ): SendTransactionParameters {
   return {
     account: toHexPrefixed(signerAddress),
@@ -189,7 +202,7 @@ function toSendTransactionParams(
     data: tx.data,
     gas: tx.gas,
     gasPrice: tx.gasPrice,
-    nonce: tx.nonce,
+    nonce: Number(nonce),
     to: tx.to,
     value: tx.value,
   };
