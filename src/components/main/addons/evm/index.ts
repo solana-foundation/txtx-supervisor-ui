@@ -8,6 +8,8 @@ import {
   Config,
   getAccount,
   getChainId,
+  getConnections,
+  getTransactionCount,
   sendTransaction,
   signMessage,
   switchChain,
@@ -20,8 +22,9 @@ import {
 } from "viem";
 import supportedChains from "./chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider } from "wagmi";
+import { useTransactionCount, WagmiProvider } from "wagmi";
 import { createElement } from "react";
+import { getTransactionCountQueryOptions } from "wagmi/query";
 
 const projectId = "a750324b860cf7867328c96408bc03ac";
 const metadata = {
@@ -152,7 +155,6 @@ export default class EvmAddon implements Addon {
       }
     }
     const parsedTransaction = parseTransaction(toHexPrefixed(txHex));
-
     let chain = wagmiConfig.chains.find(
       (chain) => chain.id === parsedTransaction.chainId,
     );
@@ -160,24 +162,18 @@ export default class EvmAddon implements Addon {
       return { error: `Chain id ${parsedTransaction.chainId} not supported.` };
     }
 
-    console.log("Retrieving wagmi client for chain id:", chain.id);
-    const client = wagmiConfig.getClient({ chainId: chain.id });
-    if (!client.account) {
-      return { error: "No connected account found in wagmi client." };
-    }
-    const getNonce = client.account.getNonce;
-    if (!getNonce) {
-      return { error: "getNonce function not available on account." };
-    }
     console.log("Getting nonce for address:", signerAddress);
-    const noncePls = await getNonce();
-    console.log("Retrieved nonce:", noncePls);
+    const nonce = await getTransactionCount(wagmiConfig, {
+      address: signerAddress as any,
+      chainId: chain.id,
+    });
+    console.log("Retrieved nonce:", nonce);
 
     let sendTransactionParams = toSendTransactionParams(
       parsedTransaction,
       signerAddress,
       chain,
-      noncePls,
+      nonce,
     );
 
     const txHash = await sendTransaction(wagmiConfig, sendTransactionParams);
@@ -197,7 +193,7 @@ function toSendTransactionParams(
   tx: TransactionSerializable,
   signerAddress: string,
   chain: Chain,
-  nonce: bigint,
+  nonce: number,
 ): SendTransactionParameters {
   console.log("Preparing transaction with nonce:", nonce);
   console.log("Transaction nonce:", tx.nonce);
@@ -207,7 +203,7 @@ function toSendTransactionParams(
     data: tx.data,
     gas: tx.gas,
     gasPrice: tx.gasPrice,
-    nonce: Number(nonce),
+    nonce: nonce,
     to: tx.to,
     value: tx.value,
   };
