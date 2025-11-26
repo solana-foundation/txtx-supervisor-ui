@@ -8,12 +8,11 @@ import {
   Config,
   getAccount,
   getChainId,
-  getConnections,
-  getTransactionCount,
   sendTransaction,
   signMessage,
   switchChain,
 } from "@wagmi/core";
+import NonceManager from "./nonce";
 import {
   Chain,
   parseTransaction,
@@ -22,9 +21,8 @@ import {
 } from "viem";
 import supportedChains from "./chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useTransactionCount, WagmiProvider } from "wagmi";
+import { WagmiProvider } from "wagmi";
 import { createElement } from "react";
-import { getTransactionCountQueryOptions } from "wagmi/query";
 
 const projectId = "a750324b860cf7867328c96408bc03ac";
 const metadata = {
@@ -162,12 +160,11 @@ export default class EvmAddon implements Addon {
       return { error: `Chain id ${parsedTransaction.chainId} not supported.` };
     }
 
-    console.log("Getting nonce for address:", signerAddress);
-    const nonce = await getTransactionCount(wagmiConfig, {
-      address: signerAddress as any,
-      chainId: chain.id,
-    });
-    console.log("Retrieved nonce:", nonce);
+    const nonce = await NonceManager.getInstance().getNonce(
+      signerAddress,
+      wagmiConfig, 
+      chain.id,
+    );
 
     let sendTransactionParams = toSendTransactionParams(
       parsedTransaction,
@@ -195,8 +192,6 @@ function toSendTransactionParams(
   chain: Chain,
   nonce: number,
 ): SendTransactionParameters {
-  console.log("Preparing transaction with nonce:", nonce);
-  console.log("Transaction nonce:", tx.nonce);
   return {
     account: toHexPrefixed(signerAddress),
     chain: chain,
