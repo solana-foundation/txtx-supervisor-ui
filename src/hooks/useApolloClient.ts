@@ -11,8 +11,10 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { createClient } from "graphql-ws";
 import { setContext } from "@apollo/client/link/context";
 import { BACKEND_URL, BACKEND_WS_URL } from "../App";
+import { useMemo } from "react";
 
 export default function useApolloClient() {
+  return useMemo(() => {
   const httpLink = new HttpLink({
     uri: `${BACKEND_URL}/gql/v1/graphql`,
   });
@@ -45,7 +47,7 @@ export default function useApolloClient() {
   );
 
   // Creating Apollo Client
-  const apolloClient = new ApolloClient({
+  return new ApolloClient({
     link: splitLink,
     cache: new InMemoryCache(),
 
@@ -63,7 +65,7 @@ export default function useApolloClient() {
     */
     incrementalHandler: new Defer20220824Handler(),
   });
-  return apolloClient;
+  }, []);
 }
 
 /*
