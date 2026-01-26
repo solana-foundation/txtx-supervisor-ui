@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef } from "react";
+import React, { forwardRef, useRef, useEffect } from "react";
 import { classNames } from "../../utils/helpers";
 import { useAppSelector } from "../../hooks";
 import {
@@ -18,34 +18,36 @@ function useFirstRender() {
 export interface ErrorPanelProps {
   block: ActionBlock;
   panelIndex: number;
-  scrollHandler: any;
   isLast: boolean;
 }
 export const ErrorPanel = forwardRef(function Panel(
-  { block, panelIndex, scrollHandler, isLast }: ErrorPanelProps,
-  ref: React.ForwardedRef<any>,
+  { block, panelIndex, isLast }: ErrorPanelProps,
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  const { uuid, visible, panel } = block;
+  const { uuid, panel } = block;
   const { title, description, groups } = panel;
   const activeStep = useAppSelector(selectRunbookActiveStep);
   const firstRender = useFirstRender();
 
-  let status = statusForStepNumber(panelIndex, activeStep);
+  const status = statusForStepNumber(panelIndex, activeStep);
 
   const contentVisibility = "";
   // status === RunbookStepStatus.Queued ? "invisible" : "";
-  const buttonsDisabled = status === RunbookStepStatus.Complete;
 
   const panelId =
     title.toLocaleLowerCase().split(" ").join("-") + "-" + panelIndex;
 
-  if (firstRender && isLast) {
-    setTimeout(() => {
+  useEffect(() => {
+    if (!firstRender || !isLast) return;
+
+    const scrollTimer = setTimeout(() => {
       document
         .getElementById(uuid)
         ?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 200);
-  }
+
+    return () => clearTimeout(scrollTimer);
+  }, [firstRender, isLast, uuid]);
 
   return (
     <div

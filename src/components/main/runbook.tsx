@@ -1,4 +1,4 @@
-import React, { MutableRefObject } from "react";
+import React from "react";
 import { useAppSelector } from "../../hooks";
 import { selectRunbook } from "../../reducers/runbooks-slice";
 import { Panel } from "./panel";
@@ -7,40 +7,36 @@ import { ErrorPanel } from "./error";
 import RunbookComplete from "./runbook-complete";
 import { RunbookLogs } from "./runbook-logs";
 import { BeginFlow } from "./begin-flow";
-import { ActionBlock, ActionGroup, BeginFlowActionItemRequest } from "./types";
+import {
+  ActionBlock,
+  ActionGroup,
+  ActionItemRequest,
+  BeginFlowActionItemRequest,
+} from "./types";
 
-export interface RunbookProps {
-  panelScrollHandler: any;
-  panelRefs: MutableRefObject<any[]>;
+function isIncompleteActionItem(actionItem: ActionItemRequest): boolean {
+  return (
+    actionItem.actionStatus.status !== "Success" &&
+    actionItem.actionType.type !== "DisplayOutput"
+  );
 }
-export default function Runbook({
-  panelScrollHandler,
-  panelRefs,
-}: RunbookProps) {
+
+function blockHasIncompleteActionItems(block: ActionBlock): boolean {
+  return block.panel.groups.some((group) =>
+    group.subGroups.some((subGroup) =>
+      subGroup.actionItems.some(isIncompleteActionItem),
+    ),
+  );
+}
+
+export default function Runbook() {
   const { actionBlocks, errorBlocks, runbookComplete } =
     useAppSelector(selectRunbook);
-  const blockUuids = actionBlocks.map((block) => block.uuid);
-  const duplicateUuids = blockUuids.filter(
-    (item, index) => blockUuids.indexOf(item) !== index,
-  );
 
-  const notSuccessUuidBlocks = actionBlocks
-    .filter(
-      (block) =>
-        block.panel.groups.filter(
-          (group) =>
-            group.subGroups.filter(
-              (subGroup) =>
-                subGroup.actionItems.filter(
-                  (actionItem) =>
-                    actionItem.actionStatus.status !== "Success" &&
-                    actionItem.actionType.type != "DisplayOutput",
-                ).length > 0,
-            ).length > 0,
-        ).length > 0,
-    )
+  const incompleteBlockUuids = actionBlocks
+    .filter(blockHasIncompleteActionItems)
     .map((block) => block.uuid);
-  const firstNotSuccessUuidBlock = notSuccessUuidBlocks[0];
+  const firstIncompleteBlockUuid = incompleteBlockUuids[0];
 
   return (
     <div className="w-full justify-center flex flex-col items-center">
@@ -67,7 +63,7 @@ export default function Runbook({
             );
           } else {
             const isFirstIncompletePanel =
-              firstNotSuccessUuidBlock === block.uuid;
+              firstIncompleteBlockUuid === block.uuid;
             const wasPreviousBlockFlow = actionBlocks[i - 1]
               ? extractBeginFlowActions(actionBlocks[i - 1]).length > 0
               : false;
@@ -80,7 +76,6 @@ export default function Runbook({
                 key={block.uuid}
                 block={block}
                 panelIndex={i}
-                scrollHandler={() => {}}
                 isLast={i === actionBlocks.length - 1}
                 doScrollIntoView={doScrollIntoView}
               />
@@ -93,7 +88,6 @@ export default function Runbook({
               key={block.uuid}
               block={block}
               panelIndex={i}
-              scrollHandler={() => {}}
               isLast={i === errorBlocks.length - 1}
             />
           );
@@ -109,13 +103,11 @@ export default function Runbook({
 function extractBeginFlowActions(
   actionBlock: ActionBlock<true>,
 ): ActionGroup<true>[] {
-  return actionBlock.panel.groups.filter(
-    (group) =>
-      group.subGroups.filter(
-        (subGroup) =>
-          subGroup.actionItems.filter(
-            (actionItem) => actionItem.actionType.type === "BeginFlow",
-          ).length > 0,
-      ).length > 0,
+  return actionBlock.panel.groups.filter((group) =>
+    group.subGroups.some((subGroup) =>
+      subGroup.actionItems.some(
+        (actionItem) => actionItem.actionType.type === "BeginFlow",
+      ),
+    ),
   );
 }

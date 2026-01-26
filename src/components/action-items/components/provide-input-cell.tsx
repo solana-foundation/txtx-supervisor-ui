@@ -6,7 +6,7 @@ import UpdateInputPopup from "../../popup/update-input-popup";
 
 export interface ProvideInputCell {
   actionItem: ActionItemRequest;
-  onChange: any;
+  onChange: (value: string | number | object) => void;
   defaultValue?: DisplayableValue;
   isCurrent: boolean;
 }

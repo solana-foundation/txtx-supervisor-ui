@@ -39,59 +39,71 @@ const initialState: Runbook = {
   runbookComplete: false,
 };
 
-const selectActivePanelActionId = createSelector(
-  [(state: Runbook) => state.actionBlocks],
-  (blocks: ActionBlock[]): string | null => {
-    for (const { panel, visible } of blocks) {
-      if (!visible) continue;
-      for (const group of panel.groups) {
-        for (const subGroup of group.subGroups) {
-          for (const action of subGroup.actionItems) {
-            if (isActionItemIncomplete(action)) {
-              return action.id;
+type BlockWithPanel = ActionBlock | ModalBlock | ErrorBlock;
+
+function applyActionItemUpdates<T extends BlockWithPanel>(
+  blocks: T[],
+  actionItemEvents: UpdateActionItemEvent[],
+): T[] {
+  return blocks.map((block) => ({
+    ...block,
+    panel: {
+      ...block.panel,
+      groups: block.panel.groups.map((group) => ({
+        ...group,
+        subGroups: group.subGroups.map((subGroup) => ({
+          ...subGroup,
+          actionItems: subGroup.actionItems.map((actionItem) => {
+            const matchingUpdate = actionItemEvents.find(
+              (update) => update.id === actionItem.id,
+            );
+            if (matchingUpdate) {
+              return {
+                ...actionItem,
+                constructInstanceName:
+                  matchingUpdate.title || actionItem.constructInstanceName,
+                description:
+                  matchingUpdate.description || actionItem.description,
+                actionStatus:
+                  matchingUpdate.actionStatus || actionItem.actionStatus,
+                actionType: matchingUpdate.actionType || actionItem.actionType,
+              };
             }
+            return actionItem;
+          }),
+        })),
+      })),
+    },
+  }));
+}
+
+function findFirstIncompleteActionId(blocks: BlockWithPanel[]): string | null {
+  for (const { panel, visible } of blocks) {
+    if (!visible) continue;
+    for (const group of panel.groups) {
+      for (const subGroup of group.subGroups) {
+        for (const action of subGroup.actionItems) {
+          if (isActionItemIncomplete(action)) {
+            return action.id;
           }
         }
       }
     }
-    return null;
-  },
+  }
+  return null;
+}
+
+const selectActivePanelActionId = createSelector(
+  [(state: Runbook) => state.actionBlocks],
+  findFirstIncompleteActionId,
 );
 const selectActiveModalActionId = createSelector(
   [(state: Runbook) => state.modalBlocks],
-  (modalBlocks: ModalBlock[]): string | null => {
-    for (const { panel, visible } of modalBlocks) {
-      if (!visible) continue;
-      for (const group of panel.groups) {
-        for (const subGroup of group.subGroups) {
-          for (const action of subGroup.actionItems) {
-            if (isActionItemIncomplete(action)) {
-              return action.id;
-            }
-          }
-        }
-      }
-    }
-    return null;
-  },
+  findFirstIncompleteActionId,
 );
 const selectActiveErrorActionId = createSelector(
   [(state: Runbook) => state.errorBlocks],
-  (errorBlocks: ErrorBlock[]): string | null => {
-    for (const { panel, visible } of errorBlocks) {
-      if (!visible) continue;
-      for (const group of panel.groups) {
-        for (const subGroup of group.subGroups) {
-          for (const action of subGroup.actionItems) {
-            if (isActionItemIncomplete(action)) {
-              return action.id;
-            }
-          }
-        }
-      }
-    }
-    return null;
-  },
+  findFirstIncompleteActionId,
 );
 
 export const runbooksSlice = createSlice({
@@ -206,78 +218,19 @@ export const runbooksSlice = createSlice({
       }
       return state;
     }),
-    // todo: this reducer could use some cleanup
     updateActionItems: create.reducer(
       (state, action: PayloadAction<UpdateActionItemEvent<false>[]>) => {
         const actionItemEvents: UpdateActionItemEvent[] = action.payload.map(
           deserializeActionItemEvent,
         );
-        state.actionBlocks = state.actionBlocks.map((block) => ({
-          ...block,
-          panel: {
-            ...block.panel,
-            groups: block.panel.groups.map((group) => ({
-              ...group,
-              subGroups: group.subGroups.map((subGroup) => ({
-                ...subGroup,
-                actionItems: subGroup.actionItems.map((actionItem) => {
-                  const matchingUpdate = actionItemEvents.find(
-                    (update) => update.id === actionItem.id,
-                  );
-                  if (matchingUpdate) {
-                    return {
-                      ...actionItem,
-                      constructInstanceName:
-                        matchingUpdate.title ||
-                        actionItem.constructInstanceName,
-                      description:
-                        matchingUpdate.description || actionItem.description,
-                      actionStatus:
-                        matchingUpdate.actionStatus || actionItem.actionStatus,
-                      actionType:
-                        matchingUpdate.actionType || actionItem.actionType,
-                    };
-                  } else {
-                    return actionItem;
-                  }
-                }),
-              })),
-            })),
-          },
-        }));
-        state.modalBlocks = state.modalBlocks.map((block) => ({
-          ...block,
-          panel: {
-            ...block.panel,
-            groups: block.panel.groups.map((group) => ({
-              ...group,
-              subGroups: group.subGroups.map((subGroup) => ({
-                ...subGroup,
-                actionItems: subGroup.actionItems.map((actionItem) => {
-                  const matchingUpdate = actionItemEvents.find(
-                    (update) => update.id === actionItem.id,
-                  );
-                  if (matchingUpdate) {
-                    return {
-                      ...actionItem,
-                      constructInstanceName:
-                        matchingUpdate.title ||
-                        actionItem.constructInstanceName,
-                      description:
-                        matchingUpdate.description || actionItem.description,
-                      actionStatus:
-                        matchingUpdate.actionStatus || actionItem.actionStatus,
-                      actionType:
-                        matchingUpdate.actionType || actionItem.actionType,
-                    };
-                  } else {
-                    return actionItem;
-                  }
-                }),
-              })),
-            })),
-          },
-        }));
+        state.actionBlocks = applyActionItemUpdates(
+          state.actionBlocks,
+          actionItemEvents,
+        );
+        state.modalBlocks = applyActionItemUpdates(
+          state.modalBlocks,
+          actionItemEvents,
+        );
       },
     ),
     setModalVisibility: create.reducer(

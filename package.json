@@ -44,7 +44,7 @@
     "@reduxjs/toolkit": "2.9.0",
     "@solana/wallet-adapter-base": "0.9.27",
     "@solana/wallet-adapter-react": "0.15.39",
-    "@tanstack/react-query": "5.56.2",
+    "@tanstack/react-query": "5.90.20",
     "@txtxrun/txtx-ui-kit": "1.3.1",
     "@wagmi/core": "^2.21.2",
     "@web3modal/wagmi": "^5.1.8",

@@ -1,4 +1,3 @@
-// import { phLogOnChainError, phLogOnChainSuccess } from "../posthog";
 import { Result } from "./result";
 
 export enum AddonErrorType {
@@ -92,7 +91,7 @@ export class AddonManager {
     const network = networks.find((network) => network === networkId);
     if (!network) {
       return Result.err(
-        `Network ${network} is not supported for namespace ${namespace}`,
+        `Network ${networkId} is not supported for namespace ${namespace}`,
       );
     }
     return Result.ok(addon);
@@ -253,8 +252,8 @@ export type ConnectWalletFunction = () => void;
 export type AddonError = { error: string };
 export abstract class Addon {
   public abstract injectProvider(
-    inner: any,
-  ): React.FunctionComponentElement<any>;
+    inner: React.ReactNode,
+  ): React.ReactElement;
 
   public abstract connectWallet(): void;
 

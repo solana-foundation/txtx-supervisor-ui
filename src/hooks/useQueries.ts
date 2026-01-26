@@ -20,17 +20,33 @@ import {
   setLogEvents,
 } from "../reducers/runbooks-slice";
 
+interface ActionBlocksQueryData {
+  actionBlocks: ActionBlock<false>[];
+}
+
+interface ModalBlocksQueryData {
+  modalBlocks: ModalBlock<false>[];
+}
+
+interface ErrorBlocksQueryData {
+  errorBlocks: ErrorBlock<false>[];
+}
+
+interface LogEventsQueryData {
+  logs: LogEvent[];
+}
+
 export default function useQueries(): { loading: boolean } {
   const dispatch = useAppDispatch();
 
   const { data: actionBlocksData, loading: actionBlocksLoading } =
-    useQuery<any>(GET_ACTION_BLOCKS);
+    useQuery<ActionBlocksQueryData>(GET_ACTION_BLOCKS);
   const { data: modalBlocksData, loading: modalBlocksLoading } =
-    useQuery<any>(GET_MODAL_BLOCKS);
+    useQuery<ModalBlocksQueryData>(GET_MODAL_BLOCKS);
   const { data: errorBlocksData, loading: errorBlocksLoading } =
-    useQuery<any>(GET_ERROR_BLOCKS);
+    useQuery<ErrorBlocksQueryData>(GET_ERROR_BLOCKS);
   const { data: logEventsData, loading: logEventsLoading } =
-    useQuery<any>(GET_LOG_EVENTS);
+    useQuery<LogEventsQueryData>(GET_LOG_EVENTS);
 
   useEffect(() => {
     if (actionBlocksData?.actionBlocks) {

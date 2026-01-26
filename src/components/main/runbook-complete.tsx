@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useAppSelector } from "../../hooks";
 import {
   selectRunbookCleanupInfo,
@@ -8,30 +8,46 @@ import confetti from "../animations/confetti";
 import MarkdownRenderer from "../action-items/components/markdown-renderer";
 import { InfoToolTip } from "../buttons/info-tool-tip";
 
-let confetti_has_displayed = false;
+const CONFETTI_DURATION = 2500;
+const SCROLL_DELAY = 200;
+
 export default function RunbookComplete() {
   const runbookComplete = useAppSelector(selectRunbookComplete);
   const runbookCleanupInfo = useAppSelector(selectRunbookCleanupInfo);
+  const confettiHasDisplayed = useRef(false);
+
+  useEffect(() => {
+    if (!runbookComplete) {
+      confettiHasDisplayed.current = false;
+      return;
+    }
+
+    if (!confettiHasDisplayed.current) {
+      confettiHasDisplayed.current = true;
+      confetti.start();
+      const confettiTimer = setTimeout(() => {
+        confetti.stop();
+      }, CONFETTI_DURATION);
+
+      return () => clearTimeout(confettiTimer);
+    }
+  }, [runbookComplete]);
+
+  useEffect(() => {
+    if (!runbookComplete) return;
+
+    const scrollTimer = setTimeout(() => {
+      document
+        .getElementById("runbook-complete")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, SCROLL_DELAY);
+
+    return () => clearTimeout(scrollTimer);
+  }, [runbookComplete]);
 
   if (!runbookComplete) {
-    confetti_has_displayed = false;
-    return;
+    return null;
   }
-  if (!confetti_has_displayed) {
-    confetti_has_displayed = true;
-    // @ts-ignore
-    confetti.start();
-    setTimeout(function () {
-      // @ts-ignore
-      confetti.stop();
-    }, 2500);
-  }
-
-  setTimeout(() => {
-    document
-      .getElementById("runbook-complete")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, 200);
 
   return (
     <div

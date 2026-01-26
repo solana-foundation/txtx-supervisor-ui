@@ -509,13 +509,6 @@ export function valueToJson(input: Value): DisplayableValue {
   }
 }
 
-function toHexString(byteArray: string) {
-  return Array.from(byteArray, function (byte) {
-    // @ts-ignore
-    return ("0" + (byte & 0xff).toString(16)).slice(-2);
-  }).join("");
-}
-
 export function formatDiagnosticForDisplay(input: Diagnostic) {
   return input.message;
 }

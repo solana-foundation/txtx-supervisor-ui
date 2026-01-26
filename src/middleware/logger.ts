@@ -1,4 +1,6 @@
-const logger = (store) => (next) => (action) => {
+import { Middleware } from "@reduxjs/toolkit";
+
+const logger: Middleware = () => (next) => (action) => {
   // console.group(action.type);
   // console.info("dispatching", action);
   let result = next(action);

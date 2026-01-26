@@ -1,5 +1,5 @@
 import { Header } from "./components/header/header";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import Runbook from "./components/main/runbook";
 import { useAppSelector } from "./hooks";
 import { selectRunbook } from "./reducers/runbooks-slice";
@@ -32,7 +32,6 @@ export default function App() {
 }
 
 function AppInternal() {
-  const panelRefs = useRef<any[]>([]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { modalBlocks } = useAppSelector(selectRunbook);
 
@@ -40,19 +39,6 @@ function AppInternal() {
   // subscribe to new block events, action item updates, etc
   useSubscriptions();
 
-  const panelScrollHandler = (index: any) => {
-    window.location.hash = panelRefs.current[index].current.id;
-    // when we select a new panel, the panels resize some, which makes the
-    // location of the ref change. set a timeout to give the css resizing a
-    // head start, so this scroll into view has the correct position to scroll to
-    setTimeout(() => {
-      panelRefs.current[index].current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-        inline: "start",
-      });
-    }, 200);
-  };
   return (
     <div className="bg-gradient-to-b from-gray-950 to-neutral-900 ">
       {/* Header & main content */}
@@ -69,14 +55,7 @@ function AppInternal() {
                   <Modal block={block} index={i} key={block.uuid} />
                 ))}
 
-            {loading ? (
-              <div>Loading...</div>
-            ) : (
-              <Runbook
-                panelScrollHandler={panelScrollHandler}
-                panelRefs={panelRefs}
-              />
-            )}
+            {loading ? <div>Loading...</div> : <Runbook />}
           </div>
         </main>
       </div>

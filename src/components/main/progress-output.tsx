@@ -37,18 +37,23 @@ export default function ProgressOutput() {
     }
   }, [debouncedIsEmpty]);
 
-  if (debouncedIsEmpty) {
-    return <div></div>;
-  }
+  useEffect(() => {
+    if (debouncedIsEmpty || !doScroll) return;
 
-  setTimeout(() => {
-    if (doScroll) {
+    const scrollTimer = setTimeout(() => {
       document
         .getElementById("progress-bar")
         ?.scrollIntoView({ behavior: "smooth", block: "end" });
       setDoScroll(false);
-    }
-  }, 200);
+    }, 200);
+
+    return () => clearTimeout(scrollTimer);
+  }, [debouncedIsEmpty, doScroll]);
+
+  if (debouncedIsEmpty) {
+    return <div></div>;
+  }
+
   return (
     <div
       id="progress-bar"
