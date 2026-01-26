@@ -4,6 +4,7 @@ import {
   storePublicKeyInLocalStorage,
 } from "../../../../utils/helpers";
 import { createAppKit, type AppKit } from "@reown/appkit";
+import type { AppKitNetwork } from "@reown/appkit-common";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import {
   Config,
@@ -34,8 +35,10 @@ const metadata = {
 };
 
 // const allChainsAsConst: AsConst<typeof allChains> = allChains;
+// Cast to mutable array for AppKit compatibility
+const networks = [...supportedChains] as [AppKitNetwork, ...AppKitNetwork[]];
 const wagmiAdapter = new WagmiAdapter({
-  networks: supportedChains,
+  networks,
   projectId,
 });
 const wagmiConfig = wagmiAdapter.wagmiConfig;
@@ -45,7 +48,7 @@ export default class EvmAddon implements Addon {
   constructor() {
     this.modal = createAppKit({
       adapters: [wagmiAdapter],
-      networks: supportedChains,
+      networks,
       metadata,
       projectId,
       features: {
