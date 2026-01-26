@@ -3,7 +3,8 @@ import {
   getStorageKey,
   storePublicKeyInLocalStorage,
 } from "../../../../utils/helpers";
-import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi";
+import { createAppKit, type AppKit } from "@reown/appkit";
+import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import {
   Config,
   getAccount,
@@ -33,21 +34,24 @@ const metadata = {
 };
 
 // const allChainsAsConst: AsConst<typeof allChains> = allChains;
-const wagmiConfig = defaultWagmiConfig({
-  chains: supportedChains,
+const wagmiAdapter = new WagmiAdapter({
+  networks: supportedChains,
   projectId,
-  metadata,
-  enableInjected: true,
 });
+const wagmiConfig = wagmiAdapter.wagmiConfig;
 
 export default class EvmAddon implements Addon {
-  private modal: ReturnType<typeof createWeb3Modal>;
+  private modal: AppKit;
   constructor() {
-    this.modal = createWeb3Modal({
-      wagmiConfig,
+    this.modal = createAppKit({
+      adapters: [wagmiAdapter],
+      networks: supportedChains,
+      metadata,
       projectId,
-      enableAnalytics: false,
-      enableOnramp: false,
+      features: {
+        analytics: false,
+        onramp: false,
+      },
       allowUnsupportedChain: true,
     });
   }
