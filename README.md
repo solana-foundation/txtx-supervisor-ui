@@ -36,3 +36,6 @@ npm run dev
 
 Open Chrome on `http://localhost:1234`
 
+## Third-Party Notices
+
+Portions © 2025 Reown, Inc. All Rights Reserved.
