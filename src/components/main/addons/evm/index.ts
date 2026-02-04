@@ -14,6 +14,7 @@ import {
   signMessage,
   switchChain,
 } from "@wagmi/core";
+import NonceManager from "./nonce";
 import {
   Chain,
   parseTransaction,
@@ -160,17 +161,24 @@ export default class EvmAddon implements Addon {
       }
     }
     const parsedTransaction = parseTransaction(toHexPrefixed(txHex));
-
     let chain = wagmiConfig.chains.find(
       (chain) => chain.id === parsedTransaction.chainId,
     );
     if (!chain) {
       return { error: `Chain id ${parsedTransaction.chainId} not supported.` };
     }
+
+    const nonce = await NonceManager.getInstance().getNonce(
+      signerAddress,
+      wagmiConfig, 
+      chain.id,
+    );
+
     let sendTransactionParams = toSendTransactionParams(
       parsedTransaction,
       signerAddress,
       chain,
+      nonce,
     );
 
     const txHash = await sendTransaction(wagmiConfig, sendTransactionParams);
@@ -190,6 +198,7 @@ function toSendTransactionParams(
   tx: TransactionSerializable,
   signerAddress: string,
   chain: Chain,
+  nonce: number,
 ): SendTransactionParameters {
   return {
     account: toHexPrefixed(signerAddress),
@@ -197,7 +206,7 @@ function toSendTransactionParams(
     data: tx.data,
     gas: tx.gas,
     gasPrice: tx.gasPrice,
-    nonce: tx.nonce,
+    nonce: nonce,
     to: tx.to,
     value: tx.value,
   };
