@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef } from "react";
+import React, { forwardRef, useRef, useEffect } from "react";
 
 function useFirstRender() {
   const ref = useRef(true);
@@ -24,17 +24,21 @@ export const BeginFlow = forwardRef(function BeginFlow(
     uuid,
     doScrollIntoView,
   }: BeginFlowProps,
-  ref: React.ForwardedRef<any>,
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const firstRender = useFirstRender();
 
-  if (firstRender && doScrollIntoView) {
-    setTimeout(() => {
+  useEffect(() => {
+    if (!firstRender || !doScrollIntoView) return;
+
+    const scrollTimer = setTimeout(() => {
       document
         .getElementById(uuid)
         ?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 200);
-  }
+
+    return () => clearTimeout(scrollTimer);
+  }, [firstRender, doScrollIntoView, uuid]);
 
   return (
     <div className="scroll-m-44 w-full my-8" id={uuid}>

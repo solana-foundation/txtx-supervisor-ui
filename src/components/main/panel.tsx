@@ -1,33 +1,36 @@
-import React, { forwardRef, useRef } from "react";
+import React, { forwardRef, useEffect } from "react";
 import { ActionBlock } from "./types";
 import { Group } from "../action-items/components/group";
 
 export interface PanelProps {
   block: ActionBlock;
   panelIndex: number;
-  scrollHandler: any;
   isLast: boolean;
   doScrollIntoView: boolean;
 }
 export const Panel = forwardRef(function Panel(
-  { block, panelIndex, scrollHandler, isLast, doScrollIntoView }: PanelProps,
-  ref: React.ForwardedRef<any>,
+  { block, panelIndex, isLast, doScrollIntoView }: PanelProps,
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  const { uuid, visible, panel } = block;
+  const { uuid, panel } = block;
   const { title, description, groups } = panel;
   const [didScroll, setDidScroll] = React.useState(false);
 
   const panelId =
     title.toLocaleLowerCase().split(" ").join("-") + "-" + panelIndex;
 
-  if (!didScroll && doScrollIntoView && panelIndex !== 0) {
-    setTimeout(() => {
+  useEffect(() => {
+    if (didScroll || !doScrollIntoView || panelIndex === 0) return;
+
+    const scrollTimer = setTimeout(() => {
       document
         .getElementById(uuid)
         ?.scrollIntoView({ behavior: "smooth", block: "start" });
       setDidScroll(true);
     }, 200);
-  }
+
+    return () => clearTimeout(scrollTimer);
+  }, [didScroll, doScrollIntoView, panelIndex, uuid]);
 
   return (
     <div

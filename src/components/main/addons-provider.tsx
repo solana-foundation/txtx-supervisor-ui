@@ -1,4 +1,4 @@
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, useState, ReactNode, FunctionComponentElement } from "react";
 import addonManager from "../../utils/addons-initializer";
 import { selectActiveFlowData } from "../../reducers/runbooks-slice";
 import { useAppSelector } from "../../hooks";
@@ -6,21 +6,25 @@ import React from "react";
 import { Result } from "../../utils/result";
 import useRunbookMetadata from "../../hooks/useRunbookMetadata";
 import { AddonData } from "./types";
+import { Addon } from "../../utils/addons";
 
 export interface AddonsProviderProps {
   children: ReactNode;
 }
 
-const ADDONS: { [key: string]: () => Promise<any> } = {
+interface AddonModule {
+  default: new (rpcApiUrl: string | null) => Addon;
+}
+
+const ADDONS: { [key: string]: () => Promise<AddonModule> } = {
   evm: () => import("./addons/evm"),
-  // stacks: () => import("./addons/stacks"),
   svm: () => import("./addons/svm"),
 };
 
 export default function AddonsProvider({ children }: AddonsProviderProps) {
   const addonData = useAppSelector(selectActiveFlowData);
   const [loading, setLoading] = useState(true);
-  const [WrappedApp, setWrappedApp] = useState(null as any);
+  const [WrappedApp, setWrappedApp] = useState<React.ReactElement | null>(null);
 
   const { loading: metadataLoading } = useRunbookMetadata();
 
@@ -48,7 +52,7 @@ export default function AddonsProvider({ children }: AddonsProviderProps) {
             new addonModule.default(rpcApiUrl),
           );
 
-          injections.push((input: any) => {
+          injections.push((input: ReactNode) => {
             return ((addon: string) =>
               addonManager.injectProvider(addon, input))(addonName);
           });
@@ -58,14 +62,14 @@ export default function AddonsProvider({ children }: AddonsProviderProps) {
       }
 
       const composedInjections = injections.reduceRight(
-        (acc, injection) => (input: any) => {
+        (acc, injection) => (input: ReactNode) => {
           const result = injection(input);
           if (result.is_err()) {
             return input;
           }
           return result.unwrap();
         },
-        (input: any) => input,
+        (input: ReactNode) => input,
       );
       setWrappedApp(composedInjections(children));
       setLoading(false);
@@ -83,5 +87,5 @@ export default function AddonsProvider({ children }: AddonsProviderProps) {
 }
 
 type InjectorCaller = (
-  inner: any,
-) => Result<React.FunctionComponentElement<any>, string>;
+  inner: ReactNode,
+) => Result<React.ReactElement, string>;

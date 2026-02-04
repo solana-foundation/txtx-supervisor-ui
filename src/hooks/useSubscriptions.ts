@@ -12,7 +12,9 @@ import { useEffect } from "react";
 import {
   ActionBlock,
   ErrorBlock,
+  LogEvent,
   ModalBlock,
+  RunbookCompletedEvent,
   UpdateActionItemEvent,
 } from "../components/main/types";
 import {
@@ -26,28 +28,60 @@ import {
 } from "../reducers/runbooks-slice";
 import { useAppDispatch } from "../hooks";
 
+interface ActionBlockEventData {
+  actionBlockEvent: ActionBlock<false>;
+}
+
+interface ModalBlockEventData {
+  modalBlockEvent: ModalBlock<false>;
+}
+
+interface ErrorBlockEventData {
+  errorBlockEvent: ErrorBlock<false>;
+}
+
+interface UpdateActionItemsEventData {
+  updateActionItemsEvent: UpdateActionItemEvent<false>[];
+}
+
+interface ClearBlocksEventData {
+  clearBlocksEvent: boolean;
+}
+
+interface RunbookCompletedEventData {
+  runbookCompleteEvent: RunbookCompletedEvent[];
+}
+
+interface LogEventData {
+  logEvent: LogEvent;
+}
+
 export default function useSubscriptions() {
   const dispatch = useAppDispatch();
 
-  const { data: actionBlockEvent } = useSubscription<any>(
+  const { data: actionBlockEvent } = useSubscription<ActionBlockEventData>(
     ACTION_BLOCK_EVENT_SUBSCRIPTION,
   );
-  const { data: modalBlockEvent } = useSubscription<any>(
+  const { data: modalBlockEvent } = useSubscription<ModalBlockEventData>(
     MODAL_BLOCK_EVENT_SUBSCRIPTION,
   );
-  const { data: errorBlockEvent } = useSubscription<any>(
+  const { data: errorBlockEvent } = useSubscription<ErrorBlockEventData>(
     ERROR_BLOCK_EVENT_SUBSCRIPTION,
   );
-  const { data: updateActionItemsEvent } = useSubscription<any>(
-    UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION,
-  );
-  const { data: clearBlocksEvent } = useSubscription<any>(
+  const { data: updateActionItemsEvent } =
+    useSubscription<UpdateActionItemsEventData>(
+      UPDATE_ACTION_ITEMS_EVENT_SUBSCRIPTION,
+    );
+  const { data: clearBlocksEvent } = useSubscription<ClearBlocksEventData>(
     CLEAR_BLOCKS_EVENT_SUBSCRIPTION,
   );
-  const { data: runbookCompletedEvent } = useSubscription<any>(
-    RUNBOOK_COMPLETED_EVENT_SUBSCRIPTION,
+  const { data: runbookCompletedEvent } =
+    useSubscription<RunbookCompletedEventData>(
+      RUNBOOK_COMPLETED_EVENT_SUBSCRIPTION,
+    );
+  const { data: logEvent } = useSubscription<LogEventData>(
+    LOG_EVENT_SUBSCRIPTION,
   );
-  const { data: logEvent } = useSubscription<any>(LOG_EVENT_SUBSCRIPTION);
 
   useEffect(() => {
     if (actionBlockEvent) {

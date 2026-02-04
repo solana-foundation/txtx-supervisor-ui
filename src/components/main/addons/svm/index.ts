@@ -41,7 +41,7 @@ export default class SolanaAddon implements Addon {
     this.connection = new Connection(rpcApiUrl);
   }
 
-  public injectProvider(inner: any): React.FunctionComponentElement<any> {
+  public injectProvider(inner: React.ReactNode): React.ReactElement {
     const connectionProvider = createElement(ConnectionContext.Provider, {
       children: inner,
       value: { connection: this.connection },
@@ -129,7 +129,6 @@ export default class SolanaAddon implements Addon {
     }
     if ("signTransaction" in wallet) {
       const rustTx = RustSolanaTransaction.from_hex(txHex);
-      console.log("rustTx", rustTx);
 
       const connection = this.connection;
 
@@ -156,7 +155,6 @@ export default class SolanaAddon implements Addon {
         }
       }
       let unsignedTx = rustTx.toTransaction(recentBlockhash);
-      console.log("unsignedTx", unsignedTx);
 
       let signed;
       try {
@@ -164,10 +162,8 @@ export default class SolanaAddon implements Addon {
       } catch (error) {
         return { error: "Failed to sign transaction: " + error };
       }
-      console.log("signed", signed);
 
       const signedRustTx = RustSolanaTransaction.fromTransaction(signed);
-      console.log("signedRustTx", signedRustTx);
       return signedRustTx.toHex();
     }
     return {

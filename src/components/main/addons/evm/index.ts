@@ -3,7 +3,9 @@ import {
   getStorageKey,
   storePublicKeyInLocalStorage,
 } from "../../../../utils/helpers";
-import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi";
+import { createAppKit, type AppKit } from "@reown/appkit";
+import type { AppKitNetwork } from "@reown/appkit-common";
+import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import {
   Config,
   getAccount,
@@ -23,7 +25,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { createElement } from "react";
 
-const projectId = "a750324b860cf7867328c96408bc03ac";
+const projectId =
+  process.env.WALLETCONNECT_PROJECT_ID || "a750324b860cf7867328c96408bc03ac";
 const metadata = {
   name: "Txtx",
   description: "Build confidence with smart contract Runbooks",
@@ -32,25 +35,30 @@ const metadata = {
 };
 
 // const allChainsAsConst: AsConst<typeof allChains> = allChains;
-const wagmiConfig = defaultWagmiConfig({
-  chains: supportedChains,
+// Cast to mutable array for AppKit compatibility
+const networks = [...supportedChains] as [AppKitNetwork, ...AppKitNetwork[]];
+const wagmiAdapter = new WagmiAdapter({
+  networks,
   projectId,
-  metadata,
-  enableInjected: true,
 });
+const wagmiConfig = wagmiAdapter.wagmiConfig;
 
 export default class EvmAddon implements Addon {
-  private modal: any;
+  private modal: AppKit;
   constructor() {
-    this.modal = createWeb3Modal({
-      wagmiConfig,
+    this.modal = createAppKit({
+      adapters: [wagmiAdapter],
+      networks,
+      metadata,
       projectId,
-      enableAnalytics: false,
-      enableOnramp: false,
+      features: {
+        analytics: false,
+        onramp: false,
+      },
       allowUnsupportedChain: true,
     });
   }
-  public injectProvider(inner: any): React.FunctionComponentElement<any> {
+  public injectProvider(inner: React.ReactNode): React.ReactElement {
     const queryClient = new QueryClient();
     const withQueryClient = createElement(
       QueryClientProvider,
@@ -102,7 +110,7 @@ export default class EvmAddon implements Addon {
     message: string,
   ): Promise<string | AddonError> {
     const result = await signMessage(wagmiConfig, {
-      account: address as any,
+      account: address as `0x${string}`,
       message,
     });
     storePublicKeyInLocalStorage(getStorageKey("evm"), address, result);
@@ -121,7 +129,7 @@ export default class EvmAddon implements Addon {
     message: string,
   ): Promise<string | AddonError> {
     const result = await signMessage(wagmiConfig, {
-      account: address as any,
+      account: address as `0x${string}`,
       message,
     });
     return result;

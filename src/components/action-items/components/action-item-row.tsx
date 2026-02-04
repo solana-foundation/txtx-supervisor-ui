@@ -9,7 +9,7 @@ export interface ActionItemRow {
   actionItem: ActionItemRequest;
   isFirst: boolean;
   isLast: boolean;
-  onClick: any;
+  onClick: () => void;
   subRow?: ActionItemSubRow;
   isCurrent: boolean;
   displayStatus?: boolean;
@@ -34,12 +34,6 @@ export function ActionItemRow({
     markdown,
   } = actionItem;
   const { status } = actionStatus;
-  // todo: handle other statuses
-  let checkClass;
-  if (status === "Error") {
-    const diag = actionStatus.data;
-    checkClass = "text-rose-400";
-  }
 
   subRow =
     !subRow && status === "Error"
@@ -225,13 +219,6 @@ export function ActionItemTitle({
   const tooltipText = internalKeySkipDescription
     ? "This action is available by default when your `txtx.yml` has multiple environments"
     : `This is derived from the \`${constructInstanceName}\` construct`;
-
-  // console.groupCollapsed(constructInstanceName);
-  // console.log("internalKey", internalKey);
-  // console.log("metaDescription", metaDescription);
-  // console.log("description", description);
-  // console.log("markdown", markdown);
-  // console.groupEnd();
 
   return (
     <div className="w-full self-stretch justify-start flex flex-col items-start">
