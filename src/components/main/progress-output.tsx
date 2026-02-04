@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../../hooks";
 import { selectActiveTransientLogs } from "../../reducers/runbooks-slice";
 import ProgressAnimation from "../animations/progress-animation";
-import { classNames } from "../../utils/helpers";
+import classnames from "../ui-kit/classnames";
 import { LogEvent } from "./types";
 
 export default function ProgressOutput() {
@@ -57,7 +57,7 @@ export default function ProgressOutput() {
   return (
     <div
       id="progress-bar"
-      className={classNames("w-full justify-center items-center", height)}
+      className={classnames("w-full justify-center items-center", height)}
     >
       <div className="relative mx-auto w-[1024px] max-w-full min-h-full px-6 justify-center flex flex-col inline-flex gap-8">
         <ProgressAnimation />
@@ -78,7 +78,7 @@ function ActiveTransientLogsList({ logs }: ActiveTransientLogsList) {
   return (
     <div className="absolute w-full h-full mt-6">
       <div
-        className={classNames(
+        className={classnames(
           "transition-opacity ease-in-out w-[370px] bg-black bg-opacity-50 rounded-lg p-4 float-right mr-6",
           logs.length ? "opacity-100" : "opacity-0",
         )}
@@ -115,7 +115,7 @@ function ActiveTransientLogLine({ log }: ActiveTransientLogLine) {
       </div>
       <div className="w-1/5 self-stretch flex-col justify-between items-start inline-flex">
         <div
-          className={classNames(
+          className={classnames(
             "text-right text-xs font-gt uppercase flex items-center justify-end gap-1",
             color,
           )}

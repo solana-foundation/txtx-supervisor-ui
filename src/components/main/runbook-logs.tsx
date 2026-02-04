@@ -3,7 +3,7 @@ import { LogEvent } from "./types";
 import React from "react";
 import { useAppSelector } from "../../hooks";
 import { selectLogs } from "../../reducers/runbooks-slice";
-import { classNames } from "../../utils/helpers";
+import classnames from "../ui-kit/classnames";
 
 export const RunbookLogs: React.FC = () => {
   const logs = useAppSelector(selectLogs);
@@ -46,7 +46,7 @@ export const RunbookLogs: React.FC = () => {
   return (
     <div className="w-[28rem] fixed bottom-0 left-0 right-4 left-auto z-50">
       <div
-        className={classNames(
+        className={classnames(
           "w-[28rem] min-w-md w-full bg-gray-950 shadow-xl border-t border-neutral-800 rounded-t-lg transition-all duration-300 ease-in-out overflow-hidden",
           isOpen
             ? "h-full max-h-[calc(100vh-3rem)] shadow-[0_0_20px_rgba(0,0,0,0.3)] ring-1 ring-neutral-300/30"
@@ -59,7 +59,7 @@ export const RunbookLogs: React.FC = () => {
         >
           <span>Runbook Logs</span>
           <svg
-            className={classNames(
+            className={classnames(
               "w-4 h-4 transform transition-transform duration-300",
               isOpen ? "rotate-180" : "",
             )}
@@ -103,7 +103,7 @@ const RunbookLogEntry: React.FC<LogEvent> = ({
   return (
     <div className="flex items-start gap-2 p-2 text-sm">
       <span
-        className={classNames(
+        className={classnames(
           "self-center font-semibold w-[72px] shrink-0",
           colorClass,
         )}

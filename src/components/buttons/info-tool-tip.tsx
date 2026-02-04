@@ -1,7 +1,7 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import React, { useState } from "react";
-import { classNames } from "../../utils/helpers";
+import classnames from "../ui-kit/classnames";
 
 export interface InfoToolTipProps {
   text: string;
@@ -33,11 +33,11 @@ export function InfoToolTip({
   };
 
   return (
-    <Popover className={classNames("relative flex items-center", className)}>
+    <Popover className={classnames("relative flex items-center", className)}>
       <PopoverButton
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={classNames(
+        className={classnames(
           "flex items-center justify-center w-6 h-6 rounded-full transition-colors outline-none focus:outline-none",
           isCurrent
             ? "text-gray-500 hover:text-gray-400"

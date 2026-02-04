@@ -1,5 +1,5 @@
 import React from "react";
-import { classNames } from "../../../utils/helpers";
+import classnames from "../../ui-kit/classnames";
 import { ActionGroup } from "../../main/types";
 import { ButtonSubGroup } from "./button-sub-group";
 import { SubGroup } from "./sub-group";
@@ -22,7 +22,7 @@ export function Group({ group, accent = GroupAccent.None, modalUuid }: Group) {
   return (
     <div className="w-full flex-col justify-center items-start gap-2.5 inline-flex">
       <div
-        className={classNames(
+        className={classnames(
           "px-2 text-sm font-normal font-inter rounded",
           accent !== GroupAccent.None && title ? "border" : "",
           accent === GroupAccent.None ? "text-gray-400" : "",

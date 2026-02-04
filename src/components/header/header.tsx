@@ -2,7 +2,6 @@ import React from "react";
 import { useAppSelector } from "../../hooks";
 import RunbookStatusBar from "./runbook-status-bar";
 import { selectRunbook, setMetadata } from "../../reducers/runbooks-slice";
-import { classNames } from "../../utils/helpers";
 import MarkdownDescriptionPopup from "../popup/markdown-description-popup";
 import { BookOpenIcon } from "@heroicons/react/20/solid";
 

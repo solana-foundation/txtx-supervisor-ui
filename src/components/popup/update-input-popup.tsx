@@ -4,7 +4,7 @@ import useHandleEscapeKey from "../../hooks/useHandleEscapeKey";
 import useHandleEnterKey from "../../hooks/useHandleEnterKey";
 import { ModalWrapper } from "../main/modal-wrapper";
 import React from "react";
-import { classNames } from "../../utils/helpers";
+import classnames from "../ui-kit/classnames";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Button } from "../ui-kit";
 
@@ -65,7 +65,7 @@ export default function UpdateInputPopup({
           {description || title}
         </div>
         <input
-          className={classNames(
+          className={classnames(
             "grow text-sm font-normal font-gt leading-[18.20px] my-[20px] w-full",
             "border-gray-800 rounded-sm",
             "focus:outline-none focus:ring-0 ring-0 focus:border-emerald-500",

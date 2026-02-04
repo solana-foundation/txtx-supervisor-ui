@@ -9,10 +9,10 @@ import { Button } from "../ui-kit";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client/react";
 import {
-  classNames,
   getPublicKeyFromLocalStorage,
   getStorageKey,
 } from "../../utils/helpers";
+import classnames from "../ui-kit/classnames";
 
 export interface VerifyThirdPartySignatureAction {
   actionItem: ActionItemRequest;
@@ -80,7 +80,7 @@ export function VerifyThirdPartySignatureAction({
                   disabled={false}
                   size={Button.ButtonSizes.m}
                   variant={Button.ButtonVariants.primary}
-                  className={classNames(
+                  className={classnames(
                     "uppercase",
                     linkOpened ? "brightness-125" : "brightness-75",
                   )}
@@ -93,7 +93,7 @@ export function VerifyThirdPartySignatureAction({
                 disabled={false}
                 size={Button.ButtonSizes.m}
                 variant={Button.ButtonVariants.primary}
-                className={classNames(
+                className={classnames(
                   "uppercase",
                   linkOpened ? "brightness-75" : "brightness-125",
                 )}
