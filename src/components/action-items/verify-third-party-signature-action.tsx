@@ -5,7 +5,7 @@ import {
 } from "./components/action-item-row";
 import { ActionItemRequest, ActionItemResponse, toValue } from "../main/types";
 import { DisplayValue, ReviewInputCell } from "./components/review-input-cell";
-import { Button } from "@txtxrun/txtx-ui-kit";
+import { Button } from "../ui-kit";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client/react";
 import {

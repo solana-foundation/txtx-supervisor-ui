@@ -6,7 +6,6 @@ const primaryGreen = "#00D992";
 module.exports = {
   content: [
     "./src/**/*.{html,js,ts,jsx,tsx}",
-    "./node_modules/@txtxrun/txtx-ui-kit/dist/styles.css",
   ],
   darkMode: "class",
   theme: {

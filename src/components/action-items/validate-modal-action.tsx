@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client/react";
 import { ActionItemRequest, ActionItemResponse } from "../main/types";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
-import { Button } from "@txtxrun/txtx-ui-kit";
+import { Button } from "../ui-kit";
 import { classNames } from "../../utils/helpers";
 import { useAppDispatch } from "../../hooks";
 import {

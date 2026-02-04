@@ -4,7 +4,7 @@ import { classNames } from "../../utils/helpers";
 import { InputOption } from "../main/types";
 import useHandleEscapeKey from "../../hooks/useHandleEscapeKey";
 import useHandleEnterKey from "../../hooks/useHandleEnterKey";
-import { Button } from "@txtxrun/txtx-ui-kit";
+import { Button } from "../ui-kit";
 import { ModalWrapper } from "../main/modal-wrapper";
 
 export interface PickInputPopup {

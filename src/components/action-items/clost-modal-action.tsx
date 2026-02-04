@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppDispatch } from "../../hooks";
 import { setModalVisibility } from "../../reducers/runbooks-slice";
-import { Button } from "@txtxrun/txtx-ui-kit";
+import { Button } from "../ui-kit";
 
 export interface CloseModalAction {
   modalUuid: string;

@@ -6,7 +6,7 @@ import { ModalWrapper } from "../main/modal-wrapper";
 import React from "react";
 import { classNames } from "../../utils/helpers";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { Button } from "@txtxrun/txtx-ui-kit";
+import { Button } from "../ui-kit";
 
 export default function UpdateInputPopup({
   actionStatus,

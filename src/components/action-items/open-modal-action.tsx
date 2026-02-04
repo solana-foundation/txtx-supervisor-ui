@@ -1,7 +1,7 @@
 import React from "react";
 import { ActionItemRow, ActionItemSubRow } from "./components/action-item-row";
 import { ActionItemRequest, toValue } from "../main/types";
-import { Button } from "@txtxrun/txtx-ui-kit";
+import { Button } from "../ui-kit";
 import { useAppDispatch } from "../../hooks";
 import { setModalVisibility } from "../../reducers/runbooks-slice";
 import { ReviewInputCell } from "./components/review-input-cell";

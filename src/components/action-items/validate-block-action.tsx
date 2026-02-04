@@ -5,7 +5,7 @@ import React from "react";
 import { classNames } from "../../utils/helpers";
 import { selectPanelValidationReady } from "../../reducers/runbooks-slice";
 import { useAppSelector } from "../../hooks";
-import { Button } from "@txtxrun/txtx-ui-kit";
+import { Button } from "../ui-kit";
 
 export interface ValidateBlockAction {
   actionItem: ActionItemRequest;
