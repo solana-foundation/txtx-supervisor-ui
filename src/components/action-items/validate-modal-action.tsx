@@ -3,7 +3,7 @@ import { ActionItemRequest, ActionItemResponse } from "../main/types";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
 import { Button } from "../ui-kit";
-import classnames from "../ui-kit/classnames";
+import classNames from "../ui-kit/class-names";
 import { useAppDispatch } from "../../hooks";
 import {
   selectModalValidationReady,
@@ -50,7 +50,7 @@ export function ValidateModalAction({
         ? ""
         : "grow clear-left float-left order-first";
   return (
-    <div className={classnames(" ", orderClass)}>
+    <div className={classNames(" ", orderClass)}>
       <Button
         disabled={isDisabled}
         onClick={onClick}

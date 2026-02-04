@@ -12,7 +12,7 @@ import {
   getPublicKeyFromLocalStorage,
   getStorageKey,
 } from "../../utils/helpers";
-import classnames from "../ui-kit/classnames";
+import classNames from "../ui-kit/class-names";
 
 export interface VerifyThirdPartySignatureAction {
   actionItem: ActionItemRequest;
@@ -80,7 +80,7 @@ export function VerifyThirdPartySignatureAction({
                   disabled={false}
                   size={Button.ButtonSizes.m}
                   variant={Button.ButtonVariants.primary}
-                  className={classnames(
+                  className={classNames(
                     "uppercase",
                     linkOpened ? "brightness-125" : "brightness-75",
                   )}
@@ -93,7 +93,7 @@ export function VerifyThirdPartySignatureAction({
                 disabled={false}
                 size={Button.ButtonSizes.m}
                 variant={Button.ButtonVariants.primary}
-                className={classnames(
+                className={classNames(
                   "uppercase",
                   linkOpened ? "brightness-75" : "brightness-125",
                 )}

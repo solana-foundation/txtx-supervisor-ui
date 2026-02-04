@@ -1,6 +1,6 @@
 import React from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import classnames from "../ui-kit/classnames";
+import classNames from "../ui-kit/class-names";
 import { InputOption } from "../main/types";
 import useHandleEscapeKey from "../../hooks/useHandleEscapeKey";
 import useHandleEnterKey from "../../hooks/useHandleEnterKey";
@@ -68,7 +68,7 @@ export default function PickInputPopup({
                 console.log("setActive", item);
                 setActive(item);
               }}
-              className={classnames(
+              className={classNames(
                 "flex items-center gap-3 px-3 py-2 rounded border transition-colors cursor-pointer",
                 activeIndex === idx
                   ? "bg-emerald-950 border-teal-950"
@@ -76,7 +76,7 @@ export default function PickInputPopup({
               )}
             >
               <div
-                className={classnames(
+                className={classNames(
                   "flex border w-[16px] aspect-square rounded-full transition-colors",
                   activeIndex === idx
                     ? "border-emerald-500"
@@ -84,14 +84,14 @@ export default function PickInputPopup({
                 )}
               >
                 <div
-                  className={classnames(
+                  className={classNames(
                     "m-auto w-[8px] aspect-square rounded-full transition-colors",
                     activeIndex === idx ? "bg-emerald-500" : "",
                   )}
                 />
               </div>
               <div
-                className={classnames(
+                className={classNames(
                   "flex-1",
                   activeIndex === idx ? "text-emerald-500" : "",
                 )}
@@ -108,7 +108,7 @@ export default function PickInputPopup({
         ) : null}
         <Button
           onClick={onButtonClick}
-          className={classnames(
+          className={classNames(
             "font-gt uppercase tracking-wide w-full",
             isChangeEnv && updated
               ? "bg-rose-400 hover:bg-rose-350 text-black"

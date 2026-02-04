@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import React, { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import classnames from "../../ui-kit/classnames";
+import classNames from "../../ui-kit/class-names";
 
 export interface SyntaxHighlighterInputProps {
   codeString: string;
@@ -20,7 +20,7 @@ export function SyntaxHighlighterInput({
   return (
     <div className="w-full rounded overflow-hidden">
       <div
-        className={classnames(
+        className={classNames(
           "transition-[max-height] duration-300 ease-in-out overflow-scroll scrollbar-thin w-full bg-gray-950 p-0",
           isFullHeight ? "max-h-[80vh]" : "max-h-60",
         )}
@@ -46,7 +46,7 @@ export function SyntaxHighlighterInput({
             className="flex items-center justify-center gap-1.5 px-4 text-gray-400 hover:text-gray-500 transition-colors"
           >
             <ChevronDownIcon
-              className={classnames(
+              className={classNames(
                 "transition-transform duration-300 h-6 w-6",
                 isFullHeight ? "rotate-180" : "",
               )}

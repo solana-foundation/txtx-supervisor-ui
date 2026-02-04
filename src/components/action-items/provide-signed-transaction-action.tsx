@@ -9,7 +9,7 @@ import { Button } from "../ui-kit";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client/react";
 import addonManager from "../../utils/addons-initializer";
-import classnames from "../ui-kit/classnames";
+import classNames from "../ui-kit/class-names";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { useAppDispatch } from "../../hooks";
 import { pushError } from "../../reducers/error-slice";
@@ -234,7 +234,7 @@ export function SignTransactionRow({
       {/* Header Row */}
       <div
         onClick={onClick}
-        className={classnames(
+        className={classNames(
           "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap rounded-t",
           isCurrent ? "bg-emerald-950" : "bg-gray-950",
         )}
@@ -242,7 +242,7 @@ export function SignTransactionRow({
         <div className="w-full self-stretch justify-start items-start inline-flex">
           <div className="w-[46px] flex items-center justify-center self-stretch">
             <div
-              className={classnames(
+              className={classNames(
                 "w-[20px] aspect-square border border-emerald-500 rounded-full flex items-center justify-center transition-colors hover:border-emerald-500",
                 isStatusSuccess ? "border-emerald-500 bg-emerald-500" : "",
                 isCurrent ? "border-emerald-500" : "",
@@ -250,7 +250,7 @@ export function SignTransactionRow({
               )}
             >
               <CheckIcon
-                className={classnames(
+                className={classNames(
                   "w-[16px] aspect-square transition-opacity",
                   !isStatusSuccess ? "opacity-0" : "",
                 )}
@@ -261,7 +261,7 @@ export function SignTransactionRow({
           <div className="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
             <div className="self-stretch py-3.5 md:py-[18px] justify-start items-start inline-flex">
               <div
-                className={classnames(
+                className={classNames(
                   "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
                   isStatusSuccess ? "text-emerald-620" : "",
                   isCurrent ? "text-emerald-500" : "",

@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client/react";
 import { ActionItemRequest, ActionItemResponse } from "../main/types";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
-import classnames from "../ui-kit/classnames";
+import classNames from "../ui-kit/class-names";
 import { selectPanelValidationReady } from "../../reducers/runbooks-slice";
 import { useAppSelector } from "../../hooks";
 import { Button } from "../ui-kit";
@@ -41,7 +41,7 @@ export function ValidateBlockAction({
         ? ""
         : "grow clear-left float-left order-first";
   return (
-    <div className={classnames(" ", orderClass)}>
+    <div className={classNames(" ", orderClass)}>
       <Button
         disabled={isDisabled}
         onClick={onClick}

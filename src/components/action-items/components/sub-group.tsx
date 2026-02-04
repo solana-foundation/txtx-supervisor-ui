@@ -11,7 +11,7 @@ import { ReviewInputAction } from "../review-input-action";
 import { SendTransactionAction } from "../send-transaction-action";
 import { ProvideSignedMessageAction } from "../provide-signed-message-action";
 import { OpenModalAction } from "../open-modal-action";
-import classnames from "../../ui-kit/classnames";
+import classNames from "../../ui-kit/class-names";
 import { DisplayErrorLogAction } from "../display-error-log-action";
 import { DisplayInfoAction } from "../display-info-action";
 import { VerifyThirdPartySignatureAction } from "../verify-third-party-signature-action";
@@ -161,7 +161,7 @@ export function SubGroup({ subGroup }: SubGroup) {
 
   return (
     <div
-      className={classnames(
+      className={classNames(
         "self-stretch flex-col justify-start items-start inline-flex border rounded",
         isCurrentSubGroup && !isErrorSubGroup
           ? "border-emerald-650"

@@ -1,7 +1,7 @@
 // https://tppr.me/K7gKC4
 
 import React from "react";
-import classnames from "../ui-kit/classnames";
+import classNames from "../ui-kit/class-names";
 import GoogleIcon from "../../components/icons/google";
 import GithubIcon from "../../components/icons/github";
 import { XMarkIcon } from "@heroicons/react/20/solid";
@@ -16,7 +16,7 @@ export default function FormSignUp() {
       <div className="flex flex-col gap-2.5">
         <input
           placeholder="Enter your email"
-          className={classnames(
+          className={classNames(
             "text-xs font-normal font-gt w-full p-3",
             "border-gray-800 rounded",
             "bg-neutral-800 text-gray-400",
@@ -30,7 +30,7 @@ export default function FormSignUp() {
       <div className="h-[1px] bg-gray-800 my-6" />
       <div className={"flex flex-col gap-2"}>
         <button
-          className={classnames(
+          className={classNames(
             "transition duration-200 rounded text-xs font-gt uppercase tracking-wide bg-black hover:bg-gray-800 text-zinc-400 py-[13px] px-4 w-full",
             "flex justify-center gap-2",
           )}
@@ -39,7 +39,7 @@ export default function FormSignUp() {
           Github connect
         </button>
         <button
-          className={classnames(
+          className={classNames(
             "transition duration-200 rounded text-xs font-gt uppercase tracking-wide bg-black hover:bg-gray-800 text-zinc-400 py-[13px] px-4 w-full",
             "flex justify-center gap-2",
           )}

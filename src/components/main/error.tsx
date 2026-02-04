@@ -1,5 +1,5 @@
 import React, { forwardRef, useRef, useEffect } from "react";
-import classnames from "../ui-kit/classnames";
+import classNames from "../ui-kit/class-names";
 import { useAppSelector } from "../../hooks";
 import {
   RunbookStepStatus,
@@ -51,7 +51,7 @@ export const ErrorPanel = forwardRef(function Panel(
 
   return (
     <div
-      className={classnames(
+      className={classNames(
         "w-full p-6 bg-stone-900 rounded-lg shadow border border-stone-800 flex-col justify-center items-start gap-2.5 inline-flex",
         contentVisibility,
       )}

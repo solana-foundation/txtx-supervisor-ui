@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ActionItemRequest, DisplayableValue } from "../../main/types";
-import classnames from "../../ui-kit/classnames";
+import classNames from "../../ui-kit/class-names";
 import Pencil from "../../icons/pencil";
 import UpdateInputPopup from "../../popup/update-input-popup";
 
@@ -56,7 +56,7 @@ export function ProvideInputCell({
         <div className="grow flex">
           <input
             id={id}
-            className={classnames(
+            className={classNames(
               "grow text-sm font-normal font-gt leading-[18.20px] text-right",
               " rounded-l-sm",
               isStatusSuccess ? "bg-neutral-800 text-emerald-500" : "",
@@ -71,14 +71,14 @@ export function ProvideInputCell({
             disabled={true}
           />
           <div
-            className={classnames(
+            className={classNames(
               "w-[32px] bg-neutral-800 flex items-center justify-center rounded-r-sm  border border-l-0",
               isCurrent ? "border-emerald-500/50" : "border-gray-800",
             )}
             onClick={onPencilClick}
           >
             <Pencil
-              className={classnames(
+              className={classNames(
                 isStatusSuccess ? "bg-neutral-800 text-emerald-500" : "",
                 isCurrent
                   ? "bg-neutral-800 text-emerald-500"

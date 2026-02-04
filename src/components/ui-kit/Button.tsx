@@ -1,16 +1,16 @@
-import React, { ButtonHTMLAttributes } from 'react';
-import * as Headless from '@headlessui/react';
+import React, { ButtonHTMLAttributes } from "react";
+import * as Headless from "@headlessui/react";
 
-import classnames from './classnames';
+import classNames from "./class-names";
 
 export enum ButtonSizes {
-  m = 'medium',
-  l = 'large',
+  m = "medium",
+  l = "large",
 }
 
 export enum ButtonVariants {
-  primary = 'primary',
-  secondary = 'secondary',
+  primary = "primary",
+  secondary = "secondary",
 }
 
 const variants = {
@@ -59,23 +59,23 @@ export const Button = ({
   ...props
 }: ButtonProps) => (
   <Headless.Button
-    className={classnames(
+    className={classNames(
       // Base layout
-      'relative isolate inline-flex items-center justify-center gap-x-2 border',
+      "relative isolate inline-flex items-center justify-center gap-x-2 border",
       // Focus ring
-      'focus:outline-none data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-blue-500',
+      "focus:outline-none data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-blue-500",
       // Disabled
-      'data-[disabled]:opacity-50',
+      "data-[disabled]:opacity-50",
       // Button-specific base
-      'cursor-pointer rounded font-gt-america-mono font-normal',
+      "cursor-pointer rounded font-gt-america-mono font-normal",
       // Size
       sizes[size],
       // Variant
       variants[variant],
       // Disabled pointer
-      { 'pointer-events-none': disabled },
+      { "pointer-events-none": disabled },
       // Consumer overrides
-      className
+      className,
     )}
     disabled={disabled}
     {...props}

@@ -2,7 +2,7 @@ import React from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import classnames from "../ui-kit/classnames";
+import classNames from "../ui-kit/class-names";
 import CopyLinkIcon from "../icons/copy-link";
 
 export default function Share() {
@@ -32,7 +32,7 @@ export default function Share() {
       <div className="relative flex items-center justify-between mb-3">
         <CopyLinkIcon className="absolute top-[14px] left-[12px] pointer-events-none" />
         <input
-          className={classnames(
+          className={classNames(
             "text-sm font-normal w-[220px] py-2.5 pr-3 pl-[36px]",
             "border-gray-800 rounded",
             "bg-neutral-800 text-gray-400",

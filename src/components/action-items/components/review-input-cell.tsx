@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import classnames from "../../ui-kit/classnames";
+import classNames from "../../ui-kit/class-names";
 import {
   ActionItemStatus,
   DisplayableValue,
@@ -32,19 +32,19 @@ export function ReviewInputCell({
 
   return (
     <div
-      className={classnames(
+      className={classNames(
         "self-stretch flex-col justify-center items-start inline-flex basis-full md:basis-auto",
         childIsFullWidth ? "w-full" : "",
       )}
     >
       <div
-        className={classnames(
+        className={classNames(
           "self-stretch pr-3 pb-3 pl-3 md:pt-3 justify-end items-start inline-flex",
           childIsFullWidth ? "w-full" : "",
         )}
       >
         <div
-          className={classnames(
+          className={classNames(
             "rounded flex-col justify-end items-start gap-2.5 inline-flex",
             isStatusSuccess ? "bg-teal-950" : "",
             isCurrent ? "bg-emerald-500" : "",
@@ -55,7 +55,7 @@ export function ReviewInputCell({
           )}
         >
           <div
-            className={classnames(
+            className={classNames(
               "text-sm font-normal font-gt leading-[18.20px] break-all",
               isStatusSuccess ? "text-emerald-500" : "",
               isCurrent ? "text-gray-950" : "",

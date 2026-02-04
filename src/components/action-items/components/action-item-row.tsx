@@ -1,5 +1,5 @@
 import React from "react";
-import classnames from "../../ui-kit/classnames";
+import classNames from "../../ui-kit/class-names";
 import { ActionItemRequest, errorDiagnostic } from "../../main/types";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { InfoToolTip } from "../../buttons/info-tool-tip";
@@ -48,19 +48,19 @@ export function ActionItemRow({
     <div className="w-full relative">
       <div
         onClick={onClick}
-        className={classnames(
+        className={classNames(
           "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap rounded",
           isCurrent ? "bg-emerald-950" : "bg-gray-950",
         )}
       >
         <div
-          className={classnames(
+          className={classNames(
             "flex items-center justify-center self-stretch",
             displayStatus ? "w-[46px]" : "w-0 pl-4",
           )}
         >
           <div
-            className={classnames(
+            className={classNames(
               "flex items-center justify-center",
               displayStatus
                 ? "w-[20px] aspect-square border border-emerald-500 rounded-full transition-colors hover:border-emerald-500"
@@ -73,7 +73,7 @@ export function ActionItemRow({
           >
             {displayStatus && (
               <CheckIcon
-                className={classnames(
+                className={classNames(
                   "w-[16px] aspect-square transition-opacity",
                   !isStatusSuccess ? "opacity-0" : "",
                 )}
@@ -85,7 +85,7 @@ export function ActionItemRow({
         <div className="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
           <div className="self-stretch py-2.5 md:py-[12px] justify-start items-start inline-flex rounded">
             <div
-              className={classnames(
+              className={classNames(
                 "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",
                 isStatusSuccess ? "text-emerald-620" : "",
                 isCurrent ? "text-emerald-500" : "",
@@ -159,9 +159,9 @@ export function ActionItemTitle({
   if (hasDescription && hasMarkdown) {
     secondary = (
       <span className="font-inter text-xs font-semibold">
-        <span className={classnames(descriptionTextColor)}>{description}</span>
+        <span className={classNames(descriptionTextColor)}>{description}</span>
         <span
-          className={classnames(
+          className={classNames(
             "uppercase font-bold ml-2 hover:brightness-150",
             markdownButtonColor,
           )}
@@ -174,7 +174,7 @@ export function ActionItemTitle({
   } else if (hasDescription && !hasMarkdown) {
     secondary = (
       <span
-        className={classnames(
+        className={classNames(
           "font-gt text-xs font-semibold",
           descriptionTextColor,
         )}
@@ -185,7 +185,7 @@ export function ActionItemTitle({
   } else if (!hasDescription && hasMarkdown) {
     secondary = (
       <span
-        className={classnames(
+        className={classNames(
           "uppercase font-gt text-xs font-semibold hover:brightness-150",
           markdownButtonColor,
         )}
@@ -197,7 +197,7 @@ export function ActionItemTitle({
   } else {
     secondary = (
       <span
-        className={classnames(
+        className={classNames(
           "font-gt text-xs font-semibold",
           isCurrent ? "text-amber-400" : "",
         )}
@@ -261,7 +261,7 @@ export function ActionItemSubRow({
 
   return (
     <div
-      className={classnames(
+      className={classNames(
         "overflow-auto w-full p-3 pb-0 justify-start items-start inline-flex bg-black rounded-b",
         footer ? "min-h-20" : "",
         // todo, investigate why scrollbar styling isn't working
@@ -269,13 +269,13 @@ export function ActionItemSubRow({
       )}
     >
       <div
-        className={classnames(
+        className={classNames(
           "grow shrink basis-0 flex-col justify-start items-start inline-flex",
           footer ? "gap-2.5" : "",
         )}
       >
         <div
-          className={classnames(
+          className={classNames(
             "self-stretch text-sm font-medium font-inter leading-[18.20px]",
             isError ? "text-rose-400" : "text-stone-500",
           )}
