@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: "20.x"
 
-      - run: npm run ci
+      - run: npm ci
       - run: npm run build
 
       - name: Compress Build
