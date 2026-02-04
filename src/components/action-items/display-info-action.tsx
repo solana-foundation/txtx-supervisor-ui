@@ -1,4 +1,4 @@
-import { classNames } from "../../utils/helpers";
+import classNames from "../ui-kit/class-names";
 import { ActionItemRequest } from "../main/types";
 import { OutputRow } from "./components/output-row";
 import React from "react";

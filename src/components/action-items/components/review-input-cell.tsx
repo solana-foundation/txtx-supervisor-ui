@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { classNames } from "../../../utils/helpers";
+import classNames from "../../ui-kit/class-names";
 import {
   ActionItemStatus,
   DisplayableValue,

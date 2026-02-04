@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import React, { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { classNames } from "../../../utils/helpers";
+import classNames from "../../ui-kit/class-names";
 
 export interface SyntaxHighlighterInputProps {
   codeString: string;

@@ -1,5 +1,5 @@
 import React from "react";
-import { classNames } from "../../../utils/helpers";
+import classNames from "../../ui-kit/class-names";
 import { ActionGroup } from "../../main/types";
 import { ButtonSubGroup } from "./button-sub-group";
 import { SubGroup } from "./sub-group";

@@ -11,7 +11,7 @@ import { ReviewInputAction } from "../review-input-action";
 import { SendTransactionAction } from "../send-transaction-action";
 import { ProvideSignedMessageAction } from "../provide-signed-message-action";
 import { OpenModalAction } from "../open-modal-action";
-import { classNames } from "../../../utils/helpers";
+import classNames from "../../ui-kit/class-names";
 import { DisplayErrorLogAction } from "../display-error-log-action";
 import { DisplayInfoAction } from "../display-info-action";
 import { VerifyThirdPartySignatureAction } from "../verify-third-party-signature-action";

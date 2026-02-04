@@ -1,5 +1,5 @@
 import React, { forwardRef, useRef, useEffect } from "react";
-import { classNames } from "../../utils/helpers";
+import classNames from "../ui-kit/class-names";
 import { useAppSelector } from "../../hooks";
 import {
   RunbookStepStatus,

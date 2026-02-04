@@ -1,10 +1,10 @@
 import React from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { classNames } from "../../utils/helpers";
+import classNames from "../ui-kit/class-names";
 import { InputOption } from "../main/types";
 import useHandleEscapeKey from "../../hooks/useHandleEscapeKey";
 import useHandleEnterKey from "../../hooks/useHandleEnterKey";
-import { Button } from "@txtxrun/txtx-ui-kit";
+import { Button } from "../ui-kit";
 import { ModalWrapper } from "../main/modal-wrapper";
 
 export interface PickInputPopup {

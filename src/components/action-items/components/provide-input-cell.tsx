@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ActionItemRequest, DisplayableValue } from "../../main/types";
-import { classNames } from "../../../utils/helpers";
+import classNames from "../../ui-kit/class-names";
 import Pencil from "../../icons/pencil";
 import UpdateInputPopup from "../../popup/update-input-popup";
 

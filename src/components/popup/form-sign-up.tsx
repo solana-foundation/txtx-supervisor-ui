@@ -1,7 +1,7 @@
 // https://tppr.me/K7gKC4
 
 import React from "react";
-import { classNames } from "../../utils/helpers";
+import classNames from "../ui-kit/class-names";
 import GoogleIcon from "../../components/icons/google";
 import GithubIcon from "../../components/icons/github";
 import { XMarkIcon } from "@heroicons/react/20/solid";

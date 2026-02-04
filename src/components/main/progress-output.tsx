@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../../hooks";
 import { selectActiveTransientLogs } from "../../reducers/runbooks-slice";
 import ProgressAnimation from "../animations/progress-animation";
-import { classNames } from "../../utils/helpers";
+import classNames from "../ui-kit/class-names";
 import { LogEvent } from "./types";
 
 export default function ProgressOutput() {

@@ -1,7 +1,7 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import React, { useState } from "react";
-import { classNames } from "../../utils/helpers";
+import classNames from "../ui-kit/class-names";
 
 export interface InfoToolTipProps {
   text: string;

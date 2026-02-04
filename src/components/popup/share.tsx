@@ -2,7 +2,7 @@ import React from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { classNames } from "../../utils/helpers";
+import classNames from "../ui-kit/class-names";
 import CopyLinkIcon from "../icons/copy-link";
 
 export default function Share() {

@@ -1,5 +1,5 @@
 import React from "react";
-import { classNames } from "../../../utils/helpers";
+import classNames from "../../ui-kit/class-names";
 import { ActionItemRequest, errorDiagnostic } from "../../main/types";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { InfoToolTip } from "../../buttons/info-tool-tip";

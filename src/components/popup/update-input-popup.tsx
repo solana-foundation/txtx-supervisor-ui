@@ -4,9 +4,9 @@ import useHandleEscapeKey from "../../hooks/useHandleEscapeKey";
 import useHandleEnterKey from "../../hooks/useHandleEnterKey";
 import { ModalWrapper } from "../main/modal-wrapper";
 import React from "react";
-import { classNames } from "../../utils/helpers";
+import classNames from "../ui-kit/class-names";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { Button } from "@txtxrun/txtx-ui-kit";
+import { Button } from "../ui-kit";
 
 export default function UpdateInputPopup({
   actionStatus,

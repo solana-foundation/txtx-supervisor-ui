@@ -3,7 +3,7 @@ import { LogEvent } from "./types";
 import React from "react";
 import { useAppSelector } from "../../hooks";
 import { selectLogs } from "../../reducers/runbooks-slice";
-import { classNames } from "../../utils/helpers";
+import classNames from "../ui-kit/class-names";
 
 export const RunbookLogs: React.FC = () => {
   const logs = useAppSelector(selectLogs);

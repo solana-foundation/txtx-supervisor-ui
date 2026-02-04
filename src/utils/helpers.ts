@@ -16,10 +16,6 @@ export function sortNavItemsRecursive(a: NavItem, b: NavItem) {
   }
 }
 
-export function classNames(...classes: string[]): string {
-  return classes.filter(Boolean).join(" ");
-}
-
 export function getStorageKey(namespace: string): string {
   return `txtx_${namespace}_data`;
 }

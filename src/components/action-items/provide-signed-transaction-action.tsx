@@ -5,11 +5,11 @@ import {
   ErrorActionItemRow,
 } from "./components/action-item-row";
 import { ActionItemRequest, ActionItemResponse, Value } from "../main/types";
-import { Button } from "@txtxrun/txtx-ui-kit";
+import { Button } from "../ui-kit";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client/react";
 import addonManager from "../../utils/addons-initializer";
-import { classNames } from "../../utils/helpers";
+import classNames from "../ui-kit/class-names";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { useAppDispatch } from "../../hooks";
 import { pushError } from "../../reducers/error-slice";

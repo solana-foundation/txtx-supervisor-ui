@@ -2,7 +2,7 @@ import React from "react";
 import { ModalWrapper } from "../main/modal-wrapper";
 import useHandleEscapeKey from "../../hooks/useHandleEscapeKey";
 import MarkdownRenderer from "../action-items/components/markdown-renderer";
-import { Button } from "@txtxrun/txtx-ui-kit";
+import { Button } from "../ui-kit";
 
 export default function MarkdownDescriptionPopup({
   title,

@@ -1,7 +1,7 @@
 import React from "react";
 import { ErrorActionItemRow } from "./components/action-item-row";
 import { ActionItemRequest, ActionItemResponse } from "../main/types";
-import { Button } from "@txtxrun/txtx-ui-kit";
+import { Button } from "../ui-kit";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client/react";
 import addonManager from "../../utils/addons-initializer";
