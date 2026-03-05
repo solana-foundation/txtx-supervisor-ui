@@ -31,7 +31,7 @@ const projectId =
 const metadata = {
   name: "Txtx",
   description: "Build confidence with smart contract Runbooks",
-  url: "http://localhost:1234",
+  url: `${window.location.protocol}//${window.location.host}`,
   icons: [],
 };
 
@@ -170,7 +170,7 @@ export default class EvmAddon implements Addon {
 
     const nonce = await NonceManager.getInstance().getNonce(
       signerAddress,
-      wagmiConfig, 
+      wagmiConfig,
       chain.id,
     );
 
