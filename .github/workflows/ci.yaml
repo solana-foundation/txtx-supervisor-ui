@@ -31,7 +31,7 @@ jobs:
       - run: npm run build
 
       - name: Compress Build
-        run: tar -zcvf txtx-web-ui.tar.gz dist
+        run: tar -C dist -zcvf txtx-web-ui.tar.gz .
 
       - name: Upload Build
         uses: actions/upload-artifact@v4

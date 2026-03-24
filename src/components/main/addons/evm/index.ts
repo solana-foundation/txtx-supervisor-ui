@@ -26,8 +26,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { createElement } from "react";
 
-const projectId =
-  process.env.WALLETCONNECT_PROJECT_ID || "a750324b860cf7867328c96408bc03ac";
+function requireEnv(env: string): string {
+  const envVar = process.env[env];
+  if (typeof envVar === "undefined") {
+    throw new Error(`Missing required environment variable: ${env}`);
+  }
+  return envVar;
+}
+
+const projectId = requireEnv("WALLETCONNECT_PROJECT_ID");
 const metadata = {
   name: "Txtx",
   description: "Build confidence with smart contract Runbooks",
