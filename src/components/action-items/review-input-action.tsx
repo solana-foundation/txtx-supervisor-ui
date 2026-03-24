@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client/react";
-import { ActionItemRequest, ActionItemResponse } from "../main/types";
-import { ActionItemRow } from "./components/action-item-row";
-import { ReviewInputCell } from "./components/review-input-cell";
+import { ActionItemRequest, ActionItemResponse } from "../../types/runbook";
+import { ActionItemRow } from "./shared/action-item-row";
+import { ReviewInputCell } from "./shared/review-input-cell";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
 

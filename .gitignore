@@ -8,3 +8,4 @@ dist
 
 # Yalc storage
 .yalc
+coverage/*

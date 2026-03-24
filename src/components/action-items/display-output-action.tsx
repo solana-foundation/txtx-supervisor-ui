@@ -1,6 +1,6 @@
-import { ActionItemRequest } from "../main/types";
-import { ActionItemRow } from "./components/action-item-row";
-import { ReviewInputCell } from "./components/review-input-cell";
+import { ActionItemRequest } from "../../types/runbook";
+import { ActionItemRow } from "./shared/action-item-row";
+import { ReviewInputCell } from "./shared/review-input-cell";
 import React from "react";
 
 export interface DisplayOutputAction {

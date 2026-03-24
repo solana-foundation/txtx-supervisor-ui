@@ -16,7 +16,7 @@ import {
   ModalBlock,
   RunbookCompletedEvent,
   UpdateActionItemEvent,
-} from "../components/main/types";
+} from "../types/runbook";
 import {
   clearBlocks,
   pushLogEvent,

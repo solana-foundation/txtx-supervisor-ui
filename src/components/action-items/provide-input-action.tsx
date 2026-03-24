@@ -4,11 +4,11 @@ import {
   ActionItemResponse,
   valueToJson,
   toValue,
-} from "../main/types";
-import { ActionItemRow } from "./components/action-item-row";
+} from "../../types/runbook";
+import { ActionItemRow } from "./shared/action-item-row";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
-import { ProvideInputCell } from "./components/provide-input-cell";
+import { ProvideInputCell } from "./shared/provide-input-cell";
 
 export interface ProvideInputAction {
   actionItem: ActionItemRequest;

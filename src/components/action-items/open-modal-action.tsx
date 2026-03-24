@@ -1,10 +1,10 @@
 import React from "react";
-import { ActionItemRow, ActionItemSubRow } from "./components/action-item-row";
-import { ActionItemRequest, toValue } from "../main/types";
-import { Button } from "../ui-kit";
+import { ActionItemRow, ActionItemSubRow } from "./shared/action-item-row";
+import { ActionItemRequest, toValue } from "../../types/runbook";
+import { Button } from "../ui";
 import { useAppDispatch } from "../../hooks";
 import { setModalVisibility } from "../../reducers/runbooks-slice";
-import { ReviewInputCell } from "./components/review-input-cell";
+import { ReviewInputCell } from "./shared/review-input-cell";
 
 export interface OpenModalAction {
   actionItem: ActionItemRequest;

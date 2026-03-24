@@ -4,11 +4,14 @@
   "description": "",
   "source": "src/index.html",
   "scripts": {
-    "dev": "TXTX_DEV_MODE=true parcel",
+    "dev": "WALLETCONNECT_PROJECT_ID=test TXTX_DEV_MODE=true parcel",
     "restart": "npm run clean && npm i && npm run dev",
     "clean": "rm -rf .parcel-cache & rm -rf dist",
     "build": "parcel build --no-scope-hoist --no-source-maps",
-    "rebuild": "npm run clean && npm run i && npm run build"
+    "rebuild": "npm run clean && npm run i && npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [],
   "author": "",
@@ -17,21 +20,26 @@
   "devDependencies": {
     "@parcel/core": "2.15.4",
     "@tailwindcss/forms": "0.5.11",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "20.11.19",
     "@types/react": "18.3.1",
     "@types/react-dom": "18.3.1",
     "@types/react-syntax-highlighter": "15.5.13",
+    "@vitest/coverage-v8": "^4.1.1",
     "browserify-zlib": "0.2.0",
     "buffer": "6.0.3",
     "dotenv": "16.4.7",
     "events": "3.3.0",
+    "jsdom": "^29.0.1",
     "parcel": "2.15.4",
     "postcss": "8.5.6",
     "prettier": "3.8.1",
     "process": "0.11.10",
     "tailwind-scrollbar": "3.0.5",
     "tailwindcss": "3.4.1",
-    "typescript": "5.7.3"
+    "typescript": "5.7.3",
+    "vitest": "^4.1.1"
   },
   "dependencies": {
     "@apollo/client": "4.1.2",
