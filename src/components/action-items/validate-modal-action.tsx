@@ -1,9 +1,9 @@
 import { useMutation } from "@apollo/client/react";
-import { ActionItemRequest, ActionItemResponse } from "../main/types";
+import { ActionItemRequest, ActionItemResponse } from "../../types/runbook";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
-import { Button } from "../ui-kit";
-import classNames from "../ui-kit/class-names";
+import { Button } from "../ui";
+import classNames from "../ui/class-names";
 import { useAppDispatch } from "../../hooks";
 import {
   selectModalValidationReady,

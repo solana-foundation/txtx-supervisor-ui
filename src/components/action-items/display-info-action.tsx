@@ -1,6 +1,6 @@
-import classNames from "../ui-kit/class-names";
-import { ActionItemRequest } from "../main/types";
-import { OutputRow } from "./components/output-row";
+import classNames from "../ui/class-names";
+import { ActionItemRequest } from "../../types/runbook";
+import { OutputRow } from "./shared/output-row";
 import React from "react";
 
 export interface DisplayInfoAction {

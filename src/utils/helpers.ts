@@ -1,21 +1,3 @@
-import { NavItem } from "../components/sidebar/nav-item";
-
-export function sortNavItemsRecursive(a: NavItem, b: NavItem) {
-  if (a.children && b.children) {
-    a.children.sort(sortNavItemsRecursive);
-    b.children.sort(sortNavItemsRecursive);
-    return 0;
-  } else if (a.children) {
-    a.children.sort(sortNavItemsRecursive);
-    return 1;
-  } else if (b.children) {
-    b.children.sort(sortNavItemsRecursive);
-    return -1;
-  } else {
-    return 0;
-  }
-}
-
 export function getStorageKey(namespace: string): string {
   return `txtx_${namespace}_data`;
 }

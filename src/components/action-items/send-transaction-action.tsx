@@ -1,7 +1,7 @@
 import React from "react";
-import { ErrorActionItemRow } from "./components/action-item-row";
-import { ActionItemRequest, ActionItemResponse } from "../main/types";
-import { Button } from "../ui-kit";
+import { ErrorActionItemRow } from "./shared/action-item-row";
+import { ActionItemRequest, ActionItemResponse } from "../../types/runbook";
+import { Button } from "../ui";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client/react";
 import addonManager from "../../utils/addons-initializer";
@@ -11,7 +11,7 @@ import {
 } from "./provide-signed-transaction-action";
 import { useAppDispatch } from "../../hooks";
 import { pushError } from "../../reducers/error-slice";
-import { DisplayValue } from "./components/review-input-cell";
+import { DisplayValue } from "./shared/review-input-cell";
 
 export interface SendTransactionAction {
   actionItem: ActionItemRequest;

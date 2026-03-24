@@ -12,7 +12,7 @@ import {
   ErrorBlock,
   ModalBlock,
   LogEvent,
-} from "../components/main/types";
+} from "../types/runbook";
 import {
   setActionBlocks,
   setErrorBlocks,

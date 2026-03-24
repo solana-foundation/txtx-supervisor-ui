@@ -1,15 +1,15 @@
-import { Header } from "./components/header/header";
-import React, { useState } from "react";
-import Runbook from "./components/main/runbook";
+import { Header } from "./components/layout/header";
+import React from "react";
+import Runbook from "./components/runbook/runbook";
 import { useAppSelector } from "./hooks";
 import { selectRunbook } from "./reducers/runbooks-slice";
 import useSubscriptions from "./hooks/useSubscriptions";
-import { Modal } from "./components/main/modal";
+import { Modal } from "./components/runbook/modal";
 import useQueries from "./hooks/useQueries";
 import { ApolloProvider } from "@apollo/client/react";
 import useApolloClient from "./hooks/useApolloClient";
-import AddonsProvider from "./components/main/addons-provider";
-import ErrorModal from "./components/popup/error-popup";
+import AddonsProvider from "./components/runbook/addons-provider";
+import ErrorModal from "./components/overlays/error-popup";
 
 const devMode = process.env.TXTX_DEV_MODE === "true";
 const protocol = window.location.protocol;
@@ -30,7 +30,6 @@ export default function App() {
 }
 
 function AppInternal() {
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { modalBlocks } = useAppSelector(selectRunbook);
 
   const { loading } = useQueries();
@@ -42,10 +41,7 @@ function AppInternal() {
       {/* Header & main content */}
       <div className="from-gray-950 to-neutral-900 ">
         <Header loading={loading}></Header>
-        <main
-          className="min-h-screen pt-0 mt-0" //pl-16 when we reinsatate sidebar
-          onClick={() => setModalVisible(!modalVisible)}
-        >
+        <main className="min-h-screen pt-0 mt-0">
           <div className="flex justify-center py-9">
             {loading
               ? undefined

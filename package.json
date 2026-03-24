@@ -4,7 +4,7 @@
   "description": "",
   "source": "src/index.html",
   "scripts": {
-    "dev": "TXTX_DEV_MODE=true parcel",
+    "dev": "WALLETCONNECT_PROJECT_ID=test TXTX_DEV_MODE=true parcel",
     "restart": "npm run clean && npm i && npm run dev",
     "clean": "rm -rf .parcel-cache & rm -rf dist",
     "build": "parcel build --no-scope-hoist --no-source-maps",

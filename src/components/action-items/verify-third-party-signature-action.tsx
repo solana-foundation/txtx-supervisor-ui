@@ -2,17 +2,17 @@ import React from "react";
 import {
   ActionItemRow,
   ErrorActionItemRow,
-} from "./components/action-item-row";
-import { ActionItemRequest, ActionItemResponse, toValue } from "../main/types";
-import { DisplayValue, ReviewInputCell } from "./components/review-input-cell";
-import { Button } from "../ui-kit";
+} from "./shared/action-item-row";
+import { ActionItemRequest, ActionItemResponse, toValue } from "../../types/runbook";
+import { DisplayValue, ReviewInputCell } from "./shared/review-input-cell";
+import { Button } from "../ui";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client/react";
 import {
   getPublicKeyFromLocalStorage,
   getStorageKey,
 } from "../../utils/helpers";
-import classNames from "../ui-kit/class-names";
+import classNames from "../ui/class-names";
 
 export interface VerifyThirdPartySignatureAction {
   actionItem: ActionItemRequest;

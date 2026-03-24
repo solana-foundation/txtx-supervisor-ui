@@ -3,11 +3,11 @@ import {
   ActionItemRequest,
   ActionItemResponse,
   InputOption,
-} from "../main/types";
-import { ActionItemRow } from "./components/action-item-row";
+} from "../../types/runbook";
+import { ActionItemRow } from "./shared/action-item-row";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
-import PickInputOptionCell from "./components/pick-input-option-cell";
+import PickInputOptionCell from "./shared/pick-input-option-cell";
 
 export interface PickInputOptionAction {
   actionItem: ActionItemRequest;

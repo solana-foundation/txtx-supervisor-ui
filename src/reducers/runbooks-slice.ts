@@ -12,7 +12,7 @@ import {
   ActionItemRequest,
   LogEvent,
   RunbookCompletedEvent,
-} from "../components/main/types";
+} from "../types/runbook";
 
 export interface Runbook {
   metadata: RunbookMetadata;

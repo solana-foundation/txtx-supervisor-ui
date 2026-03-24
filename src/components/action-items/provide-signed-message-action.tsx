@@ -1,4 +1,4 @@
-import { ActionItemRequest } from "../main/types";
+import { ActionItemRequest } from "../../types/runbook";
 
 export interface ProvideSignedMessageAction {
   actionItem: ActionItemRequest;

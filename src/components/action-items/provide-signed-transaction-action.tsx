@@ -3,17 +3,17 @@ import {
   ActionItemSubRow,
   ActionItemTitle,
   ErrorActionItemRow,
-} from "./components/action-item-row";
-import { ActionItemRequest, ActionItemResponse, Value } from "../main/types";
-import { Button } from "../ui-kit";
+} from "./shared/action-item-row";
+import { ActionItemRequest, ActionItemResponse, Value } from "../../types/runbook";
+import { Button } from "../ui";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import { useMutation } from "@apollo/client/react";
 import addonManager from "../../utils/addons-initializer";
-import classNames from "../ui-kit/class-names";
+import classNames from "../ui/class-names";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { useAppDispatch } from "../../hooks";
 import { pushError } from "../../reducers/error-slice";
-import { DisplayValue } from "./components/review-input-cell";
+import { DisplayValue } from "./shared/review-input-cell";
 
 export interface ProvideSignedTransactionAction {
   actionItem: ActionItemRequest;

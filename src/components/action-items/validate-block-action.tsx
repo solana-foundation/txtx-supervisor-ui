@@ -1,11 +1,11 @@
 import { useMutation } from "@apollo/client/react";
-import { ActionItemRequest, ActionItemResponse } from "../main/types";
+import { ActionItemRequest, ActionItemResponse } from "../../types/runbook";
 import { UPDATE_ACTION_ITEM } from "../../utils/queries";
 import React from "react";
-import classNames from "../ui-kit/class-names";
+import classNames from "../ui/class-names";
 import { selectPanelValidationReady } from "../../reducers/runbooks-slice";
 import { useAppSelector } from "../../hooks";
-import { Button } from "../ui-kit";
+import { Button } from "../ui";
 
 export interface ValidateBlockAction {
   actionItem: ActionItemRequest;

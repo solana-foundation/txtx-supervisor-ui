@@ -1,5 +1,5 @@
-import { ActionItemRequest, formatDiagnosticForDisplay } from "../main/types";
-import { OutputRow } from "./components/output-row";
+import { ActionItemRequest, formatDiagnosticForDisplay } from "../../types/runbook";
+import { OutputRow } from "./shared/output-row";
 import React from "react";
 
 export interface DisplayErrorLogAction {
