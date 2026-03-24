@@ -2,63 +2,18 @@ name: Release Supervisor UI
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}
+  group: ${{ github.workflow }} @ ${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  get_release_info:
-    name: Get Release Info
-    runs-on: ubuntu-latest
-    outputs:
-      tag: ${{ steps.new_release_tag.outputs.tag }}
-      version: ${{ steps.package_version.outputs.version }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20.x"
-
-      - name: Read package version
-        id: package_version
-        run: echo "version=$(node -p 'require(\"./package.json\").version')" >> "$GITHUB_OUTPUT"
-
-      - name: Get latest release
-        if: startsWith(github.ref, 'refs/heads/main')
-        id: release
-        uses: pozetroninc/github-action-get-latest-release@master
-        with:
-          repository: ${{ github.repository }}
-          excludes: prerelease, draft
-
-      - name: Determine if release build
-        if: startsWith(github.ref, 'refs/heads/main')
-        id: new_release_tag
-        env:
-          PACKAGE_VERSION: ${{ steps.package_version.outputs.version }}
-          LATEST_RELEASE: ${{ steps.release.outputs.release }}
-        run: |
-          PACKAGE_TAG="v${PACKAGE_VERSION}"
-          if [[ "${PACKAGE_TAG}" != "${LATEST_RELEASE}" ]]; then
-            echo "tag=${PACKAGE_TAG}" >> "$GITHUB_OUTPUT"
-            echo "::warning::Will create release for version: ${PACKAGE_TAG}"
-          else
-            echo "::warning::Will not create a release"
-          fi
-
   release:
     name: Build and Release Supervisor UI
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/heads/main') && needs.get_release_info.outputs.tag != ''
-    needs:
-      - get_release_info
     permissions:
       contents: write
     env:
@@ -73,6 +28,22 @@ jobs:
           node-version: "20.x"
           cache: npm
 
+      - name: Read package version
+        id: package_version
+        run: echo "version=$(node -p 'require(\"./package.json\").version')" >> "$GITHUB_OUTPUT"
+
+      - name: Validate tag matches package version
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          PACKAGE_VERSION: ${{ steps.package_version.outputs.version }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          EXPECTED_TAG="v${PACKAGE_VERSION}"
+          if [[ "${TAG_NAME}" != "${EXPECTED_TAG}" ]]; then
+            echo "::error::Tag ${TAG_NAME} does not match package.json version ${EXPECTED_TAG}"
+            exit 1
+          fi
+
       - name: Install dependencies
         run: npm ci
 
@@ -82,11 +53,9 @@ jobs:
       - name: Package dist
         run: tar -C dist -zcvf txtx-supervisor-ui-dist.tar.gz .
 
-      - name: Tag and Release
-        uses: ncipollo/release-action@v1
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
         with:
-          artifacts: txtx-supervisor-ui-dist.tar.gz
-          artifactContentType: application/gzip
-          tag: ${{ needs.get_release_info.outputs.tag }}
-          name: ${{ needs.get_release_info.outputs.tag }}
-          commit: ${{ github.sha }}
+          files: txtx-supervisor-ui-dist.tar.gz
+          name: ${{ github.ref_name }}
