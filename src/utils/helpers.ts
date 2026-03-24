@@ -19,12 +19,12 @@ export function storePublicKeyInLocalStorage(
 ) {
   const addressToKeyMapStr = localStorage.getItem(storageKey);
   if (addressToKeyMapStr === null) {
-    localStorage.setItem(storageKey, JSON.stringify({ address: publicKey }));
+    localStorage.setItem(storageKey, JSON.stringify({ [address]: publicKey }));
   } else {
     const addressToKeyMap = JSON.parse(addressToKeyMapStr);
     if (typeof addressToKeyMap !== "object") {
       // we have invalid storage at this key, overwrite it
-      localStorage.setItem(storageKey, JSON.stringify({ address: publicKey }));
+      localStorage.setItem(storageKey, JSON.stringify({ [address]: publicKey }));
     } else {
       addressToKeyMap[address] = publicKey;
       localStorage.setItem(storageKey, JSON.stringify(addressToKeyMap));
