@@ -26,7 +26,7 @@ export function Header({ loading }: HeaderProps) {
   const descriptionIsMarkdown = description?.includes("\n");
 
   return (
-    <div className="backdrop-blur-md bg-opacity-50 sticky top-0 z-50 h-28 px-8 flex shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 bg-zinc-950 border-b dark:border-zinc-900">
+    <div className="backdrop-blur-md sticky top-0 z-50 h-28 px-8 flex shrink-0 items-center gap-x-4 border-b border-gray-200 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8 bg-zinc-950/50 border-b dark:border-zinc-900">
       {/* left spacer */}
       <div className="flex-1" />
 

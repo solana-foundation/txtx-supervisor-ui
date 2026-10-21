@@ -23,7 +23,7 @@ export function Group({ group, accent = GroupAccent.None, modalUuid }: Group) {
     <div className="w-full flex-col justify-center items-start gap-2.5 inline-flex">
       <div
         className={classNames(
-          "px-2 text-sm font-normal font-inter rounded",
+          "px-2 text-sm font-normal font-inter rounded-sm",
           accent !== GroupAccent.None && title ? "border" : "",
           accent === GroupAccent.None ? "text-gray-400" : "",
           accent === GroupAccent.Red ? "border-red-600 text-red-600" : "",

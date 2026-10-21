@@ -63,11 +63,11 @@ export const Button = ({
       // Base layout
       "relative isolate inline-flex items-center justify-center gap-x-2 border",
       // Focus ring
-      "focus:outline-none data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-blue-500",
+      "focus:outline-hidden data-focus:outline-solid data-focus:outline-2 data-focus:outline-offset-2 data-[focus]:outline-blue-500",
       // Disabled
-      "data-[disabled]:opacity-50",
+      "data-disabled:opacity-50",
       // Button-specific base
-      "cursor-pointer rounded font-gt-america-mono font-normal",
+      "cursor-pointer rounded-sm font-gt-america-mono font-normal",
       // Size
       sizes[size],
       // Variant

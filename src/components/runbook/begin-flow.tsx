@@ -50,7 +50,7 @@ export const BeginFlow = forwardRef(function BeginFlow(
           Beginning new flow '{title}'
         </p>
       </div>
-      <div className="h-[2px] w-full rounded-full shadow-sm bg-gradient-to-r from-emerald-400 via-emerald-400 to-transparent" />
+      <div className="h-[2px] w-full rounded-full shadow-xs bg-linear-to-r/srgb from-emerald-400 via-emerald-400 to-transparent" />
 
       {description && (
         <div className="mt-2 flex justify-end">

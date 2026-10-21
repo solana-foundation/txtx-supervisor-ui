@@ -18,7 +18,7 @@ export function SyntaxHighlighterInput({
   const lineCount = codeString.split("\n").length;
 
   return (
-    <div className="w-full rounded overflow-hidden">
+    <div className="w-full rounded-sm overflow-hidden">
       <div
         className={classNames(
           "transition-[max-height] duration-300 ease-in-out overflow-scroll scrollbar-thin w-full bg-gray-950 p-0",
@@ -29,7 +29,7 @@ export function SyntaxHighlighterInput({
           language={language}
           // @ts-ignore
           style={getSyntaxStyle(isCurrent)}
-          className="w-full scrollbar-thin rounded"
+          className="w-full scrollbar-thin rounded-sm"
           showLineNumbers
         >
           {codeString}

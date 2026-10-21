@@ -38,7 +38,7 @@ export function InfoToolTip({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         className={classNames(
-          "flex items-center justify-center w-6 h-6 rounded-full transition-colors outline-none focus:outline-none",
+          "flex items-center justify-center w-6 h-6 rounded-full transition-colors outline-hidden focus:outline-hidden",
           isCurrent
             ? "text-gray-500 hover:text-gray-400"
             : "text-gray-700 hover:text-gray-500",

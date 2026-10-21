@@ -79,7 +79,7 @@ function ActiveTransientLogsList({ logs }: ActiveTransientLogsList) {
     <div className="absolute w-full h-full mt-6">
       <div
         className={classNames(
-          "transition-opacity ease-in-out w-[370px] bg-black bg-opacity-50 rounded-lg p-4 float-right mr-6",
+          "transition-opacity ease-in-out w-[370px] bg-black/50 rounded-lg p-4 float-right mr-6",
           logs.length ? "opacity-100" : "opacity-0",
         )}
       >
@@ -134,7 +134,7 @@ const Spinner: React.FC<{ loading: boolean }> = ({ loading }) => {
       <span className="inline-flex items-center ml-1 align-middle">
         <span className="relative flex h-2 w-2">
           {/* Gradient ring */}
-          <span className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-800 animate-spin"></span>
+          <span className="absolute inset-0 rounded-full bg-linear-to-r/srgb from-amber-400 via-yellow-500 to-amber-800 animate-spin"></span>
           {/* Inner circle for pulsing */}
           <span className="absolute inset-[2px] rounded-full bg-black animate-pulse"></span>
         </span>

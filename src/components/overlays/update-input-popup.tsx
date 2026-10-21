@@ -67,8 +67,8 @@ export default function UpdateInputPopup({
         <input
           className={classNames(
             "grow text-sm font-normal font-gt leading-[18.20px] my-[20px] w-full",
-            "border-gray-800 rounded-sm",
-            "focus:outline-none focus:ring-0 ring-0 focus:border-emerald-500",
+            "border-gray-800 rounded-xs",
+            "focus:outline-hidden focus:ring-0 ring-0 focus:border-emerald-500",
             inputClass,
           )}
           defaultValue={defaultInputValue}
@@ -85,7 +85,7 @@ export default function UpdateInputPopup({
           CONFIRM
         </Button>
         <XMarkIcon
-          className="absolute top-[10px] right-[10px] w-[20px] cursor-pointer rounded hover:text-gray-400/80 transition-colors"
+          className="absolute top-[10px] right-[10px] w-[20px] cursor-pointer rounded-sm hover:text-gray-400/80 transition-colors"
           onClick={closePopup}
         />
       </div>

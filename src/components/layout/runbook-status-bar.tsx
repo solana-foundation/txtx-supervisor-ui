@@ -118,8 +118,8 @@ function RunbookStepStatusItem({
         <div className="w-8 h-8 relative">
           <div className="left-0 top-0 absolute" />
           <div className="w-8 h-8 left-0 top-0 absolute">
-            <div className="w-8 h-8 left-0 top-0 absolute bg-neutral-900 rounded-full border-2 border-white border-opacity-5" />
-            <div className="left-[7.50px] top-[7.50px] absolute text-center text-white text-opacity-5 text-[13px] font-medium font-inter">
+            <div className="w-8 h-8 left-0 top-0 absolute bg-neutral-900 rounded-full border-2 border-white/5" />
+            <div className="left-[7.50px] top-[7.50px] absolute text-center text-white/5 text-[13px] font-medium font-inter">
               {formattedNumber}
             </div>
           </div>
@@ -140,7 +140,7 @@ function RunbookStepStatusItem({
 function RunbookStatusTrail({ status }: RunbookStepStatusProps) {
   let color = "bg-emerald-300";
   if (status === RunbookStepStatus.Queued) {
-    color = "bg-white bg-opacity-5";
+    color = "bg-white/5";
   }
   return (
     <div className="w-20 h-8 relative">

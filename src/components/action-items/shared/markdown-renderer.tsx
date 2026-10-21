@@ -28,13 +28,13 @@ export default function MarkdownRenderer({
           ),
           pre: ({ node, ...props }) => (
             <pre
-              className="bg-gray-800 text-sm p-4 rounded mb-4 font-gt"
+              className="bg-gray-800 text-sm p-4 rounded-sm mb-4 font-gt"
               {...props}
             />
           ),
           code: ({ node, ...props }) => (
             <code
-              className="bg-gray-800 text-sm py-[2px] px-1 rounded font-gt"
+              className="bg-gray-800 text-sm py-[2px] px-1 rounded-sm font-gt"
               {...props}
             />
           ),
