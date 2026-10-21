@@ -1,8 +1,148 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@plugin '@tailwindcss/forms';
+@custom-variant search-cancel (&::-webkit-search-cancel-button);
+@plugin 'tailwind-scrollbar' {
+  nocompatible: true;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-*: initial;
+  --color-buttonPrimaryBorder: #102924;
+  --color-buttonPrimaryHover: #10372c;
+  --color-buttonSecondary: #000000;
+  --color-buttonSecondaryHover: #313131;
+  --color-buttonGhostBg: #ffffff;
+  --color-buttonGhostBorder: #000000;
+  --color-buttonGhostBorderHover: #f1fcfb;
+  --color-buttonWhiteBg: #f1fcfb;
+  --color-buttonWhiteBgHover: #eef8ff;
+  --color-textButtonPrimary: #00d992;
+  --color-textButtonSecondary: #a9adae;
+  --color-textButtonGhost: #000000;
+  --color-textButtonWhite: #000000;
+
+  --color-amber-400: #ffb615;
+  --color-amber-800: #bf8b00;
+
+  --color-black: #000000;
+
+  --color-blue-400: #96c5d3;
+  --color-blue-600: #5ea2f5;
+
+  --color-cyan-300: cyan;
+
+  --color-emerald-300: #6acf9b;
+  --color-emerald-350: #44edc2;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #00d992;
+  --color-emerald-550: #04b179;
+  --color-emerald-600: #059669;
+  --color-emerald-620: #31715a;
+  --color-emerald-650: #0d4938;
+  --color-emerald-700: #111f1f;
+  --color-emerald-800: #112221;
+  --color-emerald-950: #102924;
+
+  --color-fuchsia-500: fuchsia;
+
+  --color-green-600: #33d398;
+
+  --color-gray-400: #b7bbbc;
+  --color-gray-500: #b7bbbccc;
+  --color-gray-600: #11171a;
+  --color-gray-700: #313131;
+  --color-gray-800: #2c3335;
+  --color-gray-950: #060f11;
+
+  --color-indigo-500: indigo;
+
+  --color-lime-300: lime;
+
+  --color-neutral-300: #d7d7d5;
+  --color-neutral-700: #363636;
+  --color-neutral-800: #1a2225;
+  --color-neutral-900: #0d1517;
+
+  --color-orange-500: orange;
+
+  --color-pink-500: pink;
+
+  --color-purple-400: #9f74d7;
+  --color-purple-500: #9747ff;
+
+  --color-red-600: #fb7185;
+
+  --color-rose-350: #fe889f;
+  --color-rose-400: #fb6d88;
+  --color-rose-500: #fb6d88cc;
+
+  --color-sky-500: sky;
+
+  --color-slate-500: #6c7375;
+  --color-slate-800: #161f23;
+  --color-slate-900: #101718;
+  --color-slate-950: #090e11;
+
+  --color-stone-500: #636969;
+  --color-stone-700: #4a381f;
+  --color-stone-800: #3b2327;
+  --color-stone-850: #2b2011;
+  --color-stone-900: #231517;
+
+  --color-teal-600: teal;
+  --color-teal-950: #10372c;
+
+  --color-violet-500: violet;
+
+  --color-white: #ffffff;
+
+  --color-yellow-400: #e9ba4c;
+  --color-yellow-500: #ffb200;
+
+  --color-zinc-100: #f0f1f1;
+  --color-zinc-200: #101618;
+  --color-zinc-300: #dbdbdb;
+  --color-zinc-400: #a9adae;
+  --color-zinc-500: #6c7375;
+  --color-zinc-600: #5b5b5b;
+  --color-zinc-700: #1c2225;
+  --color-zinc-800: #271f2d;
+  --color-zinc-900: #121b1d;
+  --color-zinc-950: #0a0f0f;
+
+  --font-sans:
+    ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  --font-inter: Inter var;
+  --font-gt: "GT America Mono";
+
+  --transition-property-width: width;
+}
 
 @layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@layer base {
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
   @font-face {
     font-family: "GT America Mono";
     font-style: normal;

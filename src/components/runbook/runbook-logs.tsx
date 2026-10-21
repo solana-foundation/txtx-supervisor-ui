@@ -44,10 +44,10 @@ export const RunbookLogs: React.FC = () => {
   ));
 
   return (
-    <div className="w-[28rem] fixed bottom-0 left-0 right-4 left-auto z-50">
+    <div className="w-md fixed bottom-0 left-0 right-4 left-auto z-50">
       <div
         className={classNames(
-          "w-[28rem] min-w-md w-full bg-gray-950 shadow-xl border-t border-neutral-800 rounded-t-lg transition-all duration-300 ease-in-out overflow-hidden",
+          "w-md min-w-md w-full bg-gray-950 shadow-xl border-t border-neutral-800 rounded-t-lg transition-all duration-300 ease-in-out overflow-hidden",
           isOpen
             ? "h-full max-h-[calc(100vh-3rem)] shadow-[0_0_20px_rgba(0,0,0,0.3)] ring-1 ring-neutral-300/30"
             : "h-12",
@@ -72,7 +72,7 @@ export const RunbookLogs: React.FC = () => {
           </svg>
         </button>
 
-        <div className="scrollbar-thin overflow-y-auto h-[50rem]">
+        <div className="scrollbar-thin overflow-y-auto h-200">
           <ul className="divide-y divide-neutral-800">
             {rows.length > 0 ? (
               rows
@@ -110,7 +110,7 @@ const RunbookLogEntry: React.FC<LogEvent> = ({
       >
         {summary}
       </span>
-      <span className="text-gray-400 break-words whitespace-pre-wrap">
+      <span className="text-gray-400 wrap-break-word whitespace-pre-wrap">
         {message}
       </span>
     </div>

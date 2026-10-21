@@ -40,7 +40,7 @@ export default function PickInputOptionCell({
       onClick={() => setPopupOpen(true)}
     >
       <div className="pr-3 pb-3 pl-3 md:pt-3">
-        <div className="block relative w-full rounded-md bg-neutral-800 pl-3 pr-10 text-left text-emerald-500 shadow-sm sm:text-sm sm:leading-6">
+        <div className="block relative w-full rounded-md bg-neutral-800 pl-3 pr-10 text-left text-emerald-500 shadow-xs sm:text-sm sm:leading-6">
           <span className="block truncate">{selected.value}</span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <ChevronUpDownIcon

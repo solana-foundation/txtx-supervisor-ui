@@ -31,7 +31,7 @@ const ErrorModal = () => {
       leaveFrom="opacity-100 translate-y-0"
       leaveTo="opacity-0 translate-y-2"
     >
-      <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-2 rounded shadow-lg">
+      <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-2 rounded-sm shadow-lg">
         {currentError}
       </div>
     </Transition>

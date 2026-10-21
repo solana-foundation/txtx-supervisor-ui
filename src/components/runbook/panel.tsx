@@ -34,7 +34,7 @@ export const Panel = forwardRef(function Panel(
 
   return (
     <div
-      className="scroll-m-44 w-full p-4 md:p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex"
+      className="scroll-m-44 w-full p-4 md:p-6 bg-zinc-900 rounded-lg shadow-sm border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex"
       id={uuid}
     >
       <div className="self-stretch justify-start items-start inline-flex">

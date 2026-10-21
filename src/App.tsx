@@ -37,7 +37,7 @@ function AppInternal() {
   useSubscriptions();
 
   return (
-    <div className="bg-gradient-to-b from-gray-950 to-neutral-900 ">
+    <div className="bg-linear-to-b/srgb from-gray-950 to-neutral-900 ">
       {/* Header & main content */}
       <div className="from-gray-950 to-neutral-900 ">
         <Header loading={loading}></Header>

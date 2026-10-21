@@ -69,7 +69,7 @@ export default function PickInputPopup({
                 setActive(item);
               }}
               className={classNames(
-                "flex items-center gap-3 px-3 py-2 rounded border transition-colors cursor-pointer",
+                "flex items-center gap-3 px-3 py-2 rounded-sm border transition-colors cursor-pointer",
                 activeIndex === idx
                   ? "bg-emerald-950 border-teal-950"
                   : "bg-gray-950 border-neutral-800",

@@ -52,7 +52,7 @@ export const ErrorPanel = forwardRef(function Panel(
   return (
     <div
       className={classNames(
-        "w-full p-6 bg-stone-900 rounded-lg shadow border border-stone-800 flex-col justify-center items-start gap-2.5 inline-flex",
+        "w-full p-6 bg-stone-900 rounded-lg shadow-sm border border-stone-800 flex-col justify-center items-start gap-2.5 inline-flex",
         contentVisibility,
       )}
       id={uuid}

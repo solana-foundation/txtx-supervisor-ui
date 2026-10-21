@@ -49,7 +49,7 @@ export function ActionItemRow({
       <div
         onClick={onClick}
         className={classNames(
-          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap rounded",
+          "w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap rounded-sm",
           isCurrent ? "bg-emerald-950" : "bg-gray-950",
         )}
       >
@@ -83,7 +83,7 @@ export function ActionItemRow({
         </div>
 
         <div className="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
-          <div className="self-stretch py-2.5 md:py-[12px] justify-start items-start inline-flex rounded">
+          <div className="self-stretch py-2.5 md:py-[12px] justify-start items-start inline-flex rounded-sm">
             <div
               className={classNames(
                 "grow shrink basis-0 text-sm font-normal font-inter leading-[18.20px]",

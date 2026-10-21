@@ -57,7 +57,7 @@ const ModalPanel = forwardRef(function Panel(
 
   return (
     <div
-      className="w-full p-4 md:p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex"
+      className="w-full p-4 md:p-6 bg-zinc-900 rounded-lg shadow-sm border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex"
       id={uuid}
     >
       <div className="self-stretch justify-start items-start inline-flex">

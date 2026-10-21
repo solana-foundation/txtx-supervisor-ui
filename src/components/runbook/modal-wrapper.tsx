@@ -31,7 +31,7 @@ export function ModalWrapper({ children, visible, onClick }: ModalWrapper) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="modal-close-click-target fixed inset-0 backdrop-blur-lg bg-opacity-25 transition-opacity" />
+          <div className="modal-close-click-target fixed inset-0 backdrop-blur-lg transition-opacity" />
         </TransitionChild>
 
         <div
@@ -46,7 +46,7 @@ export function ModalWrapper({ children, visible, onClick }: ModalWrapper) {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <DialogPanel className="modal-close-click-target z-50 mx-auto max-w-[1024px] transform overflow-hidden rounded-xl shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
+            <DialogPanel className="modal-close-click-target z-50 mx-auto max-w-[1024px] transform overflow-hidden rounded-xl shadow-2xl ring-1 ring-black/5 transition-all">
               <div className="modal-close-click-target w-full justify-center flex flex-col items-center">
                 <div
                   onClick={modalCloseOnClick}

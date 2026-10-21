@@ -45,7 +45,7 @@ export function ReviewInputCell({
       >
         <div
           className={classNames(
-            "rounded flex-col justify-end items-start gap-2.5 inline-flex",
+            "rounded-sm flex-col justify-end items-start gap-2.5 inline-flex",
             isStatusSuccess ? "bg-teal-950" : "",
             isCurrent ? "bg-emerald-500" : "",
             isStatusError ? "bg-stone-900" : "",

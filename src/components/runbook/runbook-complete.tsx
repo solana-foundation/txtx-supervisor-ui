@@ -51,7 +51,7 @@ export default function RunbookComplete() {
 
   return (
     <div
-      className="w-full min-h-32 p-4 md:p-6 bg-zinc-900 rounded-lg shadow border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex"
+      className="w-full min-h-32 p-4 md:p-6 bg-zinc-900 rounded-lg shadow-sm border border-neutral-800 flex-col justify-center items-start gap-2.5 inline-flex"
       id="runbook-complete"
     >
       <div className="self-stretch justify-start items-start inline-flex mb-4">
@@ -69,7 +69,7 @@ export default function RunbookComplete() {
           >
             <div className="w-full self-stretch justify-start flex flex-col items-start">
               <div className="w-full flex items-center justify-between">
-                <span className="text-gray-400 px-2 text-sm font-normal font-inter rounded">
+                <span className="text-gray-400 px-2 text-sm font-normal font-inter rounded-sm">
                   {info.title}
                 </span>
                 <InfoToolTip
@@ -80,10 +80,10 @@ export default function RunbookComplete() {
               </div>
             </div>
             <div className="w-full relative">
-              <div className="w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap rounded">
-                <div className="self-stretch flex-col justify-start items-start inline-flex rounded max-w-full">
+              <div className="w-full self-stretch bg-white/opacity-0 justify-start items-start inline-flex cursor-pointer flex-wrap rounded-sm">
+                <div className="self-stretch flex-col justify-start items-start inline-flex rounded-sm max-w-full">
                   <MarkdownRenderer
-                    className="flex-1 h-full p-2 pl-4 mb-2 rounded border border-gray-700 text-gray-300 overflow-y-auto scrollbar-thin bg-black"
+                    className="flex-1 h-full p-2 pl-4 mb-2 rounded-sm border border-gray-700 text-gray-300 overflow-y-auto scrollbar-thin bg-black"
                     content={info.details}
                   />
                 </div>
